@@ -1,0 +1,26 @@
+.ft-eyebrow {
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ft-color-primary);
+}
+
+.ft-section-heading { display: grid; gap: var(--ft-space-3); }
+.ft-section-heading--center { text-align: center; justify-items: center; }
+
+.ft-section-heading__title {
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-xl);
+  color: var(--ft-color-text);
+  margin: 0;
+}
+
+.ft-section-heading__desc {
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-md);
+  color: var(--ft-color-text-muted);
+  margin: 0;
+  max-width: 65ch;
+}

@@ -1,0 +1,78 @@
+/**
+ * Tokens del Design System (TASK-201 / REQ-DS-01).
+ *
+ * Los valores viven SOLO aquí como CSS custom properties — ningún componente
+ * hardcodea colores/radios (corrige el defecto "estilos quemados" de dashboard).
+ *
+ * Cada app consumidora (website/admin/intranet) sobrescribe variables a nivel
+ * de :root o de un subárbol, o usa <DesignSystemProvider theme={...}> — sin fork.
+ */
+:root {
+  /* Superficie */
+  --ft-color-background: #ffffff;
+  --ft-color-surface: #f8fafc;
+  --ft-color-surface-hover: #f1f5f9;
+  --ft-color-border: #e2e8f0;
+  --ft-color-foreground: #0f172a;
+  --ft-color-muted-foreground: #64748b;
+
+  /* Marca */
+  --ft-color-primary: #2563eb;
+  --ft-color-primary-hover: #1d4ed8;
+  --ft-color-on-primary: #ffffff;
+  --ft-color-accent: #10b981;
+  --ft-color-spark: #f59e0b;
+
+  /* Feedback (base + versión soft para badges/alerts) */
+  --ft-color-success: #16a34a;
+  --ft-color-success-soft: #dcfce7;
+  --ft-color-warning: #d97706;
+  --ft-color-warning-soft: #fef3c7;
+  --ft-color-danger: #dc2626;
+  --ft-color-danger-soft: #fee2e2;
+  --ft-color-info: #0284c7;
+  --ft-color-info-soft: #e0f2fe;
+
+  /* Foco */
+  --ft-ring: 0 0 0 2px color-mix(in srgb, var(--ft-color-primary) 55%, transparent);
+
+  /* Tipografía */
+  --ft-font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ft-font-mono: ui-monospace, 'JetBrains Mono', 'Fira Code', monospace;
+  --ft-text-xs: 0.75rem;
+  --ft-text-sm: 0.875rem;
+  --ft-text-base: 1rem;
+  --ft-text-lg: 1.125rem;
+
+  /* Espaciado */
+  --ft-space-1: 0.25rem;
+  --ft-space-2: 0.5rem;
+  --ft-space-3: 0.75rem;
+  --ft-space-4: 1rem;
+  --ft-space-5: 1.5rem;
+  --ft-space-6: 2rem;
+
+  /* Radios */
+  --ft-radius-sm: 0.375rem;
+  --ft-radius-md: 0.5rem;
+  --ft-radius-lg: 0.75rem;
+  --ft-radius-full: 9999px;
+
+  /* Tema oscuro opt-in por app (website) */
+  --ft-dark-color-background: #0a0a0a;
+  --ft-dark-color-surface: #141414;
+  --ft-dark-color-surface-hover: #1f1f1f;
+  --ft-dark-color-border: #2a2a2a;
+  --ft-dark-color-foreground: #fafafa;
+  --ft-dark-color-muted-foreground: #a1a1aa;
+}
+
+/* Tema oscuro: se activa con data-theme="dark" en cualquier contenedor */
+[data-theme='dark'] {
+  --ft-color-background: var(--ft-dark-color-background);
+  --ft-color-surface: var(--ft-dark-color-surface);
+  --ft-color-surface-hover: var(--ft-dark-color-surface-hover);
+  --ft-color-border: var(--ft-dark-color-border);
+  --ft-color-foreground: var(--ft-dark-color-foreground);
+  --ft-color-muted-foreground: var(--ft-dark-color-muted-foreground);
+}

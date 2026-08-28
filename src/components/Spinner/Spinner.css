@@ -1,0 +1,17 @@
+.ft-spinner {
+  display: inline-block;
+  border: 2px solid var(--ft-color-border);
+  border-top-color: var(--ft-color-primary);
+  border-radius: var(--ft-radius-full);
+  animation: ft-spinner-spin 0.7s linear infinite;
+}
+
+.ft-spinner--sm { width: 1rem; height: 1rem; }
+.ft-spinner--md { width: 1.5rem; height: 1.5rem; }
+.ft-spinner--lg { width: 2.25rem; height: 2.25rem; border-width: 3px; }
+
+@keyframes ft-spinner-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-spinner { animation-duration: 1.6s; }
+}

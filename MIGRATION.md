@@ -55,6 +55,6 @@ Regla de oro (doc 08 req. 2): **reconciliar antes de migrar** — una sola API p
 | 48 | Reveal | apps/frontend | ✅ MIGRADO | reescrito con IntersectionObserver nativo — elimina framer-motion (doc 08 PERFORMANCE) |
 | 49 | Sidebar / Navbar / MainLayout / RequireAuth | dashboard layout | ⬜ pendiente | requieren tokens + RequireAuth decide sesión en TASK-203 |
 | 50 | **Menú horizontal** | — | ⬜ pendiente | TASK-204 (nueva construcción) |
-| 51 | Login / ForgotPassword / Register | dashboard + nuevo | ⬜ pendiente | TASK-203 (endpoint por props) |
+| 51 | Login / ForgotPassword / Register | dashboard + nuevo | ✅ MIGRADO | `auth-screens/`: endpoint por props (`onSubmit`), sin backend fijo, sin storage de token (SECURITY doc 08). Register conecta al contrato real del backend Lumen (`POST /register`) |
 
 **Documentación viva (doc 08 req. 5):** la base son las páginas `dashboard/pages/design-system/*` (TokensPage, ColorsPage, ComponentsLibraryPage, ChartsLibraryPage, TypographyPage) — se adaptan cuando el catálogo alcance masa crítica; la decisión de Storybook queda descartada salvo evaluación contraria (anti-overengineering).

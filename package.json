@@ -26,12 +26,20 @@
     "dist"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Farutech/design-system.git"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
-    "build": "vite build && node -e \"require('fs').copyFileSync('src/tokens/tokens.css','dist/tokens.css')\"",
+    "build": "vite build && tsc -p tsconfig.build.json && node -e \"require('fs').copyFileSync('src/tokens/tokens.css','dist/tokens.css')\"",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
   "peerDependencies": {
     "react": ">=18"

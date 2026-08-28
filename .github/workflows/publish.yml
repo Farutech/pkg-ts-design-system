@@ -1,0 +1,25 @@
+name: Publish @farutech/design-system
+
+# Publica en npmjs.com (registro público, sin credenciales para consumidores)
+# cuando se empuje una tag v* — el repo fuente permanece privado.
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+          scope: '@farutech'
+      - run: npm ci
+      - run: npm run prepublishOnly
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

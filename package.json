@@ -36,6 +36,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "prepare": "npm run build",
     "build": "vite build && tsc -p tsconfig.build.json && node -e \"require('fs').copyFileSync('src/tokens/tokens.css','dist/tokens.css')\"",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

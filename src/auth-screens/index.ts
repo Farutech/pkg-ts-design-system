@@ -1,3 +1,12 @@
-export { LoginScreen, type LoginScreenProps, type LoginCredentials } from './LoginScreen'
-export { RegisterScreen, type RegisterScreenProps, type RegisterValues } from './RegisterScreen'
-export { ForgotPasswordScreen, type ForgotPasswordScreenProps, type ForgotPasswordValues } from './ForgotPasswordScreen'
+/**
+ * Exports de pantallas de autenticación
+ */
+
+export { LoginScreen } from './LoginScreen'
+export type { LoginScreenProps } from './LoginScreen'
+
+export { RegisterScreen } from './RegisterScreen'
+export type { RegisterScreenProps } from './RegisterScreen'
+
+export { ForgotPasswordScreen } from './ForgotPasswordScreen'
+export type { ForgotPasswordScreenProps } from './ForgotPasswordScreen'

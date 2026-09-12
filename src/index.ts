@@ -1,20 +1,38 @@
 /**
- * @farutech/design-system — TASK-201 (REQ-DS-01).
- *
- * Tokens + componentes reconciliados. Import recomendado para tree-shaking:
- *   import { Button } from '@farutech/design-system/components/Button'
- *   import '@farutech/design-system/styles.css'
+ * @farutech/design-system
+ * Sistema de diseño oficial de Farutech — Componentes UI, tokens, layouts y hooks reutilizables.
  */
-export { DesignSystemProvider, useDesignSystem, type DesignSystemProviderProps, type LinkComponent } from './providers/DesignSystemProvider'
-export { tokensToStyle, type DesignTokens } from './tokens/tokens'
 
-export { Button } from './components/Button'
-export { Badge, StatusBadge } from './components/Badge'
-export { Input } from './components/Input'
-export { Alert } from './components/Alert'
-export { Spinner } from './components/Spinner'
-export { Eyebrow, SectionHeading } from './components/Content'
-export { Reveal } from './components/Reveal'
-export { LoginScreen, type LoginScreenProps, type LoginCredentials } from './auth-screens/LoginScreen'
-export { RegisterScreen, type RegisterScreenProps, type RegisterValues } from './auth-screens/RegisterScreen'
-export { ForgotPasswordScreen, type ForgotPasswordScreenProps, type ForgotPasswordValues } from './auth-screens/ForgotPasswordScreen'
+// Tokens y utilidades de estilo
+export * from './tokens'
+
+// Componentes UI de catálogo completo (51 componentes)
+export * from './components/ui'
+
+// Primitivas de contenido y animación
+export { Eyebrow, SectionHeading, type EyebrowProps, type SectionHeadingProps } from './components/Content'
+export { Reveal, type RevealProps } from './components/Reveal'
+
+// Provider y temas
+export { DesignSystemProvider, useDesignSystem, type DesignSystemProviderProps, type LinkComponent } from './providers/DesignSystemProvider'
+
+// Componentes CRUD
+export * from './components/crud'
+
+// Componentes de Layout
+export * from './components/layout'
+
+// Componentes de Navegación
+export * from './components/navigation'
+
+// Componentes Básicos (Toast, Notification, Toggle)
+export * from './components/basic'
+
+// Pantallas y flujos de autenticación
+export * from './auth-screens'
+
+// Hooks personalizados
+export * from './hooks'
+
+// Stores Zustand
+export * from './store'

@@ -1,0 +1,20 @@
+id: pkg-ts-design-system
+name: "@farutech/design-system"
+domain: packages
+subdomain: ts
+type: library
+status: active
+version: 1.0.3
+owner:
+  team: team-ux
+  tech_lead: faridmaloof
+description: "Sistema de diseño oficial de Farutech — Componentes UI, tokens, layouts y hooks reutilizables."
+registry:
+  npm: "https://npm.pkg.github.com/@farutech/design-system"
+technologies:
+  - react
+  - typescript
+  - tailwindcss
+  - vite
+ci:
+  workflow: .github/workflows/publish.yml

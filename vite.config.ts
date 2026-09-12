@@ -1,51 +1,56 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'node:path'
-import { readdirSync, statSync, existsSync } from 'node:fs'
+import path from 'path'
+import dts from 'vite-plugin-dts'
 
-/**
- * Build de librería (TASK-201):
- * - Entrada: src/index.ts + un entry por componente (tree-shaking / import individual).
- * - CSS: tokens y estilos de componente se emiten como hojas planas, no inline JS.
- * - react/react-dom quedan externos (peer dependency).
- */
-const componentsDir = resolve(__dirname, 'src/components')
-const componentEntries = existsSync(componentsDir)
-  ? readdirSync(componentsDir).filter((d) => statSync(resolve(componentsDir, d)).isDirectory())
-      .reduce((acc, d) => {
-        acc[`components/${d}/index`] = resolve(componentsDir, d, 'index.ts')
-        return acc
-      }, {} as Record<string, string>)
-  : {}
-
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    dts({
+      tsconfigPath: './tsconfig.json',
+      outDir: './dist',
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      exclude: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/__tests__/**', 'src/docs/**'],
+    })
+  ],
   resolve: {
-    conditions: ['development'],
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        ...componentEntries,
+        index: path.resolve(__dirname, 'src/index.ts'),
+        'components/ui': path.resolve(__dirname, 'src/components/ui/index.ts'),
+        'components/crud': path.resolve(__dirname, 'src/components/crud/index.ts'),
+        'components/layout': path.resolve(__dirname, 'src/components/layout/index.ts'),
+        'components/basic': path.resolve(__dirname, 'src/components/basic/index.ts'),
+        'components/navigation': path.resolve(__dirname, 'src/components/navigation/index.ts'),
+        'auth-screens': path.resolve(__dirname, 'src/auth-screens/index.ts'),
+        tokens: path.resolve(__dirname, 'src/tokens/index.ts'),
       },
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react/jsx-runtime', 'react-dom', 'clsx'],
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          'react/jsx-runtime': 'react/jsx-runtime',
+        },
         preserveModules: false,
-        assetFileNames: (asset) => (asset.name === 'style.css' ? 'styles.css' : asset.name ?? '[name]'),
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) {
+            return 'styles.css'
+          }
+          return '[name].js'
+        },
       },
     },
-    cssCodeSplit: false,
     sourcemap: true,
-    emptyOutDir: true,
-  },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: ['./src/test-setup.ts'],
-    css: false,
+    minify: false,
   },
 })

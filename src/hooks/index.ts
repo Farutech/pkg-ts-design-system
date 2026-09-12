@@ -21,4 +21,4 @@ export type { UseMenuOptions, UseMenuReturn } from './useMenu';
 export type { MenuItem, MenuCategory } from '@/config/menu.config';
 
 export { useNotification } from './useNotification';
-export type { UseNotificationReturn, Notification } from './useNotification';
+export type { UseNotificationReturn, Notification as NotificationState } from './useNotification';

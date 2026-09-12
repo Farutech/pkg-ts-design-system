@@ -2,29 +2,77 @@
   "name": "@farutech/design-system",
   "version": "1.0.3",
   "description": "Sistema de diseño oficial de Farutech — Componentes UI reutilizables para website, admin, intranet y futuras aplicaciones",
-  "author": { "name": "Farid Maloof Suarez", "company": "FaruTech" },
+  "author": {
+    "name": "Farid Maloof Suarez",
+    "company": "FaruTech"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
-    "./components/ui": { "import": "./dist/components/ui.js", "types": "./dist/components/ui/index.d.ts" },
-    "./components/crud": { "import": "./dist/components/crud.js", "types": "./dist/components/crud/index.d.ts" },
-    "./components/layout": { "import": "./dist/components/layout.js", "types": "./dist/components/layout/index.d.ts" },
-    "./components/basic": { "import": "./dist/components/basic.js", "types": "./dist/components/basic/index.d.ts" },
-    "./components/navigation": { "import": "./dist/components/navigation.js", "types": "./dist/components/navigation/index.d.ts" },
-    "./auth-screens": { "import": "./dist/auth-screens.js", "types": "./dist/auth-screens/index.d.ts" },
-    "./tokens": { "import": "./dist/tokens.js", "types": "./dist/tokens/index.d.ts" },
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./components/ui": {
+      "import": "./dist/components/ui.js",
+      "types": "./dist/components/ui/index.d.ts"
+    },
+    "./components/crud": {
+      "import": "./dist/components/crud.js",
+      "types": "./dist/components/crud/index.d.ts"
+    },
+    "./components/layout": {
+      "import": "./dist/components/layout.js",
+      "types": "./dist/components/layout/index.d.ts"
+    },
+    "./components/basic": {
+      "import": "./dist/components/basic.js",
+      "types": "./dist/components/basic/index.d.ts"
+    },
+    "./components/navigation": {
+      "import": "./dist/components/navigation.js",
+      "types": "./dist/components/navigation/index.d.ts"
+    },
+    "./auth-screens": {
+      "import": "./dist/auth-screens.js",
+      "types": "./dist/auth-screens/index.d.ts"
+    },
+    "./tokens": {
+      "import": "./dist/tokens.js",
+      "types": "./dist/tokens/index.d.ts"
+    },
     "./styles.css": "./dist/styles.css"
   },
-  "files": ["dist", "README.md", "LICENSE"],
-  "sideEffects": ["**/*.css"],
-  "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "public" },
-  "repository": { "type": "git", "url": "git+https://github.com/Farutech/pkg-ts-design-system.git" },
-  "keywords": ["react", "design-system", "ui-components", "farutech", "tailwindcss", "typescript"],
-  "engines": { "node": ">=20" },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Farutech/pkg-ts-design-system.git"
+  },
+  "keywords": [
+    "react",
+    "design-system",
+    "ui-components",
+    "farutech",
+    "tailwindcss",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite build --watch",
     "typecheck": "tsc --noEmit",
@@ -51,6 +99,7 @@
     "date-fns": "^4.4.0",
     "framer-motion": "^13.1.1",
     "react-hook-form": "^7.86.0",
+    "react-is": "^19.3.0",
     "react-router-dom": "^7.18.2",
     "zod": "^4.4.3",
     "zustand": "^5.0.15"
@@ -69,6 +118,7 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^6.1.0",
+    "ajv": "^8.17.1",
     "autoprefixer": "^10.5.4",
     "eslint": "^10.9.1",
     "eslint-plugin-react-hooks": "^7.1.1",

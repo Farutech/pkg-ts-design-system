@@ -1,5 +1,48 @@
+# Dependencies
 node_modules/
-dist/
-*.tsbuildinfo
+.pnp
+.pnp.js
 
+# Production build
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
 *.tgz
+
+# Vite / Cache
+.vite/
+.vite-temp/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Testing & Coverage
+coverage/
+allure-results/
+evidence/
+TestResults/
+playwright-report/
+blob-report/
+
+# Editor & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.suo
+*.user
+*.swp
+*.tmp
+*.bak
+*scratch*

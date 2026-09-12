@@ -99,7 +99,7 @@ export type { Module, ModuleSwitcherProps } from './ModuleSwitcher'
 export { CommandPalette, useCommandPalette } from './CommandPalette'
 export type { Command, CommandPaletteProps } from './CommandPalette'
 export { NotificationPanel } from './NotificationPanel'
-export type { Notification, NotificationPanelProps } from './NotificationPanel'
+export type { Notification as NotificationItem, NotificationPanelProps } from './NotificationPanel'
 export { CodePreview, CodePreviewGroup } from './CodePreview'
 export type { CodePreviewProps, CodePreviewGroupProps } from './CodePreview'
 

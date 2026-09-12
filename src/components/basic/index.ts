@@ -8,7 +8,7 @@ export type { NotificationProps } from './Notification'
 export { Toast } from './Toast'
 export type { ToastProps } from './Toast'
 
-export { ToastContainer } from './ToastContainer'
+export { ToastContainer as BasicToastContainer } from './ToastContainer'
 
 export { Toggle } from './Toggle'
 export type { ToggleProps } from './Toggle'

@@ -22,7 +22,7 @@
   "files": ["dist", "README.md", "LICENSE"],
   "sideEffects": ["**/*.css"],
   "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "public" },
-  "repository": { "type": "git", "url": "git+https://github.com/Farutech/design-system.git" },
+  "repository": { "type": "git", "url": "git+https://github.com/Farutech/pkg-ts-design-system.git" },
   "keywords": ["react", "design-system", "ui-components", "farutech", "tailwindcss", "typescript"],
   "engines": { "node": ">=20" },
   "scripts": {

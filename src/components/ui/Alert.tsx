@@ -1,14 +1,16 @@
-/**
- * Componente Alert - Alertas y notificaciones
- */
-
-import { XMarkIcon, CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { useState, type ReactNode } from 'react'
+import {
+  XMarkIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import type { ReactNode } from 'react'
 
-export type AlertVariant = 'success' | 'error' | 'warning' | 'info'
+export type AlertVariant = 'success' | 'error' | 'warning' | 'info' | 'danger'
 
-interface AlertProps {
+export interface AlertProps {
   variant?: AlertVariant
   title?: string
   children: ReactNode
@@ -16,7 +18,15 @@ interface AlertProps {
   className?: string
 }
 
-const variantStyles = {
+const errorStyle = {
+  container: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
+  icon: 'text-red-600 dark:text-red-400',
+  title: 'text-red-800 dark:text-red-300',
+  text: 'text-red-700 dark:text-red-400',
+  IconComponent: XCircleIcon,
+}
+
+const variantStyles: Record<AlertVariant, typeof errorStyle> = {
   success: {
     container: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
     icon: 'text-green-600 dark:text-green-400',
@@ -24,13 +34,8 @@ const variantStyles = {
     text: 'text-green-700 dark:text-green-400',
     IconComponent: CheckCircleIcon,
   },
-  error: {
-    container: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
-    icon: 'text-red-600 dark:text-red-400',
-    title: 'text-red-800 dark:text-red-300',
-    text: 'text-red-700 dark:text-red-400',
-    IconComponent: XCircleIcon,
-  },
+  error: errorStyle,
+  danger: errorStyle,
   warning: {
     container: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800',
     icon: 'text-yellow-600 dark:text-yellow-400',
@@ -48,13 +53,23 @@ const variantStyles = {
 }
 
 export function Alert({ variant = 'info', title, children, onClose, className }: AlertProps) {
-  const styles = variantStyles[variant]
+  const [dismissed, setDismissed] = useState(false)
+  if (dismissed) return null
+
+  const styles = variantStyles[variant] || variantStyles.info
   const { IconComponent } = styles
+
+  const handleClose = () => {
+    setDismissed(true)
+    onClose?.()
+  }
 
   return (
     <div
       className={clsx(
         'rounded-xl border p-4 shadow-sm transition-all duration-200',
+        'ft-alert',
+        `ft-alert--${variant}`,
         styles.container,
         className
       )}
@@ -76,7 +91,9 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
         </div>
         {onClose && (
           <button
-            onClick={onClose}
+            type="button"
+            aria-label="Cerrar aviso"
+            onClick={handleClose}
             className={clsx(
               'flex-shrink-0 rounded-lg p-1 transition-colors duration-200',
               'hover:bg-black/5 dark:hover:bg-white/5',
@@ -90,3 +107,4 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
     </div>
   )
 }
+

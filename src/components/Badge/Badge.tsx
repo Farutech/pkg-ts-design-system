@@ -11,7 +11,7 @@ import type { ReactNode } from 'react'
 import clsx from 'clsx'
 import './Badge.css'
 
-export type BadgeVariant = 'neutral' | 'outline' | 'primary' | 'success' | 'danger' | 'warning' | 'info'
+export type BadgeVariant = 'neutral' | 'default' | 'outline' | 'primary' | 'success' | 'danger' | 'warning' | 'info'
 export type BadgeSize = 'sm' | 'md' | 'lg'
 
 export interface BadgeProps {
@@ -26,11 +26,12 @@ export interface BadgeProps {
 }
 
 export function Badge({ children, variant = 'neutral', size = 'md', dot = false, mono = false, className }: BadgeProps) {
+  const normalizedVariant = variant === 'default' ? 'neutral' : variant
   return (
     <span
       className={clsx(
         'ft-badge',
-        `ft-badge--${variant}`,
+        `ft-badge--${normalizedVariant}`,
         `ft-badge--${size}`,
         mono && 'ft-badge--mono',
         className,

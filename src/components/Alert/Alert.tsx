@@ -6,7 +6,7 @@ import clsx from 'clsx'
 import './Alert.css'
 
 export interface AlertProps {
-  variant?: 'info' | 'success' | 'warning' | 'danger'
+  variant?: 'info' | 'success' | 'warning' | 'danger' | 'error'
   title?: ReactNode
   children?: ReactNode
   /** Si se define, muestra botón de cerrar (accesible). */
@@ -18,8 +18,10 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
   const [closed, setClosed] = useState(false)
   if (closed) return null
 
+  const effectiveVariant = variant === 'error' ? 'danger' : variant
+
   return (
-    <div role={variant === 'danger' ? 'alert' : 'status'} className={clsx('ft-alert', `ft-alert--${variant}`, className)}>
+    <div role={effectiveVariant === 'danger' ? 'alert' : 'status'} className={clsx('ft-alert', `ft-alert--${effectiveVariant}`, className)}>
       <div className="ft-alert__content">
         {title && <p className="ft-alert__title">{title}</p>}
         {children && <div className="ft-alert__body">{children}</div>}

@@ -13,9 +13,10 @@ describe('RegisterScreen (TASK-203)', () => {
     await user.type(screen.getByLabelText(/^correo electrónico/i), 'jane@farutech.com')
     await user.type(screen.getByLabelText(/^contraseña/i), '12345678')
     await user.type(screen.getByLabelText(/^confirmar contraseña/i), '87654321')
-    await user.click(screen.getByRole('button', { name: 'Registrarme' }))
+    await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Las contraseñas no coinciden')
+    const alerts = await screen.findAllByRole('alert')
+    expect(alerts.some((el) => el.textContent?.includes('Las contraseñas no coinciden'))).toBe(true)
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
@@ -32,7 +33,8 @@ describe('RegisterScreen (TASK-203)', () => {
     await user.type(screen.getByLabelText(/^correo electrónico/i), 'jane@farutech.com')
     await user.type(screen.getByLabelText(/^contraseña/i), '12345678')
     await user.type(screen.getByLabelText(/^confirmar contraseña/i), '12345678')
-    await user.click(screen.getByRole('button', { name: 'Registrarme' }))
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
     await waitFor(() =>
       expect(onSuccess).toHaveBeenCalledWith({
@@ -40,11 +42,11 @@ describe('RegisterScreen (TASK-203)', () => {
         requires_confirmation: true,
       }),
     )
-    expect(onSubmit).toHaveBeenCalledWith({
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({
       name: 'Jane Doe',
       email: 'jane@farutech.com',
       password: '12345678',
-    })
+    }))
   })
 
   it('contraseña corta -> error y no envía', async () => {
@@ -57,9 +59,10 @@ describe('RegisterScreen (TASK-203)', () => {
     await user.type(screen.getByLabelText(/^correo electrónico/i), 'jane@farutech.com')
     await user.type(screen.getByLabelText(/^contraseña/i), '123')
     await user.type(screen.getByLabelText(/^confirmar contraseña/i), '123')
-    await user.click(screen.getByRole('button', { name: 'Registrarme' }))
+    await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('al menos 8 caracteres')
+    const alerts = await screen.findAllByRole('alert')
+    expect(alerts.some((el) => el.textContent?.includes('al menos 8 caracteres'))).toBe(true)
     expect(onSubmit).not.toHaveBeenCalled()
   })
 })

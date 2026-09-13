@@ -9,7 +9,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode
   header?: ReactNode
   footer?: ReactNode
-  padding?: 'none' | 'sm' | 'md' | 'lg'
+  padding?: 'none' | 'sm' | 'md' | 'lg' | 'default'
   hover?: boolean
 }
 
@@ -26,6 +26,7 @@ export function Card({
     none: '',
     sm: 'p-3',
     md: 'p-6',
+    default: 'p-6',
     lg: 'p-8',
   }
 

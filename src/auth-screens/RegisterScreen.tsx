@@ -29,7 +29,9 @@ export interface RegisterScreenProps {
     phone?: string
     company?: string
     acceptTerms: boolean
-  }) => Promise<{ success: boolean; error?: string }>
+  }) => Promise<any>
+  /** Callback cuando el registro es exitoso */
+  onSuccess?: (result: any) => void
   /** Callback cuando el usuario quiere iniciar sesión */
   onLogin?: () => void
   /** URL del logo de la marca */
@@ -43,7 +45,7 @@ export interface RegisterScreenProps {
   requireCompany?: boolean
   /** URL de términos y condiciones */
   termsUrl?: string
-  /** Mensaje de éxito después del registro */
+  /** Mensaje de éxito */
   successMessage?: string
 }
 
@@ -55,6 +57,7 @@ export interface RegisterScreenProps {
  */
 export function RegisterScreen({
   onSubmit,
+  onSuccess,
   onLogin,
   logoUrl,
   brandName = 'Farutech',
@@ -122,13 +125,13 @@ export function RegisterScreen({
     setIsLoading(true)
     try {
       const result = await onSubmit(formData)
-      if (result.success) {
-        setSuccess(true)
-        setTimeout(() => {
-          // El padre puede manejar la redirección
-        }, 2000)
-      } else {
+      if (result && result.success === false) {
         setError(result.error || 'Error al crear la cuenta')
+      } else {
+        setSuccess(true)
+        if (onSuccess) {
+          onSuccess(result)
+        }
       }
     } catch (err) {
       setError('Error de conexión. Intente nuevamente.')

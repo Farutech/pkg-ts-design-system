@@ -1,1 +1,2 @@
-export { Spinner, type SpinnerProps } from './Spinner'
+export { Spinner, ProgressSpinner, type SpinnerProps } from '../ui/Spinner'
+

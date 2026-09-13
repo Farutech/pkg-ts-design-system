@@ -1,66 +1,91 @@
-/**
- * Componente Button reutilizable
- */
-
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import clsx from 'clsx'
+import { useDesignSystem } from '../../providers/DesignSystemProvider'
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'ghost' | 'outline'
+export type ButtonSize = 'sm' | 'md' | 'lg'
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
+  size?: ButtonSize
   icon?: ReactNode
   iconPosition?: 'left' | 'right'
   loading?: boolean
   fullWidth?: boolean
+  /** Ruta interna — renderiza el LinkComponent del provider si existe */
+  to?: string
+  /** URL externa — renderiza <a> */
+  href?: string
+  external?: boolean
 }
 
-export function Button({
-  children,
-  variant = 'primary',
-  size = 'md',
-  icon,
-  iconPosition = 'left',
-  loading = false,
-  fullWidth = false,
-  className,
-  disabled,
-  ...props
-}: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
-  
-  const variants = {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    children,
+    variant = 'primary',
+    size = 'md',
+    icon,
+    iconPosition = 'left',
+    loading = false,
+    fullWidth = false,
+    to,
+    href,
+    external,
+    className,
+    disabled,
+    type = 'button',
+    ...props
+  },
+  ref
+) {
+  let linkContext: { LinkComponent?: any } = {}
+  try {
+    linkContext = useDesignSystem()
+  } catch {
+    // Fuera de provider: fallback seguro
+  }
+  const { LinkComponent } = linkContext
+
+  const baseStyles =
+    'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+
+  const variants: Record<ButtonVariant, string> = {
     primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm',
     secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 shadow-sm',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm',
     success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm',
     warning: 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500 shadow-sm',
     ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-gray-500',
+    outline:
+      'border border-gray-300 dark:border-gray-600 bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-primary-500',
   }
 
-  const sizes = {
+  const sizes: Record<ButtonSize, string> = {
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-4 py-2 text-sm',
     lg: 'px-6 py-3 text-base',
   }
 
-  return (
-    <button
-      className={clsx(
-        baseStyles,
-        variants[variant],
-        sizes[size],
-        fullWidth && 'w-full',
-        className
-      )}
-      disabled={disabled || loading}
-      {...props}
-    >
+  const classes = clsx(
+    baseStyles,
+    'ft-button',
+    `ft-button--${variant}`,
+    `ft-button--${size}`,
+    fullWidth && 'ft-button--full w-full',
+    variants[variant] || variants.primary,
+    sizes[size] || sizes.md,
+    className
+  )
+
+  const content = (
+    <>
       {loading && (
         <svg
           className="animate-spin -ml-1 mr-2 h-4 w-4"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path
@@ -70,16 +95,46 @@ export function Button({
           />
         </svg>
       )}
-      
-      {!loading && icon && iconPosition === 'left' && (
-        <span className="mr-2">{icon}</span>
-      )}
-      
-      {children}
-      
-      {!loading && icon && iconPosition === 'right' && (
-        <span className="ml-2">{icon}</span>
-      )}
+
+      {!loading && icon && iconPosition === 'left' && <span className="mr-2">{icon}</span>}
+      <span>{children}</span>
+      {!loading && icon && iconPosition === 'right' && <span className="ml-2">{icon}</span>}
+    </>
+  )
+
+  if (to && LinkComponent) {
+    return (
+      <LinkComponent href={to} className={classes}>
+        {content}
+      </LinkComponent>
+    )
+  }
+
+  if (to || href) {
+    const url = to ?? href ?? '#'
+    return (
+      <a
+        href={url}
+        className={classes}
+        {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        aria-busy={loading || undefined}
+      >
+        {content}
+      </a>
+    )
+  }
+
+  return (
+    <button
+      ref={ref}
+      type={type}
+      className={classes}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...props}
+    >
+      {content}
     </button>
   )
-}
+})
+

@@ -4,7 +4,7 @@
 
 import clsx from 'clsx'
 
-interface SpinnerProps {
+export interface SpinnerProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   variant?: 'circle' | 'dots' | 'bars' | 'pulse'
   color?: 'primary' | 'white' | 'gray'

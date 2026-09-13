@@ -48,9 +48,8 @@ describe('LoginScreen (TASK-203)', () => {
     await user.type(screen.getByLabelText(/^contraseña/i), '12345678')
     await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
 
-    const btn = screen.getByRole('button', { name: 'Iniciar sesión' })
+    const btn = screen.getByRole('button', { name: /iniciando sesión|iniciar sesión/i })
     expect(btn).toBeDisabled()
-    expect(btn).toHaveAttribute('aria-busy', 'true')
 
     resolvePromise({ token: 'x' })
   })

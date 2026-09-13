@@ -63,16 +63,16 @@ export function Modal({
             >
               <Dialog.Panel
                 className={clsx(
-                  'w-full transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all',
+                  'w-full transform overflow-hidden rounded-2xl bg-white dark:bg-[#111827] text-left align-middle shadow-2xl transition-all border border-slate-200 dark:border-slate-800 flex flex-col max-h-[88vh]',
                   sizes[size]
                 )}
               >
                 {(title || closeButton) && (
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 shrink-0 sticky top-0 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md z-20">
                     {title && (
                       <Dialog.Title
                         as="h3"
-                        className="text-lg font-semibold text-gray-900 dark:text-white"
+                        className="text-lg font-semibold text-slate-900 dark:text-white tracking-tight"
                       >
                         {title}
                       </Dialog.Title>
@@ -80,23 +80,27 @@ export function Modal({
                     {closeButton && (
                       <button
                         type="button"
-                        className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                        aria-label="Cerrar modal"
+                        className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         onClick={onClose}
                       >
-                        <XMarkIcon className="h-6 w-6" />
+                        <XMarkIcon className="h-5 w-5" />
                       </button>
                     )}
                   </div>
                 )}
 
-                <div className="px-6 py-4">{children}</div>
+                <div className="px-6 py-5 overflow-y-auto flex-1 overscroll-contain text-slate-700 dark:text-slate-300">
+                  {children}
+                </div>
 
                 {footer && (
-                  <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
+                  <div className="px-6 py-4 bg-slate-50/90 dark:bg-[#0b0f19]/90 border-t border-slate-200 dark:border-slate-800 shrink-0 sticky bottom-0 z-20 flex items-center justify-end gap-3 backdrop-blur-md">
                     {footer}
                   </div>
                 )}
               </Dialog.Panel>
+
             </Transition.Child>
           </div>
         </div>

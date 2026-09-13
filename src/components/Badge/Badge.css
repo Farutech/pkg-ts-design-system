@@ -12,7 +12,7 @@
 .ft-badge--mono { font-family: var(--ft-font-mono); letter-spacing: 0.08em; }
 
 /* Variantes */
-.ft-badge--neutral { background: var(--ft-color-surface-hover); color: var(--ft-color-foreground); }
+.ft-badge--neutral, .ft-badge--default { background: var(--ft-color-surface-hover); color: var(--ft-color-foreground); }
 .ft-badge--outline { background: transparent; color: var(--ft-color-muted-foreground); border-color: var(--ft-color-border); }
 .ft-badge--primary { background: color-mix(in srgb, var(--ft-color-primary) 12%, transparent); color: var(--ft-color-primary); }
 .ft-badge--success { background: var(--ft-color-success-soft); color: var(--ft-color-success); }

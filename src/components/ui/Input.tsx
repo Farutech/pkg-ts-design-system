@@ -7,9 +7,9 @@ import type { InputHTMLAttributes, ReactNode, ChangeEvent } from 'react'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 
-type ValidationMode = 'block' | 'error'
+export type ValidationMode = 'block' | 'error'
 
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'pattern'> {
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'pattern'> {
   label?: string
   error?: string
   helperText?: string
@@ -107,6 +107,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             type={effectiveType}
+            aria-invalid={displayError ? 'true' : undefined}
             onChange={handleChange}
             className={clsx(
               'input',
@@ -147,8 +148,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {displayError && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{displayError}</p>
+          <p role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">{displayError}</p>
         )}
+
 
         {helperText && !displayError && (
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{helperText}</p>

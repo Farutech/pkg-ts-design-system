@@ -1,1 +1,2 @@
-export { Alert, type AlertProps } from './Alert'
+export { Alert, type AlertProps, type AlertVariant } from '../ui/Alert'
+

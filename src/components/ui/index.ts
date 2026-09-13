@@ -2,23 +2,23 @@
  * Exports de componentes UI
  */
 
-// Base components
-export { Button } from './Button'
+// Base components (versiones reconciliadas con base Platform y Tailwind styling nativo)
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './Button'
 export { ButtonGroup } from './ButtonGroup'
 export { Card, CardHeader } from './Card'
-export { Input } from './Input'
+export { Input, type InputProps } from './Input'
 export { MaskedInput } from './MaskedInput'
 export type { MaskedInputProps, PredefinedMask } from './MaskedInput'
 export { Textarea } from './Textarea'
 export { Select } from './Select'
 export { Modal } from './Modal'
 export { ToastContainer } from './Toast'
-export { Badge } from './Badge'
+export { Badge, StatusBadge, type BadgeProps, type BadgeVariant, type BadgeSize } from './Badge'
 export { Loading, Skeleton as LoadingSkeleton, TableSkeleton, CardSkeleton } from './Loading'
 export { Divider, SectionHeader } from './Divider'
 
 // Advanced components
-export { Alert } from './Alert'
+export { Alert, type AlertProps, type AlertVariant } from './Alert'
 export { Avatar, AvatarGroup } from './Avatar'
 export { Breadcrumb } from './Breadcrumb'
 export { Carousel } from './Carousel'
@@ -42,7 +42,8 @@ export type {
   FilterState,
   FilterType
 } from './DataTable'
-export { Spinner, ProgressSpinner } from './Spinner'
+export { Spinner, ProgressSpinner, type SpinnerProps } from './Spinner'
+
 export { Switch } from './Switch'
 export { Tabs } from './Tabs'
 export { Tooltip } from './Tooltip'

@@ -22,7 +22,9 @@ import { Button, Input, Checkbox, Alert } from '../components/ui'
 
 export interface LoginScreenProps {
   /** Callback que recibe email/password y retorna Promise con el resultado del login */
-  onSubmit: (credentials: { email: string; password: string; remember: boolean }) => Promise<{ success: boolean; error?: string }>
+  onSubmit: (credentials: { email: string; password: string; remember: boolean }) => Promise<any>
+  /** Callback invocado cuando el login es exitoso */
+  onSuccess?: (result: any) => void
   /** Callback cuando el usuario hace clic en "Olvidé mi contraseña" */
   onForgotPassword?: () => void
   /** Callback cuando el usuario quiere registrarse */
@@ -43,6 +45,7 @@ export interface LoginScreenProps {
 
 export function LoginScreen({
   onSubmit,
+  onSuccess,
   onForgotPassword,
   onRegister,
   logoUrl = '/logo.png',
@@ -74,8 +77,10 @@ export function LoginScreen({
         remember: formData.remember,
       })
 
-      if (!result.success && result.error) {
+      if (result && result.success === false && result.error) {
         setError(result.error)
+      } else if (onSuccess) {
+        onSuccess(result)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión')

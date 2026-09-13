@@ -1,5 +1,7 @@
-/* Entrada de estilos del paquete: tokens + estilos de los componentes incluidos. */
+/* Entrada de estilos del paquete: tokens base del Platform + estilos de componentes */
+@import './styles/index.css';
 @import './tokens/tokens.css';
+
 @import './components/Button/Button.css';
 @import './components/Badge/Badge.css';
 @import './components/Input/Input.css';

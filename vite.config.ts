@@ -17,6 +17,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'use-sync-external-store/shim/with-selector.js': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/shim/with-selector': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/with-selector.js': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/with-selector': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/shim/index.js': path.resolve(__dirname, './src/shims/use-sync-external-store.ts'),
+      'use-sync-external-store/shim': path.resolve(__dirname, './src/shims/use-sync-external-store.ts'),
+      'use-sync-external-store': path.resolve(__dirname, './src/shims/use-sync-external-store.ts'),
     },
   },
   build: {

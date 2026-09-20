@@ -663,6 +663,120 @@ export function CRUDTable<T = any>({
             min-width: 100%;
           }
         }
+
+        /* Dark mode support */
+        .dark .crud-table {
+          background: #0f172a;
+          border: 1px solid #1e293b;
+          color: #f8fafc;
+        }
+
+        .dark .crud-table__toolbar {
+          background: #0f172a;
+          border-bottom-color: #1e293b;
+        }
+
+        .dark .crud-table__search-input {
+          background: #1e293b;
+          border-color: #334155;
+          color: #f8fafc;
+        }
+
+        .dark .crud-table__search-input:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .dark .crud-table__search-icon {
+          color: #94a3b8;
+        }
+
+        .dark .crud-table__btn--secondary {
+          background: #1e293b;
+          color: #e2e8f0;
+          border-color: #334155;
+        }
+
+        .dark .crud-table__btn--secondary:hover:not(:disabled) {
+          background: #334155;
+        }
+
+        .dark .crud-table__filters {
+          background: #0b1120;
+          border-bottom-color: #1e293b;
+        }
+
+        .dark .crud-table__filter-label {
+          color: #94a3b8;
+        }
+
+        .dark .crud-table__filter-select,
+        .dark .crud-table__filter-input {
+          background: #1e293b;
+          border-color: #334155;
+          color: #f8fafc;
+        }
+
+        .dark .crud-table__th {
+          background: #0b1120;
+          color: #94a3b8;
+          border-bottom-color: #1e293b;
+        }
+
+        .dark .crud-table__th--sortable:hover {
+          background: #1e293b;
+        }
+
+        .dark .crud-table__td {
+          border-bottom-color: #1e293b;
+          color: #e2e8f0;
+        }
+
+        .dark .crud-table__tbody tr:hover {
+          background: rgba(30, 41, 59, 0.5);
+        }
+
+        .dark .crud-table__action-btn--secondary {
+          color: #94a3b8;
+        }
+
+        .dark .crud-table__action-btn--secondary:hover {
+          background: #1e293b;
+          color: #f8fafc;
+        }
+
+        .dark .crud-table__pagination {
+          background: #0f172a;
+          border-top-color: #1e293b;
+        }
+
+        .dark .crud-table__pagination-info {
+          color: #94a3b8;
+        }
+
+        .dark .crud-table__page-btn {
+          background: #1e293b;
+          border-color: #334155;
+          color: #e2e8f0;
+        }
+
+        .dark .crud-table__page-btn:hover:not(:disabled) {
+          background: #334155;
+        }
+
+        .dark .crud-table__page-size {
+          background: #1e293b;
+          border-color: #334155;
+          color: #f8fafc;
+        }
+
+        .dark .crud-table__empty {
+          color: #94a3b8;
+        }
+
+        .dark .crud-table__loading {
+          color: #94a3b8;
+        }
       `}</style>
 
       {/* Toolbar superior */}

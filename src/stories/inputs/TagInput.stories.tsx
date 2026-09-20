@@ -36,9 +36,7 @@ type Story = StoryObj<typeof meta>
 
 export const SelectorDeTags: Story = {
   render: () => {
-    const [tags, setTags] = useState<typeof AVAILABLE_TAGS>([])
-    const [asyncTags, setAsyncTags] = useState<typeof AVAILABLE_TAGS>([])
-
+    const [tags, setTags] = useState<Array<{ id: string | number; label: string; color?: string }>>([])
     const handleSearch = useCallback(async (query: string) => {
       await new Promise(r => setTimeout(r, 300))
       return AVAILABLE_TAGS.filter(t => t.label.toLowerCase().includes(query.toLowerCase()))

@@ -8,36 +8,6 @@ import { Button } from '@/components/ui/Button'
  * Soporta 4 posiciones (top, bottom, left, right), delays editables,
  * y tipos: info, danger, warning, success.
  */
-function TooltipGrid() {
-  const positions = ['top', 'bottom', 'left', 'right']
-  const types = ['default', 'danger', 'warning', 'success', 'info'] as const
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '600px' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
-        {positions.map((pos) => (
-          <div key={pos} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <Tooltip content={`Tooltip ${pos}`} position={pos}>
-              <Button variant="outline">Hover aquí</Button>
-            </Tooltip>
-            <span style={{ fontSize: '0.75rem', color: 'var(--ft-color-muted-foreground)', textTransform: 'capitalize' }}>
-              {pos}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
-        {types.map((type) => (
-          <Tooltip key={type} content={`Tooltip ${type}`} type={type} showIcon>
-            <Button variant="outline">{type}</Button>
-          </Tooltip>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 const meta = {
   title: '7-Overlays/Tooltip',
   parameters: {
@@ -58,7 +28,7 @@ export const Posiciones: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '600px' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
-        {['top', 'bottom', 'left', 'right'].map((pos) => (
+        {(['top', 'bottom', 'left', 'right'] as const).map((pos) => (
           <div key={pos} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
             <Tooltip content={`Tooltip ${pos}`} position={pos}>
               <Button variant="outline">Hover aquí</Button>
@@ -77,7 +47,7 @@ export const TiposSemanticos: Story = {
   name: 'Tipos semánticos',
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
-      {(['default', 'danger', 'warning', 'success', 'info'] as const).map((type) => (
+      {(['default', 'error', 'warning', 'success', 'info'] as const).map((type) => (
         <Tooltip key={type} content={`${type}`} type={type} showIcon>
           <Button variant="outline">{type}</Button>
         </Tooltip>

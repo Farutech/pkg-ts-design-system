@@ -77,7 +77,7 @@ const PRESETS = {
   Coral: { colorPrimary: '#f43f5e', colorPrimaryHover: '#e11d48', colorAccent: '#8b5cf6' },
 } as const
 
-const meta = {
+const meta: Meta<CustomThemeArgs> = {
   title: 'Guía/Theming',
   parameters: {
     layout: 'centered',
@@ -88,10 +88,10 @@ const meta = {
       },
     },
   },
-} satisfies Meta<CustomThemeArgs>
+}
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<CustomThemeArgs>
 
 export const CustomTheme: Story = {
   name: 'CustomTheme (en vivo)',

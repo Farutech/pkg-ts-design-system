@@ -3,6 +3,7 @@ import { DataTable } from '@/components/ui/DataTable'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useState } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 
 /**
  * DataTable — tabla profesional con orden, paginación, selección y acciones.
@@ -27,13 +28,13 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'danger'> = {
   active: 'success', pending: 'warning', inactive: 'danger',
 }
 
-const COLUMNS = [
-  { accessorKey: 'id', header: 'ID', cell: info => <span style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}>{info.getValue()}</span> },
+const COLUMNS: ColumnDef<(typeof MOCK_DATA)[number]>[] = [
+  { accessorKey: 'id', header: 'ID', cell: info => <span style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}>{String(info.getValue())}</span> },
   { accessorKey: 'name', header: 'Nombre' },
-  { accessorKey: 'email', header: 'Correo', cell: info => <span style={{ color: 'var(--ft-color-muted-foreground)', fontSize: '0.8125rem' }}>{info.getValue()}</span> },
+  { accessorKey: 'email', header: 'Correo', cell: info => <span style={{ color: 'var(--ft-color-muted-foreground)', fontSize: '0.8125rem' }}>{String(info.getValue())}</span> },
   { accessorKey: 'role', header: 'Rol' },
   { accessorKey: 'status', header: 'Estado', cell: info => (
-    <Badge variant={STATUS_VARIANT[info.getValue() as string] || 'default'}>{info.getValue()}</Badge>
+    <Badge variant={STATUS_VARIANT[info.getValue() as string] || 'default'}>{String(info.getValue())}</Badge>
   )},
   { accessorKey: 'id', header: 'Acciones', cell: () => (
     <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -62,6 +63,7 @@ export const TablaCompleta: Story = {
   render: () => {
     const [search, setSearch] = useState('')
     const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set())
+    const [page, setPage] = useState(1)
 
     return (
       <div style={{ width: '900px' }}>
@@ -96,7 +98,12 @@ export const TablaCompleta: Story = {
             onView: (row) => alert(`Ver ${row.name}`),
             onDuplicate: (row) => alert(`Duplicar ${row.name}`),
           }}
-          pagination={{ pageSize: 5 }}
+          pagination={{
+            page,
+            perPage: 5,
+            total: MOCK_DATA.length,
+            onPageChange: setPage,
+          }}
         />
       </div>
     )

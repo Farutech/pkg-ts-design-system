@@ -59,11 +59,11 @@ export const ConSpinner: Story = {
   name: 'Spinner básico (alternativa)',
   render: () => (
     <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-      <Spinner size="sm" variant="primary" />
-      <Spinner size="md" variant="primary" />
-      <Spinner size="lg" variant="primary" />
-      <Spinner size="xl" variant="white" />
-      <Spinner size="xl" variant="gray" />
+      <Spinner size="sm" variant="circle" />
+      <Spinner size="md" variant="circle" />
+      <Spinner size="lg" variant="circle" />
+      <Spinner size="xl" variant="circle" />
+      <Spinner size="xl" variant="circle" />
     </div>
   ),
 }

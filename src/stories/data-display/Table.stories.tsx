@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Table } from '@/components/ui/Table'
+import Table from '@/components/ui/Table'
 
 /**
  * Table — tabla presentacional simple sin orden ni paginación.
@@ -8,11 +8,11 @@ import { Table } from '@/components/ui/Table'
  * usar DataTable o CRUDTable.
  */
 const COLUMNS = [
-  { key: 'name', header: 'Producto', align: 'left' },
-  { key: 'category', header: 'Categoría', align: 'left' },
-  { key: 'price', header: 'Precio', align: 'right' },
-  { key: 'stock', header: 'Stock', align: 'center' },
-  { key: 'status', header: 'Estado', align: 'center' },
+  { key: 'name', header: 'Producto', align: 'left' as const },
+  { key: 'category', header: 'Categoría', align: 'left' as const },
+  { key: 'price', header: 'Precio', align: 'right' as const },
+  { key: 'stock', header: 'Stock', align: 'center' as const },
+  { key: 'status', header: 'Estado', align: 'center' as const },
 ]
 
 const ROWS = [

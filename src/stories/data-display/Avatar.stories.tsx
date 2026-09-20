@@ -90,7 +90,7 @@ export const GrupoDeAvatares: Story = {
     <div style={{ display: 'flex', alignItems: 'center' }}>
       {['Ana L', 'Carlos R', 'María G', 'Juan P'].map((name, i) => (
         <div key={name} style={{ marginLeft: i === 0 ? 0 : '-0.75rem', zIndex: 4 - i, position: 'relative' }}>
-          <Avatar name={name} size="md" style={{ boxShadow: '0 0 0 2px white', display: 'block' } as React.CSSProperties} />
+          <Avatar name={name} size="md" />
         </div>
       ))}
       <div style={{ marginLeft: '-0.75rem', zIndex: 0 }}>

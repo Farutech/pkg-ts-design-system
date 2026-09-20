@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Checkbox, CheckboxGroup } from '@/components/ui/Checkbox'
-import { fn } from '@storybook/test'
 
 /**
  * Checkbox — casilla de verificación individual y CheckboxGroup para grupos.
  *
  * Soporta label, description, estado disabled, y variantes de size.
  */
-const meta = {
+const meta: Meta<typeof Checkbox> = {
   title: '4-Inputs/Checkbox',
   component: Checkbox,
   argTypes: {
@@ -17,7 +16,7 @@ const meta = {
     checked: { control: 'boolean' },
     size: { control: 'radio', options: ['sm', 'md', 'lg'] },
   },
-  args: { label: 'Acepto los términos', checked: false, onChange: fn() },
+  args: { label: 'Acepto los términos', checked: false, onChange: () => {} },
   parameters: {
     layout: 'centered',
     docs: {
@@ -26,7 +25,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta<typeof Checkbox>
+}
 
 export default meta
 type Story = StoryObj<typeof meta>

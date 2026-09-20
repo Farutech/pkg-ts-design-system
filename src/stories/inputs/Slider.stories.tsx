@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Slider } from '@/components/ui/Slider'
-import { fn } from '@storybook/test'
 
 const meta = {
   title: '4-Inputs/Slider',
@@ -12,7 +11,7 @@ const meta = {
     label: { control: 'text' },
     disabled: { control: 'boolean' },
   },
-  args: { value: 50, min: 0, max: 100, step: 1, label: 'Volumen', onChange: fn() },
+  args: { value: 50, min: 0, max: 100, step: 1, label: 'Volumen', onChange: () => {} },
   parameters: {
     layout: 'centered',
     docs: { description: { component: 'Slider de rango con label, formato de valor y estado deshabilitado.' } },

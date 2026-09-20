@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Spinner, type SpinnerProps } from '@/components/ui/Spinner'
+import { Spinner } from '@/components/ui/Spinner'
 
 const meta = {
   title: '6-Feedback/Loading',
@@ -8,7 +8,7 @@ const meta = {
     size: { control: 'select', options: ['sm', 'md', 'lg', 'xl'] },
     variant: { control: 'select', options: ['primary', 'white', 'gray'] },
   },
-  args: { size: 'md', variant: 'primary' },
+  args: { size: 'md', variant: 'circle' },
   parameters: {
     layout: 'centered',
     docs: { description: { component: 'Componentes de carga: `Spinner`, `Loading` (texto+spinner) y `LogoSpinner` (animación de logo).' } },
@@ -20,12 +20,12 @@ type Story = StoryObj<typeof meta>
 
 export const SpinnerDefault: Story = {
   name: 'Spinner básico',
-  render: (args: SpinnerProps) => (
+  render: () => (
     <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-      <Spinner size="sm" variant="primary" />
-      <Spinner size="md" variant="primary" />
-      <Spinner size="lg" variant="primary" />
-      <Spinner size="xl" variant="primary" />
+      <Spinner size="sm" variant="circle" />
+      <Spinner size="md" variant="circle" />
+      <Spinner size="lg" variant="circle" />
+      <Spinner size="xl" variant="circle" />
     </div>
   ),
 }
@@ -47,7 +47,8 @@ export const EnBoton: Story = {
             fontSize: '0.875rem', fontWeight: 500,
           }}
         >
-          <Spinner size="sm" variant={bg === 'transparent' ? 'gray' : 'white'} />
+          {/*<Spinner size="sm" variant={bg === 'transparent' ? 'gray' : 'white'} />*/}
+          <Spinner size="sm" variant='circle' />
           {label}
         </div>
       ))}
@@ -63,7 +64,7 @@ export const PaginaCompleta: Story = {
       alignItems: 'center', justifyContent: 'center', gap: '1rem',
       borderRadius: '0.75rem', background: 'var(--ft-color-surface)', border: '1px solid var(--ft-color-border)',
     }}>
-      <Spinner size="xl" variant="primary" />
+      <Spinner size="xl" variant="circle" />
       <div style={{ textAlign: 'center' }}>
         <p style={{ margin: 0, fontWeight: 600, color: 'var(--ft-color-foreground)' }}>Cargando módulo</p>
         <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: 'var(--ft-color-muted-foreground)' }}>

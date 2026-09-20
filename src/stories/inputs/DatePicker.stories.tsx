@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { DatePicker, DateTimePicker, DateRangePicker } from '@/components/ui/DatePicker'
-import { Button } from '@/components/ui/Button'
 import { useState } from 'react'
 
 /**
@@ -48,6 +47,7 @@ function DatePickerDemo() {
 
 const meta = {
   title: '4-Inputs/DatePicker',
+  component: DatePicker,
   parameters: {
     layout: 'centered',
     docs: {
@@ -91,7 +91,7 @@ export const ConRangoYPresets: Story = {
           label="Período de reporte"
           value={range}
           onChange={setRange}
-          presets={['today', 'thisWeek', 'thisMonth', 'lastMonth', 'last30days']}
+          presets={['today', 'thisWeek', 'thisMonth', 'lastMonth']}
         />
       </div>
     )

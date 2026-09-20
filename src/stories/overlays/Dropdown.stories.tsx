@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Dropdown } from '@/components/ui/Dropdown'
-import { Button } from '@/components/ui/Button'
-import { UserIcon, CogIcon, BellIcon, LogOutIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
+import { UserIcon, CogIcon, BellIcon, ArrowLeftOnRectangleIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 
 /**
  * Dropdown — Menú desplegable con ítems, dividers, badges y acciones async.
@@ -14,8 +13,8 @@ const userMenuItems = [
   { value: 'profile', label: 'Mi perfil', icon: UserIcon, onClick: () => alert('Perfil') },
   { value: 'settings', label: 'Configuración', icon: CogIcon, onClick: () => alert('Configuración') },
   { value: 'notifications', label: 'Notificaciones', icon: BellIcon, onClick: () => alert('Notificaciones') },
-  { divider: true },
-  { value: 'logout', label: 'Cerrar sesión', icon: LogOutIcon, onClick: () => alert('Logout'), danger: true },
+  { value: 'divider', label: '', divider: true },
+  { value: 'logout', label: 'Cerrar sesión', icon: ArrowLeftOnRectangleIcon, onClick: () => alert('Logout'), danger: true },
 ]
 
 const projectMenuItems = [

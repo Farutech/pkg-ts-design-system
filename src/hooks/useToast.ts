@@ -1,4 +1,4 @@
-import useToastStore from '@/components/store/toastStore';
+import useToastStore from '@/store/toastStore';
 
 export interface UseToastReturn {
   toasts: Array<{

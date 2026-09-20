@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import usePushNotificationStore from '@/components/store/pushNotificationStore';
+import usePushNotificationStore from '@/store/pushNotificationStore';
 
 export interface UsePushNotificationReturn {
   notifications: Array<{

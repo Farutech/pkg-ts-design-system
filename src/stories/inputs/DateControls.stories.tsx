@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DateControls, type SingleDatePickerProps, type DateRangePickerProps, type TimeRangePickerProps } from '@/components/ui/DateControls'
-import { Button } from '@/components/ui/Button'
-import { useState } from 'react'
+import type { SingleDatePickerProps, DateRangePickerProps } from '@/components/ui/DateControls'
 
 /**
  * DateControls — Suite completa de controles de fecha y hora.
@@ -17,7 +15,7 @@ const DATE_CONTROLS_SINGLE: SingleDatePickerProps = {
   minDate: undefined,
   maxDate: undefined,
   clearable: true,
-  dateFormat: 'dd/MM/yyyy',
+  dateFormat: undefined,
   placement: 'bottom',
 }
 
@@ -28,7 +26,7 @@ const DATE_CONTROLS_RANGE: DateRangePickerProps = {
   onChange: () => {},
   clearable: true,
   presets: ['today', 'yesterday', 'thisWeek', 'lastWeek', 'thisMonth', 'lastMonth', 'last7days', 'last30days'],
-  dateFormat: 'dd/MM/yyyy',
+  dateFormat: undefined,
   placement: 'bottom',
 }
 
@@ -42,10 +40,10 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<Record<string, unknown>>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<any>
 
 export const SingleDatePicker: Story = {
   name: 'SingleDatePicker',

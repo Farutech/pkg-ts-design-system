@@ -1,5 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/ui/DataTable'
+
+const meta = {
+  title: 'Data Display/DataTable/Extra',
+  component: DataTable,
+} satisfies Meta<typeof DataTable>
+
+export default meta
 
 /**
  * DataTable — secundarios: sin acciones, loading, empty state.
@@ -11,24 +19,36 @@ const MOCK_DATA = [
   { id: '3', name: 'María Torres', email: 'maria@empresa.com', role: 'Vista', status: 'pending' },
 ]
 
-const SIMPLE_COLUMNS = [
-  { accessorKey: 'id', header: 'ID', cell: info => <span style={{ fontFamily: 'monospace' }}>{info.getValue()}</span> },
+type MockUser = (typeof MOCK_DATA)[number]
+
+const SIMPLE_COLUMNS: ColumnDef<MockUser>[] = [
+  { accessorKey: 'id', header: 'ID', cell: info => <span style={{ fontFamily: 'monospace' }}>{String(info.getValue())}</span> },
   { accessorKey: 'name', header: 'Nombre' },
-  { accessorKey: 'email', header: 'Correo', cell: info => <span style={{ color: 'var(--ft-color-muted-foreground)' }}>{info.getValue()}</span> },
+  { accessorKey: 'email', header: 'Correo', cell: info => <span style={{ color: 'var(--ft-color-muted-foreground)' }}>{String(info.getValue())}</span> },
   { accessorKey: 'role', header: 'Rol' },
-  { accessorKey: 'status', header: 'Estado', cell: info => <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700">{info.getValue()}</span> },
+  { accessorKey: 'status', header: 'Estado', cell: info => <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700">{String(info.getValue())}</span> },
 ]
 
 export const SinAcciones: StoryObj<typeof meta> = {
+  args: {
+    data: MOCK_DATA,
+    columns: SIMPLE_COLUMNS as ColumnDef<{ id: string | number }, any>[],
+  },
   render: () => (
     <div style={{ width: '700px' }}>
-      <DataTable data={MOCK_DATA} columns={SIMPLE_COLUMNS} pagination={{ pageSize: 5 }} />
+      <DataTable data={MOCK_DATA} columns={SIMPLE_COLUMNS} />
     </div>
   ),
 }
 
 export const ConLoading: StoryObj<typeof meta> = {
   name: 'Estado de loading',
+  args: {
+    data: [],
+    columns: SIMPLE_COLUMNS as ColumnDef<{ id: string | number }, any>[],
+    isLoading: true,
+    emptyMessage: 'Cargando usuarios...',
+  },
   render: () => (
     <div style={{ width: '700px' }}>
       <DataTable data={[]} columns={SIMPLE_COLUMNS} isLoading emptyMessage="Cargando usuarios..." />
@@ -38,6 +58,11 @@ export const ConLoading: StoryObj<typeof meta> = {
 
 export const SinDatos: StoryObj<typeof meta> = {
   name: 'Sin datos (empty state)',
+  args: {
+    data: [],
+    columns: SIMPLE_COLUMNS as ColumnDef<{ id: string | number }, any>[],
+    emptyMessage: 'No hay usuarios registrados',
+  },
   render: () => (
     <div style={{ width: '700px' }}>
       <DataTable

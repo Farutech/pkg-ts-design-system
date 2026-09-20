@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Stepper } from '@/components/ui/Stepper'
 import { useState } from 'react'
-import { fn } from '@storybook/test'
 
 /**
  * Stepper — navegación por pasos secuenciales.
@@ -13,10 +12,10 @@ function StepperDemo() {
   const [currentStep, setCurrentStep] = useState(1)
 
   const steps = [
-    { title: 'Datos personales', description: 'Nombre, email, teléfono' },
-    { title: 'Credenciales', description: 'Correo y contraseña' },
-    { title: 'Confirmación', description: 'Revisa tu información' },
-    { title: 'Completado', description: 'Cuenta creada exitosamente' },
+    { label: 'Datos personales', title: 'Datos personales', description: 'Nombre, email, teléfono' },
+    { label: 'Credenciales', title: 'Credenciales', description: 'Correo y contraseña' },
+    { label: 'Confirmación', title: 'Confirmación', description: 'Revisa tu información' },
+    { label: 'Completado', title: 'Completado', description: 'Cuenta creada exitosamente' },
   ]
 
   const handleStepClick = (index: number) => {
@@ -105,10 +104,10 @@ export const Vertical: Story = {
   render: () => {
     const [step, setStep] = useState(1)
     const steps = [
-      { title: 'Información básica', icon: null },
-      { title: 'Datos de contacto', icon: null },
-      { title: 'Configuración adicional', icon: null },
-      { title: 'Finalizar', icon: null },
+      { label: 'Información básica', title: 'Información básica', icon: null },
+      { label: 'Datos de contacto', title: 'Datos de contacto', icon: null },
+      { label: 'Configuración adicional', title: 'Configuración adicional', icon: null },
+      { label: 'Finalizar', title: 'Finalizar', icon: null },
     ]
 
     return (

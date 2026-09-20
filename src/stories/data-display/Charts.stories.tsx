@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Charts, ChartLine, ChartBar, ChartArea, ChartPie, ChartRadar } from '@/components/ui/Charts'
+import { ChartLine as LineChart, ChartBar as BarChart, ChartArea as AreaChart, ChartPie as PieChart, ChartRadar as RadarChart } from '@/components/ui/Charts'
 
 /**
  * Charts — galería completa de gráficos del Design System.
@@ -71,7 +71,7 @@ export const ChartLine: Story = {
   render: () => (
     <div style={{ width: '600px' }}>
       <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Evolución de ingresos</h3>
-      <ChartLine data={LINE_DATA} xAxisKey="month" dataKey="revenue" height={260} />
+      <LineChart data={LINE_DATA} xAxisKey="month" dataKey="revenue" height={260} />
     </div>
   ),
 }
@@ -81,7 +81,7 @@ export const ChartBar: Story = {
   render: () => (
     <div style={{ width: '600px' }}>
       <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Ventas por producto</h3>
-      <ChartBar data={BAR_DATA} xAxisKey="product" dataKey="sales" height={260} />
+      <BarChart data={BAR_DATA} xAxisKey="product" dataKey="sales" height={260} />
     </div>
   ),
 }
@@ -91,7 +91,7 @@ export const ChartArea: Story = {
   render: () => (
     <div style={{ width: '600px' }}>
       <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Visitas diarias (stacked)</h3>
-      <ChartArea data={AREA_DATA} xAxisKey="day" dataKey="visits" height={260} stacked />
+      <AreaChart data={AREA_DATA} xAxisKey="day" dataKey="visits" height={260} stacked />
     </div>
   ),
 }
@@ -101,7 +101,7 @@ export const ChartPie: Story = {
   render: () => (
     <div style={{ width: '400px' }}>
       <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Fuente de tráfico</h3>
-      <ChartPie data={PIE_DATA} nameKey="name" dataKey="value" height={280} donut />
+      <PieChart data={PIE_DATA} nameKey="name" dataKey="value" height={280} donut />
     </div>
   ),
 }
@@ -111,7 +111,7 @@ export const ChartRadar: Story = {
   render: () => (
     <div style={{ width: '400px' }}>
       <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Habilidades del equipo</h3>
-      <ChartRadar data={RADAR_DATA} angleKey="skill" dataKey="score" height={300} />
+      <RadarChart data={RADAR_DATA} angleKey="skill" dataKey="score" height={300} />
     </div>
   ),
 }
@@ -122,15 +122,15 @@ export const TodosLosGraficos: Story = {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '600px' }}>
       <div>
         <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Ingresos mensuales</h3>
-        <ChartLine data={LINE_DATA} xAxisKey="month" dataKey="revenue" height={220} />
+        <LineChart data={LINE_DATA} xAxisKey="month" dataKey="revenue" height={220} />
       </div>
       <div>
         <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Ventas por producto</h3>
-        <ChartBar data={BAR_DATA} xAxisKey="product" dataKey="sales" height={220} />
+        <BarChart data={BAR_DATA} xAxisKey="product" dataKey="sales" height={220} />
       </div>
       <div>
         <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Fuente de tráfico</h3>
-        <ChartPie data={PIE_DATA} nameKey="name" dataKey="value" height={240} donut />
+        <PieChart data={PIE_DATA} nameKey="name" dataKey="value" height={240} donut />
       </div>
     </div>
   ),

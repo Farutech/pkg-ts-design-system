@@ -13,10 +13,10 @@ function FABDemo() {
   const [created, setCreated] = useState(false)
 
   const actions = [
-    { label: 'Nuevo usuario', icon: PlusIcon, onClick: () => { setCreated(true) } },
-    { label: 'Nueva orden', icon: MagnifyingGlassIcon, onClick: () => alert('Nueva orden') },
-    { label: 'Nuevo proyecto', icon: LinkIcon, onClick: () => alert('Nuevo proyecto') },
-    { label: 'Chat de soporte', icon: ChatBubbleLeftRightIcon, onClick: () => alert('Chat') },
+    { label: 'Nuevo usuario', icon: <PlusIcon className="h-5 w-5" />, onClick: () => { setCreated(true) } },
+    { label: 'Nueva orden', icon: <MagnifyingGlassIcon className="h-5 w-5" />, onClick: () => alert('Nueva orden') },
+    { label: 'Nuevo proyecto', icon: <LinkIcon className="h-5 w-5" />, onClick: () => alert('Nuevo proyecto') },
+    { label: 'Chat de soporte', icon: <ChatBubbleLeftRightIcon className="h-5 w-5" />, onClick: () => alert('Chat') },
   ]
 
   return (

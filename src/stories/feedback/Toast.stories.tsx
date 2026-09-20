@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ToastContainer, useNotificationStore } from '@/components/ui/Toast'
+import { ToastContainer } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 /**
  * Toast — notificaciones emergentes (toast notifications).
@@ -10,13 +10,22 @@ import { useState, useEffect } from 'react'
  * agregar notificaciones de distintos tipos: success, error, warning, info.
  */
 function ToastDemo() {
-  const [notifications, setNotifications] = useState<ReturnType<typeof useNotificationStore.getState>['notifications']>([])
+  type Notification = {
+    id: string
+    type: 'success' | 'error' | 'warning' | 'info'
+    title: string
+    message: string
+    read: boolean
+    createdAt: Date
+  }
+
+  const [, setNotifications] = useState<Notification[]>([])
 
   const addToast = (type: 'success' | 'error' | 'warning' | 'info', title: string, message: string) => {
     const id = `toast-${Date.now()}`
-    setNotifications(prev => [...prev, { id, type, title, message, read: false, createdAt: new Date() }])
+    setNotifications((prev) => [...prev, { id, type, title, message, read: false, createdAt: new Date() }])
     setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== id))
+      setNotifications((prev) => prev.filter((n) => n.id !== id))
     }, 4000)
   }
 

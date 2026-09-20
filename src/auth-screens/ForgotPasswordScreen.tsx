@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { cn } from '@/components/utils/cn'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Alert } from '@/components/ui/Alert'
@@ -66,7 +65,7 @@ export function ForgotPasswordScreen<TPayload = unknown>({
   }
 
   return (
-    <div className={cn('ft-auth', className)}>
+    <div className={['ft-auth', className].filter(Boolean).join(' ')}>
       <div className="ft-auth__card">
         <div className="ft-auth__header">
           <div className="ft-auth__logo" aria-hidden="true">

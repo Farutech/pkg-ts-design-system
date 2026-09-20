@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Timeline } from '@/components/ui/Timeline'
-import { BellIcon, CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XMarkIcon, UserGroupIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
+import { CheckCircleIcon, InformationCircleIcon, XMarkIcon, UserGroupIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
 
 /**
  * Timeline — lista vertical de eventos con nodos coloreados.
@@ -10,12 +10,12 @@ import { BellIcon, CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIc
  * acciones o logs de sistema.
  */
 const ACTIVITY_ITEMS = [
-  { title: 'Nuevo usuario registrado', description: 'Ana García creó una cuenta con email ana@empresa.com', time: 'Hace 5 minutos', color: 'success', icon: UserGroupIcon },
-  { title: 'Orden de compra creada', description: 'Orden #TRX-0421 por $890.000 COP', time: 'Hace 25 minutos', color: 'primary', icon: BuildingOfficeIcon },
-  { title: 'Pago pendiente de verificación', description: 'Pago de $1.200.000 COP requiere revisión manual', time: 'Hace 1 hora', color: 'warning' },
-  { title: 'Error en proceso de exportación', description: 'Fallo al exportar reporte de ventas — intento 2/3', time: 'Hace 3 horas', color: 'danger', icon: XMarkIcon },
-  { title: 'Nuevo comentario en ticket', description: 'Carlos López respondió en TKT-012', time: 'Hace 5 horas', color: 'info', icon: InformationCircleIcon },
-  { title: 'Cumplimiento de meta mensual', description: 'Meta de ventas mensual alcanzada: $45M COP', time: 'Ayer, 18:00', color: 'success', icon: CheckCircleIcon },
+  { title: 'Nuevo usuario registrado', description: 'Ana García creó una cuenta con email ana@empresa.com', time: 'Hace 5 minutos', color: 'success' as const, icon: <UserGroupIcon /> },
+  { title: 'Orden de compra creada', description: 'Orden #TRX-0421 por $890.000 COP', time: 'Hace 25 minutos', color: 'primary' as const, icon: <BuildingOfficeIcon /> },
+  { title: 'Pago pendiente de verificación', description: 'Pago de $1.200.000 COP requiere revisión manual', time: 'Hace 1 hora', color: 'warning' as const },
+  { title: 'Error en proceso de exportación', description: 'Fallo al exportar reporte de ventas — intento 2/3', time: 'Hace 3 horas', color: 'danger' as const, icon: <XMarkIcon /> },
+  { title: 'Nuevo comentario en ticket', description: 'Carlos López respondió en TKT-012', time: 'Hace 5 horas', color: 'primary' as const, icon: <InformationCircleIcon /> },
+  { title: 'Cumplimiento de meta mensual', description: 'Meta de ventas mensual alcanzada: $45M COP', time: 'Ayer, 18:00', color: 'success' as const, icon: <CheckCircleIcon /> },
 ]
 
 const meta = {

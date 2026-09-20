@@ -10,11 +10,11 @@ import {
   DocumentTextIcon,
   BuildingOfficeIcon,
   CurrencyDollarIcon,
-  FolderIcon,
   ShieldCheckIcon,
   BellIcon,
 } from '@heroicons/react/24/outline'
-import { fn } from '@storybook/test'
+
+const noop = () => undefined
 
 /**
  * TopNav — Barra de navegación horizontal multinivel con:
@@ -128,8 +128,8 @@ const meta = {
   args: {
     brandName: 'FaruTech',
     menuItems: SIMPLE_MENU,
-    onMenuClick: fn(),
-    onUserAction: fn(),
+    onMenuClick: noop,
+    onUserAction: noop,
   },
   parameters: {
     layout: 'fullscreen',

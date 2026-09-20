@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { fn } from '@storybook/test'
 
 const meta = {
   title: '4-Inputs/SegmentedControl',
@@ -11,7 +10,7 @@ const meta = {
   },
   args: {
     value: 'mensual',
-    onChange: fn(),
+    onChange: () => {},
     options: [
       { value: 'mensual', label: 'Mensual' },
       { value: 'trimestral', label: 'Trimestral' },

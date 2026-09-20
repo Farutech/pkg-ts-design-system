@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Popover } from '@/components/ui/Popover'
 import { Button } from '@/components/ui/Button'
-import { IconButton } from '@/components/ui/IconButton'
 import { Input } from '@/components/ui/Input'
 import { BellIcon, MagnifyingGlassIcon, UserIcon, CogIcon } from '@heroicons/react/24/outline'
 
@@ -14,7 +13,7 @@ import { BellIcon, MagnifyingGlassIcon, UserIcon, CogIcon } from '@heroicons/rea
 function ProfilePopover() {
   return (
     <Popover
-      trigger={({ open, toggle, ariaAttributes }) => (
+      trigger={({ toggle, ariaAttributes }) => (
         <Button
           variant="outline"
           aria-label="Perfil de usuario"
@@ -71,8 +70,8 @@ function FormPopover() {
         <Input label="Nombre" placeholder="Tu nombre" />
         <Input label="Correo" type="email" placeholder="tu@email.com" />
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', paddingTop: '0.5rem', borderTop: '1px solid var(--ft-color-border)' }}>
-          <Button variant="ghost" onClick={toggle}>Cancelar</Button>
-          <Button onClick={toggle}>Enviar</Button>
+          <Button variant="ghost">Cancelar</Button>
+          <Button>Enviar</Button>
         </div>
       </div>
     </Popover>
@@ -92,7 +91,7 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type StoryObj<typeof meta>
+type Story = StoryObj<typeof meta>
 
 export const MenuDePerfil: Story = {
   render: () => <ProfilePopover />,

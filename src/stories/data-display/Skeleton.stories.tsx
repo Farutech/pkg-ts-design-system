@@ -23,12 +23,12 @@ export const ListaDeUsuarios: Story = {
           padding: '1rem', borderRadius: '0.75rem',
           background: 'var(--ft-color-surface)', border: '1px solid var(--ft-color-border)',
         }}>
-          <Skeleton variant="circle" width={44} height={44} />
+          <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden' }}> <Skeleton /> </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <Skeleton variant="text" width="60%" height={16} />
-            <Skeleton variant="text" width="40%" height={12} />
+            <div style={{ width: '60%', maxWidth: '100%', height: 16 }}> <Skeleton /> </div>
+            <div style={{ width: '40%', height: 12 }}> <Skeleton /> </div>
           </div>
-          <Skeleton variant="rectangle" width={60} height={24} />
+          <div style={{ width: 60, height: 24 }}> <Skeleton /> </div>
         </div>
       ))}
     </div>
@@ -42,15 +42,15 @@ export const DashboardSkeleton: Story = {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
         {[1, 2, 3, 4].map((i) => (
           <div key={i} style={{ padding: '1rem', borderRadius: '0.75rem', background: 'var(--ft-color-surface)', border: '1px solid var(--ft-color-border)' }}>
-            <Skeleton variant="text" width="50%" height={12} />
-            <Skeleton variant="text" width="70%" height={28} style={{ marginTop: '0.75rem' }} />
-            <Skeleton variant="text" width="40%" height={12} style={{ marginTop: '0.5rem' }} />
+            <div style={{ width: '50%', height: 12 }}> <Skeleton /> </div>
+            <div style={{ width: '70%', height: 28, marginTop: '0.75rem' }}> <Skeleton /> </div>
+            <div style={{ width: '40%', height: 12, marginTop: '0.5rem' }}> <Skeleton /> </div>
           </div>
         ))}
       </div>
       <div style={{ padding: '1.5rem', borderRadius: '0.75rem', background: 'var(--ft-color-surface)', border: '1px solid var(--ft-color-border)' }}>
-        <Skeleton variant="text" width="30%" height={20} />
-        <Skeleton variant="rectangle" width="100%" height={200} style={{ marginTop: '1rem' }} />
+        <div style={{ width: '30%', height: 20 }}> <Skeleton /> </div>
+        <div style={{ width: '100%', height: 200, marginTop: '1rem' }}> <Skeleton /> </div>
       </div>
     </div>
   ),

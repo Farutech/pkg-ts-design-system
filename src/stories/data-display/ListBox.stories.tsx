@@ -9,13 +9,13 @@ import { useState } from 'react'
  * estados de loading y validación de error.
  */
 const FRUITS = [
-  { id: 'apple', label: 'Manzana', description: 'Fruta rosada y crujiente', icon: null },
-  { id: 'banana', label: 'Banana', description: 'Fruta amarilla y dulce', icon: null },
-  { id: 'orange', label: 'Naranja', description: 'Cítrica y vitamínica', icon: null },
-  { id: 'grape', label: 'Uva', description: 'Pequeñas Bayas de vino', icon: null },
-  { id: 'mango', label: 'Mango', description: 'Tropical y jugosa', icon: null },
-  { id: 'pineapple', label: 'Piña', description: 'Tropical deliciosa', icon: null },
-  { id: 'strawberry', label: 'Fresa', description: 'Roja y aromática', icon: null },
+  { id: 'apple', label: 'Manzana', description: 'Fruta rosada y crujiente' },
+  { id: 'banana', label: 'Banana', description: 'Fruta amarilla y dulce' },
+  { id: 'orange', label: 'Naranja', description: 'Cítrica y vitamínica' },
+  { id: 'grape', label: 'Uva', description: 'Pequeñas Bayas de vino' },
+  { id: 'mango', label: 'Mango', description: 'Tropical y jugosa' },
+  { id: 'pineapple', label: 'Piña', description: 'Tropical deliciosa' },
+  { id: 'strawberry', label: 'Fresa', description: 'Roja y aromática' },
 ]
 
 const meta = {
@@ -42,7 +42,7 @@ export const SingleSelection: Story = {
           label="Selecciona una fruta"
           options={FRUITS}
           value={value}
-          onChange={setValue}
+          onChange={(nextValue) => setValue(typeof nextValue === 'string' ? nextValue : nextValue[0] ?? '')}
           placeholder="Elige una opción..."
         />
         {value && (
@@ -65,7 +65,7 @@ export const MultipleSelection: Story = {
           label="Frutas favoritas (múltiples)"
           options={FRUITS}
           value={value}
-          onChange={setValue}
+          onChange={(nextValue) => setValue(Array.isArray(nextValue) ? nextValue : [nextValue])}
           multiple
           allowDeselect
           placeholder="Elige varias opciones..."
@@ -90,7 +90,7 @@ export const ConBusqueda: Story = {
           label="Buscar fruta"
           options={FRUITS}
           value={value}
-          onChange={setValue}
+          onChange={(nextValue) => setValue(typeof nextValue === 'string' ? nextValue : nextValue[0] ?? '')}
           searchable
           searchPlaceholder="Buscar..."
           minSearchChars={1}

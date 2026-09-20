@@ -4,9 +4,7 @@ import { StatsCard } from '@/components/ui/StatsCard'
 import { Badge } from '@/components/ui/Badge'
 import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { Timeline } from '@/components/ui/Timeline'
-import { Charts } from '@/components/ui/Charts'
 import {
   UsersIcon,
   CurrencyDollarIcon,
@@ -14,7 +12,6 @@ import {
   ChartBarIcon,
   BellIcon,
   MagnifyingGlassIcon,
-  Cog6ToothIcon,
   HomeIcon,
   ArrowRightOnRectangleIcon,
   DocumentTextIcon,
@@ -26,7 +23,6 @@ import {
   SunIcon,
   MoonIcon,
   Bars3Icon,
-  XMarkIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline'
 
@@ -100,6 +96,43 @@ const TIMELINE_ITEMS = [
   { id: '3', title: 'Pago rechazado', description: 'Tech Solutions Ltda · $7,450', time: 'Hace 2 h', status: 'error' as const },
   { id: '4', title: 'Reporte generado', description: 'Informe mensual de noviembre listo', time: 'Hace 4 h', status: 'default' as const },
 ]
+
+function DashboardChart({
+  data,
+  lines,
+  xKey,
+  height,
+}: {
+  data: Array<Record<string, string | number>>
+  lines: Array<{ key: string; name: string; color: string }>
+  xKey: string
+  height: number
+}) {
+  const width = 800
+  const padding = { top: 12, right: 12, bottom: 28, left: 12 }
+  const values = lines.flatMap((line) => data.map((item) => Number(item[line.key])))
+  const max = Math.max(...values, 1)
+  const chartWidth = width - padding.left - padding.right
+  const chartHeight = height - padding.top - padding.bottom
+  const points = (key: string) => data.map((item, index) => {
+    const x = padding.left + (index / Math.max(data.length - 1, 1)) * chartWidth
+    const y = padding.top + chartHeight - (Number(item[key]) / max) * chartHeight
+    return `${x},${y}`
+  }).join(' ')
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-label="Gráfico de ingresos y gastos">
+      {lines.map((line) => (
+        <polyline key={line.key} points={points(line.key)} fill="none" stroke={line.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      ))}
+      {data.map((item, index) => (
+        <text key={String(item[xKey])} x={padding.left + (index / Math.max(data.length - 1, 1)) * chartWidth} y={height - 6} textAnchor="middle" fontSize="11" fill="var(--ft-color-muted-foreground)">
+          {String(item[xKey])}
+        </text>
+      ))}
+    </svg>
+  )
+}
 
 function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -189,7 +222,7 @@ function AdminDashboard() {
                         marginBottom: '1px',
                       }}>
                         <span>{child.label}</span>
-                        {child.badge && (
+                        {'badge' in child && child.badge && (
                           <span style={{ background: 'var(--ft-color-danger)', color: 'white', borderRadius: '9999px', fontSize: '0.6rem', padding: '0 5px', fontWeight: 700 }}>{child.badge}</span>
                         )}
                       </button>
@@ -309,8 +342,7 @@ function AdminDashboard() {
                   <Badge variant="danger" dot>Gastos</Badge>
                 </div>
               </div>
-              <Charts
-                type="line"
+              <DashboardChart
                 data={LINE_DATA}
                 lines={[
                   { key: 'ingresos', name: 'Ingresos', color: '#2563eb' },

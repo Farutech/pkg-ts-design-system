@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Switch } from '@/components/ui/Switch'
-import { fn } from '@storybook/test'
+
+const noop = () => {}
 
 const meta = {
   title: '4-Inputs/Switch',
@@ -11,7 +12,7 @@ const meta = {
     disabled: { control: 'boolean' },
     checked: { control: 'boolean' },
   },
-  args: { label: 'Notificaciones por correo', checked: false, onChange: fn() },
+  args: { label: 'Notificaciones por correo', checked: false, onChange: noop },
   parameters: {
     layout: 'centered',
     docs: { description: { component: 'Toggle switch accesible. Controlado mediante `checked` + `onChange`.' } },
@@ -33,7 +34,7 @@ export const Grupo: Story = {
         { label: 'Notificaciones de marketing', description: 'Novedades y ofertas del equipo', defaultChecked: false },
         { label: 'Actualizaciones del sistema', description: 'Mantenimientos y cambios técnicos', defaultChecked: false },
       ].map(({ label, description, defaultChecked }) => (
-        <Switch key={label} label={label} description={description} defaultChecked={defaultChecked} onChange={() => {}} />
+        <Switch key={label} label={label} description={description} checked={defaultChecked} onChange={() => {}} />
       ))}
     </div>
   ),

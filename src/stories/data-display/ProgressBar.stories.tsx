@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ProgressBar } from '@/components/ui/ProgressBar'
-import { useState } from 'react'
 
 /**
  * ProgressBar — barra de progreso con variantes, colores y estados.
@@ -10,7 +9,7 @@ import { useState } from 'react'
  * y color semántico (primary, success, warning, error, info).
  */
 function ProgressDemo() {
-  const [progress, setProgress] = useState(65)
+  const progress = 65
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '500px' }}>
@@ -66,7 +65,7 @@ function ProgressDemo() {
       </div>
 
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        {(['sm', 'md', 'lg', 'xl'] as const).map((size) => (
+        {(['sm', 'md', 'lg'] as const).map((size) => (
           <div key={size} style={{ flex: 1, minWidth: '100px' }}>
             <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--ft-color-muted-foreground)', marginBottom: '0.125rem', textTransform: 'capitalize' }}>{size}</span>
             <ProgressBar value={60} size={size} />

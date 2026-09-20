@@ -26,29 +26,25 @@ function LayoutContent() {
         <StatsCard
           title="Usuarios activos"
           value="1,234"
-          change="+12%"
-          changeType="positive"
+          change={{ value: 12, trend: 'up' }}
           icon="users"
         />
         <StatsCard
           title="Ingresos del mes"
           value="$45,670"
-          change="+8%"
-          changeType="positive"
+          change={{ value: 8, trend: 'up' }}
           icon="currency"
         />
         <StatsCard
           title="Órdenes pendientes"
           value="23"
-          change="-3"
-          changeType="negative"
+          change={{ value: 3, trend: 'down' }}
           icon="shopping-cart"
         />
         <StatsCard
           title="Tasa de conversión"
           value="3.2%"
-          change="+0.5%"
-          changeType="positive"
+          change={{ value: 0.5, trend: 'up' }}
           icon="chart"
         />
       </div>

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { RadioGroup } from '@/components/ui/RadioGroup'
-import { fn } from '@storybook/test'
 
 /**
  * RadioGroup — selector de opciones mutuamente excluyentes.
@@ -24,7 +23,7 @@ const meta = {
       { value: 'option-b', label: 'Opción B', description: 'Descripción de la opción B' },
       { value: 'option-c', label: 'Opción C', description: 'Descripción de la opción C' },
     ],
-    onChange: fn(),
+    onChange: () => undefined,
   },
   parameters: {
     layout: 'centered',

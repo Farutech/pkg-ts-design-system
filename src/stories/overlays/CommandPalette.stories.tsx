@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CommandPalette } from '@/components/ui/CommandPalette'
-import { useState } from 'react'
-import { fn } from '@storybook/test'
 
 /**
  * CommandPalette — paleta de comandos tipo Ctrl+K / ⌘K.

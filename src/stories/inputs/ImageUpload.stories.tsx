@@ -32,7 +32,7 @@ export const UploadDeImagen: Story = {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '380px', alignItems: 'center' }}>
         <ImageUpload
           label="Foto de perfil"
-          currentImage={preview}
+          currentImage={preview ?? undefined}
           onImageChange={(f, url) => { setFile(f ?? null); setPreview(url) }}
           helperText="Arrastra una imagen o haz clic para seleccionar. Máximo 2MB."
           aspectRatio="square"
@@ -60,7 +60,7 @@ export const ConAspectRatioWide: Story = {
     <div style={{ width: '480px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <ImageUpload
         label="Imagen de portada"
-        currentImage={null}
+        currentImage={undefined}
         onImageChange={() => {}}
         helperText="Imágenes de portada para perfiles públicos."
         aspectRatio="wide"
@@ -76,7 +76,7 @@ export const ConAspectRatioSquare: Story = {
     <div style={{ width: '280px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <ImageUpload
         label="Avatar"
-        currentImage={null}
+        currentImage={undefined}
         onImageChange={() => {}}
         helperText="Avatar cuadrado para perfil."
         aspectRatio="square"

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { Button } from '@/components/ui/Button'
 import {
   FolderOpenIcon,
   MagnifyingGlassIcon,
@@ -26,7 +25,12 @@ export const SinResultados: Story = {
     title: 'Sin resultados',
     description: 'No encontramos registros que coincidan con tu búsqueda. Intenta con otros términos.',
     icon: <MagnifyingGlassIcon className="h-12 w-12" />,
-    action: <Button variant="outline" icon={<MagnifyingGlassIcon className="h-4 w-4" />}>Limpiar filtros</Button>,
+    action: {
+      label: 'Limpiar filtros',
+      onClick: () => {},
+      variant: 'secondary',
+      icon: <MagnifyingGlassIcon className="h-4 w-4" />,
+    },
   },
 }
 
@@ -36,7 +40,11 @@ export const TablaVacia: Story = {
     title: 'No hay registros aún',
     description: 'Comienza creando el primer registro en este módulo.',
     icon: <FolderOpenIcon className="h-12 w-12" />,
-    action: <Button icon={<PlusIcon className="h-4 w-4" />}>Crear primer registro</Button>,
+    action: {
+      label: 'Crear primer registro',
+      onClick: () => {},
+      icon: <PlusIcon className="h-4 w-4" />,
+    },
   },
 }
 

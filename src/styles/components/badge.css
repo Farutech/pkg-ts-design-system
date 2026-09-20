@@ -1,0 +1,39 @@
+/**
+ * Badge (.ft-badge) — CSS plano del Design System (no purgable por Tailwind).
+ * Cubre los presets `Badge` y `StatusBadge` del catálogo.
+ */
+.ft-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ft-space-2);
+  border-radius: var(--ft-radius-full);
+  font-weight: var(--ft-weight-medium);
+  border: 1px solid transparent;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.ft-badge--mono { font-family: var(--ft-font-mono); letter-spacing: 0.08em; }
+
+/* Variantes */
+.ft-badge--neutral,
+.ft-badge--default { background: var(--ft-color-surface-hover); color: var(--ft-color-foreground); }
+.ft-badge--outline { background: transparent; color: var(--ft-color-muted-foreground); border-color: var(--ft-color-border-strong); }
+.ft-badge--primary { background: var(--ft-color-primary-soft); color: var(--ft-color-primary); }
+.ft-badge--success { background: var(--ft-color-success-soft); color: var(--ft-color-success); }
+.ft-badge--danger { background: var(--ft-color-danger-soft); color: var(--ft-color-danger); }
+.ft-badge--warning { background: var(--ft-color-warning-soft); color: var(--ft-color-warning); }
+.ft-badge--info { background: var(--ft-color-info-soft); color: var(--ft-color-info); }
+
+/* Tamaños */
+.ft-badge--sm { padding: 0.125rem var(--ft-space-2); font-size: var(--ft-text-xs); }
+.ft-badge--md { padding: 0.125rem 0.625rem; font-size: var(--ft-text-xs); }
+.ft-badge--lg { padding: var(--ft-space-1) var(--ft-space-3); font-size: var(--ft-text-sm); }
+
+.ft-badge__dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: var(--ft-radius-full);
+  background: currentColor;
+  flex-shrink: 0;
+}

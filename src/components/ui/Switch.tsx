@@ -3,7 +3,7 @@
  */
 
 import { Switch as HeadlessSwitch } from '@headlessui/react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface SwitchProps {
   checked: boolean
@@ -55,7 +55,7 @@ export function Switch({
 
   return (
     <HeadlessSwitch.Group>
-      <div className={clsx('flex items-center justify-between', className)}>
+      <div className={cn('flex items-center justify-between', className)}>
         {(label || description) && (
           <div className="flex-1 mr-4">
             {label && (
@@ -74,7 +74,7 @@ export function Switch({
           checked={checked}
           onChange={onChange}
           disabled={disabled}
-          className={clsx(
+          className={cn(
             'relative inline-flex flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent',
             'transition-colors duration-200 ease-in-out',
             'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
@@ -84,7 +84,7 @@ export function Switch({
           )}
         >
           <span
-            className={clsx(
+            className={cn(
               'pointer-events-none inline-block rounded-full bg-white shadow-lg ring-0',
               'transition-transform duration-200 ease-in-out',
               sizes.toggle,

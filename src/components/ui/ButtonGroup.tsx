@@ -2,7 +2,7 @@
  * Componente ButtonGroup - Grupo de botones conectados
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import type { ReactElement } from 'react'
 
 interface ButtonGroupProps {
@@ -28,7 +28,7 @@ export function ButtonGroup({
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'inline-flex',
         orientation === 'vertical' ? 'flex-col' : 'flex-row',
         variant === 'outlined' && 'border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden',
@@ -43,7 +43,7 @@ export function ButtonGroup({
         return (
           <div
             key={index}
-            className={clsx(
+            className={cn(
               sizeStyles[size],
               orientation === 'horizontal' ? [
                 !isFirst && !isLast && 'border-x border-gray-300 dark:border-gray-600',

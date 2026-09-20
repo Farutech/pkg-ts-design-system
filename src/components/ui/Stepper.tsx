@@ -23,7 +23,7 @@
 
 import type { ReactNode } from 'react'
 import { CheckIcon } from '@heroicons/react/24/solid'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface Step {
   /** Etiqueta del paso */
@@ -106,7 +106,7 @@ export function Stepper({
 
   return (
     <nav aria-label="Progress" className={className}>
-      <ol className={clsx('flex', isVertical ? 'flex-col gap-4' : 'flex-row items-center')}>
+      <ol className={cn('flex', isVertical ? 'flex-col gap-4' : 'flex-row items-center')}>
         {steps.map((step, index) => {
           const status = getStepStatus(index)
           const styles = statusStyles[status]
@@ -116,7 +116,7 @@ export function Stepper({
           return (
             <li
               key={index}
-              className={clsx(
+              className={cn(
                 'relative',
                 isVertical ? 'flex flex-col pb-4' : 'flex flex-1 items-center'
               )}
@@ -126,7 +126,7 @@ export function Stepper({
                 <>
                   <button
                     type="button"
-                    className={clsx(
+                    className={cn(
                       'flex items-center gap-3 group',
                       clickable && 'cursor-pointer hover:opacity-80',
                       !clickable && 'cursor-default'
@@ -136,7 +136,7 @@ export function Stepper({
                   >
                     {/* Circle */}
                     <div
-                      className={clsx(
+                      className={cn(
                         'flex items-center justify-center w-10 h-10 rounded-full shrink-0 transition-all duration-200',
                         styles.circle,
                         clickable && 'group-hover:scale-110'
@@ -153,7 +153,7 @@ export function Stepper({
 
                     {/* Label */}
                     <div className="flex flex-col text-left min-w-0">
-                      <span className={clsx('text-sm font-medium transition-colors break-words', styles.label)}>
+                      <span className={cn('text-sm font-medium transition-colors break-words', styles.label)}>
                         {step.label}
                         {step.optional && (
                           <span className="ml-1 text-xs text-gray-400">(Opcional)</span>
@@ -170,7 +170,7 @@ export function Stepper({
                   {/* Connector Line - Vertical */}
                   {!isLast && (
                     <div
-                      className={clsx(
+                      className={cn(
                         'absolute left-5 top-10 w-0.5 h-full -translate-x-1/2 transition-colors duration-200',
                         statusStyles[getStepStatus(index)].line
                       )}
@@ -182,7 +182,7 @@ export function Stepper({
                   <div className="flex flex-col items-center min-w-0 flex-shrink-0">
                     <button
                       type="button"
-                      className={clsx(
+                      className={cn(
                         'flex flex-col items-center gap-2 group',
                         clickable && 'cursor-pointer hover:opacity-80',
                         !clickable && 'cursor-default'
@@ -192,7 +192,7 @@ export function Stepper({
                     >
                       {/* Circle */}
                       <div
-                        className={clsx(
+                        className={cn(
                           'flex items-center justify-center w-10 h-10 rounded-full shrink-0 transition-all duration-200',
                           styles.circle,
                           clickable && 'group-hover:scale-110'
@@ -209,7 +209,7 @@ export function Stepper({
 
                       {/* Label */}
                       <div className="flex flex-col text-center max-w-[120px]">
-                        <span className={clsx('text-sm font-medium transition-colors break-words', styles.label)}>
+                        <span className={cn('text-sm font-medium transition-colors break-words', styles.label)}>
                           {step.label}
                           {step.optional && (
                             <span className="ml-1 text-xs text-gray-400 block">(Opcional)</span>
@@ -227,7 +227,7 @@ export function Stepper({
                   {/* Connector Line - Horizontal */}
                   {!isLast && (
                     <div
-                      className={clsx(
+                      className={cn(
                         'flex-1 h-0.5 mx-4 transition-colors duration-200',
                         statusStyles[getStepStatus(index)].line
                       )}

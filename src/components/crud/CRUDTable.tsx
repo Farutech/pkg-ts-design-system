@@ -42,73 +42,38 @@ export interface FilterConfig {
 }
 
 export interface CRUDTableProps<T = any> {
-  // Datos
   data: T[];
   columns: Column<T>[];
   loading?: boolean;
-  
-  // Acciones globales (al lado del botón Create)
   globalActions?: GlobalAction[];
-  
-  // Acciones por registro
   rowActions?: RowAction<T>[];
-  
-  // Creación y configuración
   onCreate?: () => void;
   createLabel?: string;
   showCreateButton?: boolean;
-  
-  // Búsqueda y filtros
   searchable?: boolean;
   searchPlaceholder?: string;
   onSearch?: (value: string) => void;
   filters?: FilterConfig[];
   onFilterChange?: (filters: Record<string, any>) => void;
-  
-  // Paginación
   pagination?: boolean;
   pageSize?: number;
   total?: number;
   onPageChange?: (page: number, pageSize: number) => void;
   currentPage?: number;
-  
-  // Selección múltiple
   selectable?: boolean;
   selectedRows?: T[];
   onSelectionChange?: (selectedRows: T[]) => void;
-  
-  // Ordenamiento
   sortable?: boolean;
   onSortChange?: (key: string, direction: 'asc' | 'desc') => void;
   sortConfig?: { key: string; direction: 'asc' | 'desc' };
-  
-  // Exportar
   exportable?: boolean;
   onExport?: (format: 'csv' | 'excel' | 'pdf') => void;
-  
-  // Personalización
   className?: string;
   emptyMessage?: string;
   rowKey?: keyof T | ((record: T) => string | number);
-  
-  // Bulk actions (acciones masivas)
   bulkActions?: GlobalAction[];
 }
 
-// ==================== COMPONENTE PRINCIPAL ====================
-
-/**
- * CRUDTable - Componente CRUD avanzado y dinámico
- * 
- * Características:
- * - Acciones globales configurables (al lado del botón Create)
- * - Acciones por registro (en menú contextual o botones inline)
- * - Búsqueda y filtros dinámicos
- * - Paginación, ordenamiento y selección múltiple
- * - Exportación a CSV/Excel/PDF
- * - Totalmente configurable vía props
- * - Psicología del color aplicada
- */
 export function CRUDTable<T = any>({
   data,
   columns,
@@ -116,7 +81,7 @@ export function CRUDTable<T = any>({
   globalActions = [],
   rowActions = [],
   onCreate,
-  createLabel = 'Crear',
+  createLabel = '+ Nuevo Registro',
   showCreateButton = true,
   searchable = true,
   searchPlaceholder = 'Buscar...',
@@ -131,45 +96,36 @@ export function CRUDTable<T = any>({
   onSelectionChange,
   sortable = true,
   onSortChange,
-  exportable = false,
-  onExport,
   className = '',
   emptyMessage = 'No hay datos disponibles',
   rowKey,
-  bulkActions = [],
 }: CRUDTableProps<T>) {
-  // Estados locales
   const [localSearch, setLocalSearch] = useState('');
   const [localFilters, setLocalFilters] = useState<Record<string, any>>({});
   const [localPage, setLocalPage] = useState(1);
   const [localPageSize] = useState(pageSize);
   const [localSort, setLocalSort] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
-  const [showExportMenu, setShowExportMenu] = useState(false);
 
-  // Obtener key única para cada row
   const getRowKey = (record: T, index: number): string | number => {
     if (rowKey) {
-      return typeof rowKey === 'function' ? rowKey(record) : record[rowKey as keyof T] as string | number;
+      return typeof rowKey === 'function' ? rowKey(record) : (record[rowKey as keyof T] as string | number);
     }
-    return index;
+    return (record as any)?.uuid || (record as any)?.id || index;
   };
 
-  // Filtrar y ordenar datos
   const processedData = useMemo(() => {
-    let result = [...data];
+    let result = [...(data || [])];
 
-    // Aplicar búsqueda
     if (localSearch && searchable) {
       const searchLower = localSearch.toLowerCase();
       result = result.filter((item) =>
         columns.some((col) => {
           const value = item[col.key as keyof T];
-          return String(value).toLowerCase().includes(searchLower);
+          return String(value ?? '').toLowerCase().includes(searchLower);
         })
       );
     }
 
-    // Aplicar filtros
     Object.entries(localFilters).forEach(([key, value]) => {
       if (value !== '' && value !== null && value !== undefined) {
         result = result.filter((item) => {
@@ -182,12 +138,10 @@ export function CRUDTable<T = any>({
       }
     });
 
-    // Aplicar ordenamiento
     if (localSort) {
       result.sort((a, b) => {
         const aValue = a[localSort.key as keyof T];
         const bValue = b[localSort.key as keyof T];
-        
         if (aValue < bValue) return localSort.direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return localSort.direction === 'asc' ? 1 : -1;
         return 0;
@@ -197,14 +151,14 @@ export function CRUDTable<T = any>({
     return result;
   }, [data, localSearch, localFilters, localSort, columns, searchable]);
 
-  // Paginación
+  const totalPages = Math.max(1, Math.ceil((total ?? processedData.length) / localPageSize));
+
   const paginatedData = useMemo(() => {
     if (!pagination) return processedData;
     const start = (localPage - 1) * localPageSize;
     return processedData.slice(start, start + localPageSize);
   }, [processedData, localPage, localPageSize, pagination]);
 
-  // Handlers
   const handleSearch = (value: string) => {
     setLocalSearch(value);
     setLocalPage(1);
@@ -220,12 +174,10 @@ export function CRUDTable<T = any>({
 
   const handleSort = (key: string) => {
     if (!sortable) return;
-    
     let newDirection: 'asc' | 'desc' = 'asc';
     if (localSort && localSort.key === key && localSort.direction === 'asc') {
       newDirection = 'desc';
     }
-    
     const newSort = { key, direction: newDirection };
     setLocalSort(newSort);
     onSortChange?.(key, newDirection);
@@ -241,664 +193,114 @@ export function CRUDTable<T = any>({
 
   const handleSelectRow = (record: T) => {
     if (!onSelectionChange) return;
-    
-    const isSelected = selectedRows.some(
-      (row) => getRowKey(row, 0) === getRowKey(record, 0)
-    );
-    
+    const isSelected = selectedRows.some((row) => getRowKey(row, 0) === getRowKey(record, 0));
     if (isSelected) {
-      onSelectionChange(selectedRows.filter(
-        (row) => getRowKey(row, 0) !== getRowKey(record, 0)
-      ));
+      onSelectionChange(selectedRows.filter((row) => getRowKey(row, 0) !== getRowKey(record, 0)));
     } else {
       onSelectionChange([...selectedRows, record]);
     }
   };
 
-  const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
-    onExport?.(format);
-    setShowExportMenu(false);
+
+  const getPaginationItems = () => {
+    const items: (number | 'ellipsis-start' | 'ellipsis-end')[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) items.push(i);
+    } else {
+      items.push(1);
+      if (localPage > 3) {
+        items.push('ellipsis-start');
+      }
+      const start = Math.max(2, localPage - 1);
+      const end = Math.min(totalPages - 1, localPage + 1);
+      for (let i = start; i <= end; i++) {
+        if (i > 1 && i < totalPages) {
+          items.push(i);
+        }
+      }
+      if (localPage < totalPages - 2) {
+        items.push('ellipsis-end');
+      }
+      if (totalPages > 1) {
+        items.push(totalPages);
+      }
+    }
+    return items;
   };
 
-  const hasSelectedRows = selectedRows.length > 0;
-
   return (
-    <div className={`crud-table ${className}`}>
-      <style>{`
-        .crud-table {
-          background: white;
-          border-radius: var(--radius-lg, 0.5rem);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
-          overflow: hidden;
-        }
-
-        /* Toolbar */
-        .crud-table__toolbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.25rem;
-          border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .crud-table__toolbar-left,
-        .crud-table__toolbar-right {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          flex-wrap: wrap;
-        }
-
-        /* Bulk actions */
-        .crud-table__bulk-actions {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem 1rem;
-          background: var(--color-primary-50, #ecfdf5);
-          border-radius: var(--radius-md, 0.375rem);
-          color: var(--color-primary-800, #065f46);
-        }
-
-        .crud-table__bulk-count {
-          font-weight: 600;
-          margin-right: 0.5rem;
-        }
-
-        /* Search */
-        .crud-table__search {
-          position: relative;
-        }
-
-        .crud-table__search-input {
-          padding: 0.625rem 1rem 0.625rem 2.5rem;
-          border: 1px solid var(--color-gray-300, #d1d5db);
-          border-radius: var(--radius-md, 0.375rem);
-          font-size: 0.875rem;
-          width: 280px;
-          transition: all 0.2s ease;
-        }
-
-        .crud-table__search-input:focus {
-          outline: none;
-          border-color: var(--color-primary-500, #10b981);
-          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-
-        .crud-table__search-icon {
-          position: absolute;
-          left: 0.75rem;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--color-gray-400, #9ca3af);
-        }
-
-        /* Buttons */
-        .crud-table__btn {
-          padding: 0.625rem 1.25rem;
-          border-radius: var(--radius-md, 0.375rem);
-          font-size: 0.875rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          border: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .crud-table__btn--primary {
-          background: linear-gradient(135deg, var(--color-primary-600, #10b981) 0%, var(--color-primary-700, #059669) 100%);
-          color: white;
-          box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
-        }
-
-        .crud-table__btn--primary:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 6px rgba(16, 185, 129, 0.4);
-        }
-
-        .crud-table__btn--secondary {
-          background: white;
-          color: var(--color-gray-700, #374151);
-          border: 1px solid var(--color-gray-300, #d1d5db);
-        }
-
-        .crud-table__btn--secondary:hover:not(:disabled) {
-          background: var(--color-gray-50, #f9fafb);
-        }
-
-        .crud-table__btn--danger {
-          background: var(--color-error, #ef4444);
-          color: white;
-        }
-
-        .crud-table__btn--success {
-          background: var(--color-success, #10b981);
-          color: white;
-        }
-
-        .crud-table__btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        /* Filters */
-        .crud-table__filters {
-          display: flex;
-          gap: 0.75rem;
-          padding: 1rem 1.25rem;
-          background: var(--color-gray-50, #f9fafb);
-          border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
-          flex-wrap: wrap;
-        }
-
-        .crud-table__filter-item {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-
-        .crud-table__filter-label {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: var(--color-gray-600, #4b5563);
-          text-transform: uppercase;
-        }
-
-        .crud-table__filter-select,
-        .crud-table__filter-input {
-          padding: 0.5rem 0.75rem;
-          border: 1px solid var(--color-gray-300, #d1d5db);
-          border-radius: var(--radius-sm, 0.25rem);
-          font-size: 0.875rem;
-          min-width: 150px;
-        }
-
-        .crud-table__filter-select:focus,
-        .crud-table__filter-input:focus {
-          outline: none;
-          border-color: var(--color-primary-500, #10b981);
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
-        }
-
-        /* Table */
-        .crud-table__table-container {
-          overflow-x: auto;
-        }
-
-        .crud-table__table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .crud-table__thead {
-          background: var(--color-gray-50, #f9fafb);
-        }
-
-        .crud-table__th {
-          padding: 0.875rem 1rem;
-          text-align: left;
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: var(--color-gray-600, #4b5563);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          border-bottom: 2px solid var(--color-gray-200, #e5e7eb);
-          white-space: nowrap;
-        }
-
-        .crud-table__th--sortable {
-          cursor: pointer;
-          user-select: none;
-        }
-
-        .crud-table__th--sortable:hover {
-          background: var(--color-gray-100, #f3f4f6);
-        }
-
-        .crud-table__sort-icon {
-          margin-left: 0.5rem;
-          opacity: 0.3;
-        }
-
-        .crud-table__th--sorted .crud-table__sort-icon {
-          opacity: 1;
-          color: var(--color-primary-600, #10b981);
-        }
-
-        .crud-table__td {
-          padding: 1rem;
-          border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
-          font-size: 0.875rem;
-          color: var(--color-gray-900, #111827);
-        }
-
-        .crud-table__tbody tr:hover {
-          background: var(--color-gray-50, #f9fafb);
-        }
-
-        /* Row actions */
-        .crud-table__actions {
-          display: flex;
-          gap: 0.5rem;
-          align-items: center;
-        }
-
-        .crud-table__action-btn {
-          padding: 0.375rem 0.625rem;
-          border: none;
-          background: transparent;
-          border-radius: var(--radius-sm, 0.25rem);
-          cursor: pointer;
-          transition: all 0.2s ease;
-          font-size: 0.75rem;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.25rem;
-        }
-
-        .crud-table__action-btn--primary {
-          color: var(--color-primary-600, #10b981);
-        }
-
-        .crud-table__action-btn--primary:hover {
-          background: var(--color-primary-50, #ecfdf5);
-        }
-
-        .crud-table__action-btn--secondary {
-          color: var(--color-gray-600, #4b5563);
-        }
-
-        .crud-table__action-btn--secondary:hover {
-          background: var(--color-gray-100, #f3f4f6);
-        }
-
-        .crud-table__action-btn--danger {
-          color: var(--color-error, #ef4444);
-        }
-
-        .crud-table__action-btn--danger:hover {
-          background: var(--color-error-50, #fef2f2);
-        }
-
-        .crud-table__action-btn:disabled {
-          opacity: 0.3;
-          cursor: not-allowed;
-        }
-
-        /* Pagination */
-        .crud-table__pagination {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1rem 1.25rem;
-          border-top: 1px solid var(--color-gray-200, #e5e7eb);
-        }
-
-        .crud-table__pagination-info {
-          font-size: 0.875rem;
-          color: var(--color-gray-600, #4b5563);
-        }
-
-        .crud-table__pagination-controls {
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        .crud-table__page-btn {
-          padding: 0.5rem 0.75rem;
-          border: 1px solid var(--color-gray-300, #d1d5db);
-          background: white;
-          border-radius: var(--radius-sm, 0.25rem);
-          cursor: pointer;
-          font-size: 0.875rem;
-          transition: all 0.2s ease;
-        }
-
-        .crud-table__page-btn:hover:not(:disabled) {
-          background: var(--color-gray-50, #f9fafb);
-        }
-
-        .crud-table__page-btn--active {
-          background: var(--color-primary-600, #10b981);
-          color: white;
-          border-color: var(--color-primary-600, #10b981);
-        }
-
-        .crud-table__page-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        /* Loading */
-        .crud-table__loading {
-          padding: 3rem;
-          text-align: center;
-          color: var(--color-gray-500, #6b7280);
-        }
-
-        .crud-table__spinner {
-          width: 2rem;
-          height: 2rem;
-          border: 3px solid var(--color-gray-200, #e5e7eb);
-          border-top-color: var(--color-primary-600, #10b981);
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-          margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        /* Empty state */
-        .crud-table__empty {
-          padding: 3rem;
-          text-align: center;
-          color: var(--color-gray-500, #6b7280);
-        }
-
-        /* Export menu */
-        .crud-table__export-menu {
-          position: relative;
-        }
-
-        .crud-table__export-dropdown {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          margin-top: 0.5rem;
-          background: white;
-          border: 1px solid var(--color-gray-200, #e5e7eb);
-          border-radius: var(--radius-md, 0.375rem);
-          box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
-          z-index: 10;
-          min-width: 150px;
-        }
-
-        .crud-table__export-item {
-          padding: 0.625rem 1rem;
-          cursor: pointer;
-          font-size: 0.875rem;
-          color: var(--color-gray-700, #374151);
-          transition: background 0.2s ease;
-        }
-
-        .crud-table__export-item:hover {
-          background: var(--color-gray-50, #f9fafb);
-        }
-
-        /* Checkbox */
-        .crud-table__checkbox {
-          width: 1rem;
-          height: 1rem;
-          accent-color: var(--color-primary-600, #10b981);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-          .crud-table__toolbar {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .crud-table__toolbar-left,
-          .crud-table__toolbar-right {
-            justify-content: stretch;
-          }
-
-          .crud-table__search-input {
-            width: 100%;
-          }
-
-          .crud-table__filters {
-            flex-direction: column;
-          }
-
-          .crud-table__filter-select,
-          .crud-table__filter-input {
-            min-width: 100%;
-          }
-        }
-
-        /* Dark mode support */
-        .dark .crud-table {
-          background: #0f172a;
-          border: 1px solid #1e293b;
-          color: #f8fafc;
-        }
-
-        .dark .crud-table__toolbar {
-          background: #0f172a;
-          border-bottom-color: #1e293b;
-        }
-
-        .dark .crud-table__search-input {
-          background: #1e293b;
-          border-color: #334155;
-          color: #f8fafc;
-        }
-
-        .dark .crud-table__search-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-
-        .dark .crud-table__search-icon {
-          color: #94a3b8;
-        }
-
-        .dark .crud-table__btn--secondary {
-          background: #1e293b;
-          color: #e2e8f0;
-          border-color: #334155;
-        }
-
-        .dark .crud-table__btn--secondary:hover:not(:disabled) {
-          background: #334155;
-        }
-
-        .dark .crud-table__filters {
-          background: #0b1120;
-          border-bottom-color: #1e293b;
-        }
-
-        .dark .crud-table__filter-label {
-          color: #94a3b8;
-        }
-
-        .dark .crud-table__filter-select,
-        .dark .crud-table__filter-input {
-          background: #1e293b;
-          border-color: #334155;
-          color: #f8fafc;
-        }
-
-        .dark .crud-table__th {
-          background: #0b1120;
-          color: #94a3b8;
-          border-bottom-color: #1e293b;
-        }
-
-        .dark .crud-table__th--sortable:hover {
-          background: #1e293b;
-        }
-
-        .dark .crud-table__td {
-          border-bottom-color: #1e293b;
-          color: #e2e8f0;
-        }
-
-        .dark .crud-table__tbody tr:hover {
-          background: rgba(30, 41, 59, 0.5);
-        }
-
-        .dark .crud-table__action-btn--secondary {
-          color: #94a3b8;
-        }
-
-        .dark .crud-table__action-btn--secondary:hover {
-          background: #1e293b;
-          color: #f8fafc;
-        }
-
-        .dark .crud-table__pagination {
-          background: #0f172a;
-          border-top-color: #1e293b;
-        }
-
-        .dark .crud-table__pagination-info {
-          color: #94a3b8;
-        }
-
-        .dark .crud-table__page-btn {
-          background: #1e293b;
-          border-color: #334155;
-          color: #e2e8f0;
-        }
-
-        .dark .crud-table__page-btn:hover:not(:disabled) {
-          background: #334155;
-        }
-
-        .dark .crud-table__page-size {
-          background: #1e293b;
-          border-color: #334155;
-          color: #f8fafc;
-        }
-
-        .dark .crud-table__empty {
-          color: #94a3b8;
-        }
-
-        .dark .crud-table__loading {
-          color: #94a3b8;
-        }
-      `}</style>
-
-      {/* Toolbar superior */}
-      <div className="crud-table__toolbar">
-        <div className="crud-table__toolbar-left">
-          {/* Bulk actions */}
-          {hasSelectedRows && bulkActions.length > 0 && (
-            <div className="crud-table__bulk-actions">
-              <span className="crud-table__bulk-count">
-                {selectedRows.length} seleccionado{selectedRows.length !== 1 ? 's' : ''}
-              </span>
-              {bulkActions.map((action) => (
-                <button
-                  key={action.id}
-                  className={`crud-table__btn crud-table__btn--${action.variant || 'secondary'}`}
-                  onClick={action.onClick}
-                  disabled={action.disabled}
-                  title={action.tooltip}
-                >
-                  {action.icon}
-                  {action.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Botón Create */}
-          {showCreateButton && onCreate && (
-            <button className="crud-table__btn crud-table__btn--primary" onClick={onCreate}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              {createLabel}
-            </button>
-          )}
-
-          {/* Acciones globales */}
-          {globalActions.map((action) => (
-            <button
-              key={action.id}
-              className={`crud-table__btn crud-table__btn--${action.variant || 'secondary'}`}
-              onClick={action.onClick}
-              disabled={action.disabled}
-              title={action.tooltip}
-            >
-              {action.icon}
-              {action.label}
-            </button>
-          ))}
-
-          {/* Botón Exportar */}
-          {exportable && onExport && (
-            <div className="crud-table__export-menu">
-              <button
-                className="crud-table__btn crud-table__btn--secondary"
-                onClick={() => setShowExportMenu(!showExportMenu)}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                </svg>
-                Exportar
-              </button>
-              {showExportMenu && (
-                <div className="crud-table__export-dropdown">
-                  <div className="crud-table__export-item" onClick={() => handleExport('csv')}>
-                    📄 CSV
-                  </div>
-                  <div className="crud-table__export-item" onClick={() => handleExport('excel')}>
-                    📊 Excel
-                  </div>
-                  <div className="crud-table__export-item" onClick={() => handleExport('pdf')}>
-                    📑 PDF
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="crud-table__toolbar-right">
-          {/* Búsqueda */}
+    <div className={`w-full bg-slate-900/60 border border-slate-800 rounded-2xl shadow-xl overflow-hidden backdrop-blur-md ${className}`}>
+      {/* Barra Superior: Búsqueda y Botones de Creación / Acciones */}
+      {(searchable || (onCreate && showCreateButton) || globalActions.length > 0) && (
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 border-b border-slate-800 bg-slate-950/40">
           {searchable && (
-            <div className="crud-table__search">
+            <div className="relative flex-1 max-w-md">
               <svg
-                className="crud-table__search-icon"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                viewBox="0 0 24 24"
               >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
                 type="text"
-                className="crud-table__search-input"
+                className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all shadow-inner"
                 placeholder={searchPlaceholder}
                 value={localSearch}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           )}
-        </div>
-      </div>
 
-      {/* Filtros */}
+          <div className="flex items-center gap-2.5 ml-auto">
+            {globalActions.map((action) => (
+              <button
+                key={action.id}
+                type="button"
+                onClick={() => action.onClick()}
+                disabled={action.disabled}
+                title={action.tooltip}
+                className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
+                  action.variant === 'danger'
+                    ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                }`}
+              >
+                {action.icon}
+                {action.label}
+              </button>
+            ))}
+
+            {onCreate && showCreateButton && (
+              <button
+                type="button"
+                onClick={onCreate}
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-500 active:scale-[0.98] text-white rounded-xl text-sm font-semibold shadow-md shadow-primary-950/50 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+              >
+                {createLabel.trim().startsWith("+") ? createLabel.trim() : `+ ${createLabel.trim()}`}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Barra de Filtros */}
       {filters.length > 0 && (
-        <div className="crud-table__filters">
+        <div className="flex flex-wrap items-center gap-4 px-4 py-3 bg-slate-950/30 border-b border-slate-800/80 text-xs">
+          <span className="font-semibold text-slate-400 uppercase tracking-wider text-[11px]">Filtros:</span>
           {filters.map((filter) => (
-            <div key={filter.key} className="crud-table__filter-item">
-              <label className="crud-table__filter-label">{filter.label}</label>
+            <div key={filter.key} className="flex items-center gap-2">
+              <label className="text-slate-400 text-xs">{filter.label}:</label>
               {filter.type === 'select' && filter.options ? (
                 <select
-                  className="crud-table__filter-select"
-                  value={localFilters[filter.key] || ''}
+                  className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-primary-500 transition-colors cursor-pointer"
+                  value={localFilters[filter.key] ?? ''}
                   onChange={(e) => handleFilterChange(filter.key, e.target.value)}
                 >
                   <option value="">Todos</option>
                   {filter.options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
+                    <option key={String(opt.value)} value={opt.value}>
                       {opt.label}
                     </option>
                   ))}
@@ -906,16 +308,13 @@ export function CRUDTable<T = any>({
               ) : filter.type === 'text' ? (
                 <input
                   type="text"
-                  className="crud-table__filter-input"
+                  className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-primary-500 transition-colors"
                   placeholder={filter.placeholder}
-                  value={localFilters[filter.key] || ''}
+                  value={localFilters[filter.key] ?? ''}
                   onChange={(e) => handleFilterChange(filter.key, e.target.value)}
                 />
               ) : filter.render ? (
-                filter.render(
-                  (value: any) => handleFilterChange(filter.key, value),
-                  localFilters[filter.key]
-                )
+                filter.render((value: any) => handleFilterChange(filter.key, value), localFilters[filter.key])
               ) : null}
             </div>
           ))}
@@ -923,28 +322,28 @@ export function CRUDTable<T = any>({
       )}
 
       {/* Tabla */}
-      <div className="crud-table__table-container">
+      <div className="overflow-x-auto">
         {loading ? (
-          <div className="crud-table__loading">
-            <div className="crud-table__spinner"></div>
-            <p>Cargando datos...</p>
+          <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
+            <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm">Cargando datos...</p>
           </div>
         ) : paginatedData.length === 0 ? (
-          <div className="crud-table__empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: '0 auto 1rem', opacity: 0.5 }}>
-              <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+          <div className="p-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
+            <svg className="w-12 h-12 opacity-30 stroke-current" fill="none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
-            <p>{emptyMessage}</p>
+            <p className="text-sm">{emptyMessage}</p>
           </div>
         ) : (
-          <table className="crud-table__table">
-            <thead className="crud-table__thead">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead className="bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-800">
               <tr>
                 {selectable && (
-                  <th className="crud-table__th" style={{ width: '50px' }}>
+                  <th className="p-3.5 w-12 text-center">
                     <input
                       type="checkbox"
-                      className="crud-table__checkbox"
+                      className="rounded border-slate-700 bg-slate-900 text-primary-600 focus:ring-0 cursor-pointer"
                       checked={selectedRows.length === processedData.length && processedData.length > 0}
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
@@ -955,41 +354,39 @@ export function CRUDTable<T = any>({
                   return (
                     <th
                       key={String(column.key)}
-                      className={`crud-table__th ${column.sortable && sortable ? 'crud-table__th--sortable' : ''} ${isSorted ? 'crud-table__th--sorted' : ''}`}
                       style={{ width: column.width, textAlign: column.align }}
+                      className={`p-3.5 font-semibold text-slate-300 ${
+                        column.sortable && sortable ? 'cursor-pointer hover:text-white select-none transition-colors' : ''
+                      }`}
                       onClick={() => column.sortable && handleSort(String(column.key))}
                     >
-                      <span style={{ display: 'flex', alignItems: 'center' }}>
-                        {column.label}
+                      <div className="flex items-center gap-1.5">
+                        <span>{column.label}</span>
                         {column.sortable && sortable && (
-                          <span className="crud-table__sort-icon">
-                            {isSorted && localSort?.direction === 'desc' ? '↓' : '↑'}
+                          <span className="text-[10px] text-slate-500">
+                            {isSorted ? (localSort?.direction === 'desc' ? '▼' : '▲') : '⇅'}
                           </span>
                         )}
-                      </span>
+                      </div>
                     </th>
                   );
                 })}
                 {rowActions.length > 0 && (
-                  <th className="crud-table__th" style={{ width: 'auto', textAlign: 'right' }}>
-                    Acciones
-                  </th>
+                  <th className="p-3.5 text-right font-semibold text-slate-300">Acciones</th>
                 )}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-800/60 bg-transparent">
               {paginatedData.map((record, index) => {
                 const key = getRowKey(record, index);
                 return (
-                  <tr key={key}>
+                  <tr key={key} className="hover:bg-slate-800/40 transition-colors">
                     {selectable && (
-                      <td className="crud-table__td">
+                      <td className="p-3.5 text-center">
                         <input
                           type="checkbox"
-                          className="crud-table__checkbox"
-                          checked={selectedRows.some(
-                            (row) => getRowKey(row, 0) === key
-                          )}
+                          className="rounded border-slate-700 bg-slate-900 text-primary-600 focus:ring-0 cursor-pointer"
+                          checked={selectedRows.some((row) => getRowKey(row, 0) === key)}
                           onChange={() => handleSelectRow(record)}
                         />
                       </td>
@@ -997,26 +394,38 @@ export function CRUDTable<T = any>({
                     {columns.map((column) => (
                       <td
                         key={String(column.key)}
-                        className="crud-table__td"
                         style={{ textAlign: column.align }}
+                        className="p-3.5 text-slate-200 text-sm align-middle"
                       >
-                        {column.render
-                          ? column.render(record[column.key as keyof T], record, index)
-                          : String(record[column.key as keyof T] ?? '')}
+                        {(() => {
+                          const val = record[column.key as keyof T];
+                          if (column.render) return column.render(val, record, index);
+                          if (val === null || val === undefined || val === '') {
+                            return <span className="text-slate-600 font-mono text-xs select-none">—</span>;
+                          }
+                          return String(val);
+                        })()}
                       </td>
                     ))}
                     {rowActions.length > 0 && (
-                      <td className="crud-table__td">
-                        <div className="crud-table__actions">
+                      <td className="p-3.5 text-right align-middle">
+                        <div className="flex items-center justify-end gap-2">
                           {rowActions
                             .filter((action) => !action.showInMenu)
                             .map((action) => (
                               <button
                                 key={action.id}
-                                className={`crud-table__action-btn crud-table__action-btn--${action.variant || 'primary'}`}
+                                type="button"
                                 onClick={() => action.onClick(record)}
                                 disabled={action.disabled?.(record)}
                                 title={action.tooltip}
+                                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                                  action.variant === 'danger'
+                                    ? 'bg-rose-600/20 text-rose-300 border border-rose-600/40 hover:bg-rose-600 hover:text-white'
+                                    : action.variant === 'secondary'
+                                    ? 'bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white'
+                                    : 'bg-primary-600 text-white hover:bg-primary-500'
+                                }`}
                               >
                                 {action.icon}
                                 {action.label}
@@ -1033,38 +442,97 @@ export function CRUDTable<T = any>({
         )}
       </div>
 
-      {/* Paginación */}
-      {pagination && processedData.length > 0 && (
-        <div className="crud-table__pagination">
-          <div className="crud-table__pagination-info">
-            Mostrando {(localPage - 1) * localPageSize + 1} a{' '}
-            {Math.min(localPage * localPageSize, processedData.length)} de{' '}
-            {total ?? processedData.length} resultados
-          </div>
-          <div className="crud-table__pagination-controls">
-            <button
-              className="crud-table__page-btn"
-              onClick={() => setLocalPage(1)}
-              disabled={localPage === 1}
-            >
-              Primera
-            </button>
-            <button
-              className="crud-table__page-btn"
-              onClick={() => setLocalPage(localPage - 1)}
-              disabled={localPage === 1}
-            >
-              Anterior
-            </button>
-            <span className="crud-table__page-btn crud-table__page-btn--active">
+      {/* Paginación Estandarizada */}
+      {pagination && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 bg-slate-950/80 border-t border-slate-800 text-xs text-slate-300">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <span>Página</span>
+            <span className="font-bold text-white px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700">
               {localPage}
             </span>
+            <span>de</span>
+            <span className="font-bold text-white px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700">
+              {totalPages}
+            </span>
+            <span className="mx-2 text-slate-600">|</span>
+            <span>Mostrando {processedData.length === 0 ? 0 : (localPage - 1) * localPageSize + 1} a {Math.min(localPage * localPageSize, total ?? processedData.length)} de <strong className="text-slate-200">{total ?? processedData.length}</strong> registros</span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            {/* Primero */}
             <button
-              className="crud-table__page-btn"
-              onClick={() => setLocalPage(localPage + 1)}
-              disabled={localPage * localPageSize >= processedData.length}
+              type="button"
+              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
+              onClick={() => setLocalPage(1)}
+              disabled={localPage <= 1}
+              title="Ir a la primera página"
             >
-              Siguiente
+              <span>⏮</span>
+              <span className="hidden md:inline">Primero</span>
+            </button>
+
+            {/* Anterior */}
+            <button
+              type="button"
+              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
+              onClick={() => setLocalPage(localPage - 1)}
+              disabled={localPage <= 1}
+              title="Página anterior"
+            >
+              <span>◀</span>
+              <span className="hidden sm:inline">Anterior</span>
+            </button>
+
+            {/* Números de página */}
+            <div className="flex items-center gap-1 mx-1">
+              {getPaginationItems().map((item, idx) => {
+                if (typeof item === 'string') {
+                  return (
+                    <span key={item + idx} className="px-1.5 py-1 text-slate-500 font-bold select-none">
+                      ...
+                    </span>
+                  );
+                }
+                const isActive = item === localPage;
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setLocalPage(item)}
+                    className={'min-w-8 h-8 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ' + (
+                      isActive
+                        ? 'bg-indigo-600 text-white border border-indigo-400 shadow-md shadow-indigo-600/30 font-bold'
+                        : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:text-white'
+                    )}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Siguiente */}
+            <button
+              type="button"
+              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
+              onClick={() => setLocalPage(localPage + 1)}
+              disabled={localPage >= totalPages}
+              title="Página siguiente"
+            >
+              <span className="hidden sm:inline">Siguiente</span>
+              <span>▶</span>
+            </button>
+
+            {/* Último */}
+            <button
+              type="button"
+              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
+              onClick={() => setLocalPage(totalPages)}
+              disabled={localPage >= totalPages}
+              title="Ir a la última página"
+            >
+              <span className="hidden md:inline">Último</span>
+              <span>⏭</span>
             </button>
           </div>
         </div>

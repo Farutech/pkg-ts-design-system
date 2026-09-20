@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react'
-import clsx from 'clsx'
-import { Button } from '../components/Button'
-import { Input } from '../components/Input'
-import { Alert } from '../components/Alert'
+import { cn } from '@/components/utils/cn'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Alert } from '@/components/ui/Alert'
 
 /**
  * ForgotPasswordScreen (TASK-203 / REQ-DS-03) — migrado de
@@ -66,7 +66,7 @@ export function ForgotPasswordScreen<TPayload = unknown>({
   }
 
   return (
-    <div className={clsx('ft-auth', className)}>
+    <div className={cn('ft-auth', className)}>
       <div className="ft-auth__card">
         <div className="ft-auth__header">
           <div className="ft-auth__logo" aria-hidden="true">

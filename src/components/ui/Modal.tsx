@@ -1,12 +1,7 @@
-/**
- * Componente Modal reutilizable con Headless UI
- */
-
-import { Fragment } from 'react'
+import React, { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import type { ReactNode } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
 
 interface ModalProps {
   isOpen: boolean
@@ -27,7 +22,22 @@ export function Modal({
   size = 'md',
   closeButton = true,
 }: ModalProps) {
-  const sizes = {
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen, onClose])
+
+  if (!isOpen) return null
+
+  const sizeClasses = {
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
@@ -35,76 +45,62 @@ export function Modal({
     full: 'max-w-7xl',
   }
 
-  return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog open={isOpen} as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" />
-        </Transition.Child>
+  const modalContent = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity animate-fadeIn"
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel
-                className={clsx(
-                  'w-full transform overflow-hidden rounded-2xl bg-white dark:bg-[#111827] text-left align-middle shadow-2xl transition-all border border-slate-200 dark:border-slate-800 flex flex-col max-h-[88vh]',
-                  sizes[size]
-                )}
+      {/* Modal Dialog Container */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'modal-title' : undefined}
+        className={`relative z-10 w-full ${sizeClasses[size]} my-8 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transform transition-all animate-scaleUp text-slate-100`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        {(title || closeButton) && (
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md shrink-0">
+            {title && (
+              <h3 id="modal-title" className="text-lg font-bold text-white tracking-tight">
+                {title}
+              </h3>
+            )}
+            {closeButton && (
+              <button
+                type="button"
+                aria-label="Cerrar modal"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ml-auto"
+                onClick={onClose}
               >
-                {(title || closeButton) && (
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 shrink-0 sticky top-0 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md z-20">
-                    {title && (
-                      <Dialog.Title
-                        as="h3"
-                        className="text-lg font-semibold text-slate-900 dark:text-white tracking-tight"
-                      >
-                        {title}
-                      </Dialog.Title>
-                    )}
-                    {closeButton && (
-                      <button
-                        type="button"
-                        aria-label="Cerrar modal"
-                        className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                        onClick={onClose}
-                      >
-                        <XMarkIcon className="h-5 w-5" />
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                <div className="px-6 py-5 overflow-y-auto flex-1 overscroll-contain text-slate-700 dark:text-slate-300">
-                  {children}
-                </div>
-
-                {footer && (
-                  <div className="px-6 py-4 bg-slate-50/90 dark:bg-[#0b0f19]/90 border-t border-slate-200 dark:border-slate-800 shrink-0 sticky bottom-0 z-20 flex items-center justify-end gap-3 backdrop-blur-md">
-                    {footer}
-                  </div>
-                )}
-              </Dialog.Panel>
-
-            </Transition.Child>
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            )}
           </div>
+        )}
+
+        {/* Body */}
+        <div className="px-6 py-5 overflow-y-auto flex-1 text-slate-200 text-sm">
+          {children}
         </div>
-      </Dialog>
-    </Transition>
+
+        {/* Footer */}
+        {footer && (
+          <div className="px-6 py-4 bg-slate-950/90 border-t border-slate-800 shrink-0 flex items-center justify-end gap-3">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
   )
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalContent, document.body)
+    : modalContent
 }
+
+export default Modal

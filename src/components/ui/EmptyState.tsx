@@ -21,7 +21,7 @@
  */
 
 import type { ReactNode } from 'react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Button } from './Button'
 
 export interface EmptyStateProps {
@@ -99,22 +99,22 @@ export function EmptyState({
   const iconColor = variantStyles[variant]
 
   return (
-    <div className={clsx('flex flex-col items-center justify-center px-4 text-center', styles.padding, className)}>
+    <div className={cn('flex flex-col items-center justify-center px-4 text-center', styles.padding, className)}>
       {/* Ícono */}
       {icon && (
-        <div className={clsx('mb-4', iconColor, styles.icon)}>
+        <div className={cn('mb-4', iconColor, styles.icon)}>
           {icon}
         </div>
       )}
 
       {/* Título */}
-      <h3 className={clsx('font-semibold text-gray-900 dark:text-white mb-2', styles.title)}>
+      <h3 className={cn('font-semibold text-gray-900 dark:text-white mb-2', styles.title)}>
         {title}
       </h3>
 
       {/* Descripción */}
       {description && (
-        <p className={clsx('text-gray-500 dark:text-gray-400 max-w-md mb-6', styles.description)}>
+        <p className={cn('text-gray-500 dark:text-gray-400 max-w-md mb-6', styles.description)}>
           {description}
         </p>
       )}

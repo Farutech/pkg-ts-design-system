@@ -4,7 +4,7 @@
 
 import { Listbox } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Fragment, useState, useEffect, useRef } from 'react'
 import React from 'react'
 
@@ -76,10 +76,12 @@ export function ListBox({
 
   // Reset search when closing
   useEffect(() => {
-    if (searchable) {
-      return () => setSearchQuery('')
-    }
-  }, [])
+    if (!searchable) return undefined
+    // Reset al cerrar: el listado reabre sin filtros de búsqueda.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearchQuery((prev) => (prev === '' ? prev : ''))
+    return () => setSearchQuery('')
+  }, [searchable])
 
   const handleChange = (newValue: string) => {
     if (multiple) {
@@ -135,7 +137,7 @@ export function ListBox({
       >
         <div className="relative">
           <Listbox.Button
-            className={clsx(
+            className={cn(
               'relative w-full cursor-pointer rounded-xl border py-3 pl-3 pr-10 text-left',
               'focus:outline-none focus:ring-2 focus:ring-primary-500',
               'bg-white dark:bg-gray-800',
@@ -271,7 +273,7 @@ export function ListBox({
                 >
                   {({ active }) => (
                     <li
-                      className={clsx(
+                      className={cn(
                         'relative cursor-pointer select-none py-3 pl-3 pr-9 mx-1 rounded-lg transition-colors',
                         active && 'bg-primary-50 dark:bg-primary-900/20',
                         option.disabled && 'opacity-50 cursor-not-allowed'
@@ -280,7 +282,7 @@ export function ListBox({
                       <div className="flex items-center gap-3">
                         {multiple && (
                           <div
-                            className={clsx(
+                            className={cn(
                               'flex items-center justify-center w-5 h-5 rounded border-2 transition-colors',
                               isSelected
                                 ? 'bg-primary-600 border-primary-600'
@@ -301,12 +303,12 @@ export function ListBox({
                         )}
                         {option.icon && 
                           React.createElement(option.icon, { 
-                            className: clsx('h-6 w-6', isSelected ? 'text-primary-600' : 'text-gray-500')
+                            className: cn('h-6 w-6', isSelected ? 'text-primary-600' : 'text-gray-500')
                           })
                         }
                         <span className="block truncate">
                           <span
-                            className={clsx(
+                            className={cn(
                               'font-medium',
                               isSelected
                                 ? 'text-primary-600 dark:text-primary-400'

@@ -2,7 +2,7 @@
  * Componente Textarea - Input de texto multilínea con validación regex
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { forwardRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 
@@ -90,7 +90,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           onChange={handleChange}
-          className={clsx(
+          className={cn(
             'w-full px-4 py-3 rounded-xl border transition-all duration-200 min-h-[100px]',
             'focus:ring-2 focus:ring-primary-500 focus:border-transparent',
             'text-gray-900 dark:text-white',
@@ -103,7 +103,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {(displayError || helperText) && (
-          <p className={clsx(
+          <p className={cn(
             'mt-1 text-sm',
             displayError 
               ? 'text-red-600 dark:text-red-400' 

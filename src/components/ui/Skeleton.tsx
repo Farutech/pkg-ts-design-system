@@ -16,7 +16,7 @@
  * ```
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Card } from './Card'
 
 interface SkeletonProps {
@@ -29,7 +29,7 @@ interface SkeletonProps {
 export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
-      className={clsx(
+      className={cn(
         'animate-pulse bg-gray-200 dark:bg-gray-700 rounded',
         className
       )}
@@ -42,7 +42,7 @@ export function Skeleton({ className }: SkeletonProps) {
  */
 export function SkeletonCard({ className }: SkeletonProps) {
   return (
-    <Card className={clsx('p-5', className)}>
+    <Card className={cn('p-5', className)}>
       <div className="animate-pulse space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -75,7 +75,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
  */
 export function SkeletonList({ items = 5, className }: SkeletonProps & { items?: number }) {
   return (
-    <div className={clsx('space-y-3', className)}>
+    <div className={cn('space-y-3', className)}>
       {[...Array(items)].map((_, i) => (
         <div key={i} className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
@@ -99,7 +99,7 @@ export function SkeletonTable({
   className 
 }: SkeletonProps & { rows?: number; columns?: number }) {
   return (
-    <div className={clsx('overflow-x-auto', className)}>
+    <div className={cn('overflow-x-auto', className)}>
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         {/* Header */}
         <thead className="bg-gray-50 dark:bg-gray-800">
@@ -134,7 +134,7 @@ export function SkeletonTable({
  */
 export function SkeletonForm({ fields = 5, className }: SkeletonProps & { fields?: number }) {
   return (
-    <div className={clsx('space-y-6', className)}>
+    <div className={cn('space-y-6', className)}>
       {[...Array(fields)].map((_, i) => (
         <div key={i} className="space-y-2">
           <Skeleton className="h-4 w-32" />
@@ -158,11 +158,11 @@ export function SkeletonText({
   className 
 }: SkeletonProps & { lines?: number }) {
   return (
-    <div className={clsx('space-y-2', className)}>
+    <div className={cn('space-y-2', className)}>
       {[...Array(lines)].map((_, i) => (
         <Skeleton 
           key={i} 
-          className={clsx(
+          className={cn(
             'h-4',
             i === lines - 1 ? 'w-3/4' : 'w-full'
           )} 
@@ -182,7 +182,7 @@ export function SkeletonAvatar({ size = 'md', className }: SkeletonProps & { siz
     lg: 'h-12 w-12',
   }
   
-  return <Skeleton className={clsx(sizeClasses[size], 'rounded-full', className)} />
+  return <Skeleton className={cn(sizeClasses[size], 'rounded-full', className)} />
 }
 
 /**
@@ -196,7 +196,7 @@ export function SkeletonGrid({ items = 6, cols = 3, className }: SkeletonProps &
   }
   
   return (
-    <div className={clsx('grid gap-4', gridClasses[cols as keyof typeof gridClasses] || gridClasses[3], className)}>
+    <div className={cn('grid gap-4', gridClasses[cols as keyof typeof gridClasses] || gridClasses[3], className)}>
       {[...Array(items)].map((_, i) => (
         <SkeletonCard key={i} />
       ))}

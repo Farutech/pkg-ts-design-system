@@ -3,7 +3,7 @@
  * Soporta APIs REST, mapeo de respuestas y estados de loading/error
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 
 export interface AsyncDataOptions<T, R = any> {
   /** Función que ejecuta la petición a la API */
@@ -44,40 +44,51 @@ export function useAsyncData<T = any, R = any>({
   const [isError, setIsError] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hasLoaded, setHasLoaded] = useState(false)
-  
+
   const startTimeRef = useRef<number | null>(null)
   const isMountedRef = useRef(true)
+  const fetchDataRef = useRef(fetchData)
+  const mapResponseRef = useRef(mapResponse)
 
-  const executeFetch = useCallback(async () => {
+  // Mantener las funciones más recientes sin re-crear el runner (los
+  // consumidores suelen pasar arrows inline; disparar el fetch en cada render
+  // sería un loop). La asignación vive en un efecto, no durante el render.
+  useEffect(() => {
+    fetchDataRef.current = fetchData
+    mapResponseRef.current = mapResponse
+  })
+
+  const fetchRunner = useCallback(async () => {
     if (!isMountedRef.current) return
-    
+
     setIsLoading(true)
     setIsError(false)
     setError(null)
     startTimeRef.current = Date.now()
 
     try {
-      const response = await fetchData()
-      
+      const response = await fetchDataRef.current()
+
       // Calcular tiempo restante para completar el minLoadingTime
-      const elapsedTime = Date.now() - startTimeRef.current
+      const elapsedTime = Date.now() - (startTimeRef.current ?? Date.now())
       const remainingTime = Math.max(0, minLoadingTime - elapsedTime)
-      
+
       // Esperar el tiempo mínimo si es necesario
       if (remainingTime > 0) {
-        await new Promise(resolve => setTimeout(resolve, remainingTime))
+        await new Promise((resolve) => setTimeout(resolve, remainingTime))
       }
-      
+
       if (!isMountedRef.current) return
-      
+
       // Mapear la respuesta si se proporciona la función, sino asumir que ya viene en el formato correcto
-      const mappedData = mapResponse ? mapResponse(response) : (response as unknown as T[])
-      
+      const currentMapResponse = mapResponseRef.current
+      const mappedData = currentMapResponse ? currentMapResponse(response) : (response as unknown as T[])
+
       setData(mappedData)
       setHasLoaded(true)
     } catch (err) {
       if (!isMountedRef.current) return
-      
+
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar los datos'
       setError(errorMessage)
       setIsError(true)
@@ -87,23 +98,29 @@ export function useAsyncData<T = any, R = any>({
         setIsLoading(false)
       }
     }
-  }, [fetchData, mapResponse, minLoadingTime])
+  }, [minLoadingTime])
 
   useEffect(() => {
     isMountedRef.current = true
-    
+
+    // Lanzamiento del fetch en montaje/cambio de dependencias: el runner
+    // marca loading de forma sincrónica; es el contrato del hook.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (immediate) {
-      executeFetch()
+      void fetchRunner()
     }
 
     return () => {
       isMountedRef.current = false
     }
-  }, [...dependencies, immediate])
+    // `fetchData` y `mapResponse` se consultan vía ref a propósito: re-crear
+    // el runner con arrows inline del consumidor dispararía fetches infinitos.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [immediate, fetchRunner, ...dependencies])
 
   const refetch = useCallback(async () => {
-    await executeFetch()
-  }, [executeFetch])
+    await fetchRunner()
+  }, [fetchRunner])
 
   const reset = useCallback(() => {
     setData([])
@@ -203,13 +220,6 @@ export function useAsyncPagination<T = any, R = any>({
   perPage = 10,
 }: UseAsyncPaginationOptions<T, R>) {
   const [currentPage, setCurrentPage] = useState(initialPage)
-  const [paginatedData, setPaginatedData] = useState<PaginatedResponse<T>>({
-    data: [],
-    total: 0,
-    page: currentPage,
-    perPage,
-    totalPages: 0,
-  })
 
   const { data, isLoading, isError, error, hasLoaded, refetch, reset } = 
     useAsyncData<T, R>({
@@ -224,17 +234,12 @@ export function useAsyncPagination<T = any, R = any>({
       immediate,
     })
 
-  useEffect(() => {
-    if (data.length > 0 || hasLoaded) {
-      // Aquí se debería integrar con la lógica de paginación del backend
-      // Esto es un placeholder para futuras implementaciones
-      setPaginatedData(prev => ({
-        ...prev,
-        data,
-        page: currentPage,
-      }))
-    }
-  }, [data, currentPage, hasLoaded])
+  // La "página" visible se deriva de los datos cargados: sin estado espejo ni
+  // efectos de sincronización (el backend sigue mandando la página completa).
+  const paginatedData = useMemo<PaginatedResponse<T>>(
+    () => ({ data, total: 0, page: currentPage, perPage, totalPages: 0 }),
+    [data, currentPage, perPage],
+  )
 
   const goToPage = useCallback((page: number) => {
     setCurrentPage(page)

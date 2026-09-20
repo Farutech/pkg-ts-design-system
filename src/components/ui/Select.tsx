@@ -5,7 +5,7 @@
 
 import { forwardRef, useMemo } from 'react'
 import type { SelectHTMLAttributes } from 'react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Spinner } from './Spinner'
 
 interface SelectOption {
@@ -66,7 +66,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const isDisabled = disabled || (isLoading && !hasOptions)
 
     return (
-      <div className={clsx('flex flex-col', fullWidth && 'w-full')}>
+      <div className={cn('flex flex-col', fullWidth && 'w-full')}>
         {label && (
           <label
             htmlFor={selectId}
@@ -80,7 +80,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             id={selectId}
-            className={clsx(
+            className={cn(
               'input w-full appearance-none pr-10',
               error && 'border-red-500 focus:ring-red-500',
               (!hasOptions && !isLoading) && 'bg-gray-50 dark:bg-gray-800 text-gray-400 cursor-not-allowed',

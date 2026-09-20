@@ -19,8 +19,23 @@
  * <GlobalLoading customLoader={<MiSpinnerCustom />} />
  */
 
-import { useMemo, type ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 import { LogoSpinner } from './LogoSpinner'
+
+const SPINNER_VARIANTS = ['spin', 'flip', 'flipHorizontal'] as const
+type ResolvedSpinnerVariant = (typeof SPINNER_VARIANTS)[number]
+
+/**
+ * Elige de forma determinista una variante por instancia, a partir del `useId`.
+ * Mantiene la sensación de "variante aleatoria" sin llamadas impuras en el render.
+ */
+function pickVariantForInstance(instanceId: string): ResolvedSpinnerVariant {
+  let hash = 0
+  for (let index = 0; index < instanceId.length; index += 1) {
+    hash = (hash * 31 + instanceId.charCodeAt(index)) >>> 0
+  }
+  return SPINNER_VARIANTS[hash % SPINNER_VARIANTS.length]
+}
 
 type SpinnerVariant = 'spin' | 'flip' | 'flipHorizontal' | 'random'
 type SpinnerSize = 'sm' | 'md' | 'lg' | 'xl'
@@ -48,12 +63,8 @@ export function GlobalLoading({
   fullScreen = true,
   className = '',
 }: GlobalLoadingProps) {
-  // Generar variante aleatoria si se especifica 'random'
-  const resolvedVariant = useMemo(() => {
-    if (variant !== 'random') return variant
-    const variants: Array<'spin' | 'flip' | 'flipHorizontal'> = ['spin', 'flip', 'flipHorizontal']
-    return variants[Math.floor(Math.random() * variants.length)]
-  }, [variant])
+  const instanceId = useId()
+  const resolvedVariant = variant === 'random' ? pickVariantForInstance(instanceId) : variant
 
   const containerClass = fullScreen
     ? 'flex flex-col items-center justify-center h-screen gap-4'

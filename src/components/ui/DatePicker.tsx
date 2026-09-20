@@ -43,7 +43,7 @@
 import { useState, useRef } from 'react'
 import { Popover } from '@headlessui/react'
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Button } from './Button'
 
 export interface DatePickerProps {
@@ -213,7 +213,7 @@ export function DatePicker({
             <Popover.Button
               ref={buttonRef}
               disabled={disabled}
-              className={clsx(
+              className={cn(
                 'w-full flex items-center justify-between px-3 py-2 text-left rounded-lg border transition-colors',
                 disabled
                   ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
@@ -223,7 +223,7 @@ export function DatePicker({
                 open && 'ring-2 ring-primary-500'
               )}
             >
-              <span className={clsx('text-sm', dateValue ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
+              <span className={cn('text-sm', dateValue ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
                 {dateValue ? formatDate(dateValue, format) : placeholder}
               </span>
               <div className="flex items-center gap-1">
@@ -288,7 +288,7 @@ export function DatePicker({
                       type="button"
                       disabled={disabled}
                       onClick={() => handleDateSelect(day, close)}
-                      className={clsx(
+                      className={cn(
                         'aspect-square rounded-lg text-sm transition-colors',
                         isSelected
                           ? 'bg-primary-600 text-white font-semibold'

@@ -21,9 +21,9 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useSidebarStore } from '@/store/sidebarStore'
 import { useThemeStore } from '@/store/themeStore'
-import { Breadcrumb } from '../ui/Breadcrumb'
-import type { BreadcrumbItem } from '../ui/Breadcrumb'
-import clsx from 'clsx'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import type { BreadcrumbItem } from '@/components/ui/Breadcrumb'
+import { cn } from '@/utils/cn'
 import { useState } from 'react'
 import { SearchModal } from './SearchModal'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
@@ -210,6 +210,7 @@ const notifications = [
 export function Navbar() {
   const { toggle, isMobile, isOpen, sidebarWidth } = useSidebarStore()
   const { theme, toggleTheme } = useThemeStore()
+  const { logout } = useAuth()
   const location = useLocation()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   
@@ -363,7 +364,7 @@ export function Navbar() {
                             <Menu.Item key={notification.id}>
                               {({ active }) => (
                                 <button
-                                  className={clsx(
+                                  className={cn(
                                     'w-full px-3 py-3 text-left transition-all duration-200 border-b border-gray-100 dark:border-gray-700 last:border-0 rounded-lg my-1',
                                     active && 'bg-gray-50 dark:bg-gray-700/50 scale-[0.98]',
                                     !notification.read && 'bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-900/10'
@@ -371,7 +372,7 @@ export function Navbar() {
                                 >
                                   <div className="flex gap-3">
                                     <div className="flex-shrink-0 mt-0.5">
-                                      <div className={clsx(
+                                      <div className={cn(
                                         'p-1.5 rounded-lg',
                                         notification.type === 'success' && 'bg-green-100 dark:bg-green-900/30',
                                         notification.type === 'warning' && 'bg-yellow-100 dark:bg-yellow-900/30',
@@ -452,7 +453,7 @@ export function Navbar() {
                           {({ active }) => (
                             <Link
                               to="/settings/profile"
-                              className={clsx(
+                              className={cn(
                                 'flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition-all duration-200',
                                 active
                                   ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
@@ -469,7 +470,7 @@ export function Navbar() {
                           {({ active }) => (
                             <Link
                               to="/settings/general"
-                              className={clsx(
+                              className={cn(
                                 'flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition-all duration-200',
                                 active
                                   ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
@@ -487,13 +488,12 @@ export function Navbar() {
                                   <div className="border-t border-gray-200 dark:border-gray-700 pt-1 pb-1">
                                     <Menu.Item>
                                       {({ active }) => {
-                                        const { logout } = useAuth()
                                         return (
                                           <button
                                             onClick={() => {
                                               logout()
                                             }}
-                                            className={clsx(
+                                            className={cn(
                                               'w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition-all duration-200',
                                               active
                                                 ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'

@@ -3,11 +3,10 @@
  */
 
 import { useState } from 'react'
-import React from 'react'
 import type { ChangeEvent } from 'react'
 import { Listbox } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 type ValidationMode = 'block' | 'error'
 
@@ -62,9 +61,9 @@ export function PhoneInput({
   disabled = false,
 }: PhoneInputProps) {
   const [selectedCountry, setSelectedCountry] = useState<Country>(
-    countries.find(c => c.code === defaultCountry) || countries[0]
+    countries.find((c) => c.code === defaultCountry) || countries[0],
   )
-  const [phoneNumber, setPhoneNumber] = useState(value)
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [validationError, setValidationError] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState<string>('')
 
@@ -77,6 +76,18 @@ export function PhoneInput({
       )
     : countries
 
+  const displayError = error || validationError
+
+  // Derivar el número/país visibles desde el valor controlado evita sincronizar
+  // con efecto: si cambia `value`, el render siguiente ya muestra el parseo.
+  const matchedCountry = value ? countries.find((c) => value.startsWith(c.dialCode)) : undefined
+  const activeCountry = matchedCountry ?? selectedCountry
+  const displayedPhoneNumber = value
+    ? matchedCountry
+      ? value.slice(matchedCountry.dialCode.length)
+      : value
+    : phoneNumber
+
   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
 
@@ -86,7 +97,7 @@ export function PhoneInput({
         if (newValue === '' || pattern.test(newValue)) {
           setPhoneNumber(newValue)
           setValidationError('')
-          onChange?.(`${selectedCountry.dialCode}${newValue}`)
+          onChange?.(`${activeCountry.dialCode}${newValue}`)
         }
       } else {
         // Permitir entrada pero mostrar error
@@ -96,40 +107,20 @@ export function PhoneInput({
         } else {
           setValidationError('Solo se permiten números')
         }
-        onChange?.(`${selectedCountry.dialCode}${newValue}`)
+        onChange?.(`${activeCountry.dialCode}${newValue}`)
       }
     } else {
       setPhoneNumber(newValue)
-      onChange?.(`${selectedCountry.dialCode}${newValue}`)
+      onChange?.(`${activeCountry.dialCode}${newValue}`)
     }
   }
 
-  const displayError = error || validationError
 
   const handleCountryChange = (country: Country) => {
     setSelectedCountry(country)
     // Actualizar el valor completo con el nuevo indicativo
-    onChange?.(`${country.dialCode}${phoneNumber}`)
+    onChange?.(`${country.dialCode}${displayedPhoneNumber}`)
   }
-
-  // Sincronizar el phoneNumber cuando cambia el país o el valor externo
-  React.useEffect(() => {
-    if (value) {
-      // Si el valor viene con indicativo, extraer solo el número
-      const currentDialCode = selectedCountry.dialCode
-      if (value.startsWith(currentDialCode)) {
-        const numberWithoutCode = value.slice(currentDialCode.length)
-        setPhoneNumber(numberWithoutCode)
-      } else {
-        // Buscar si el valor tiene otro indicativo
-        const matchingCountry = countries.find(c => value.startsWith(c.dialCode))
-        if (matchingCountry) {
-          setSelectedCountry(matchingCountry)
-          setPhoneNumber(value.slice(matchingCountry.dialCode.length))
-        }
-      }
-    }
-  }, [value])
 
   return (
     <div className={className}>
@@ -141,10 +132,10 @@ export function PhoneInput({
 
       <div className="flex gap-2">
         {/* Country selector */}
-        <Listbox value={selectedCountry} onChange={handleCountryChange} disabled={disabled}>
+        <Listbox value={activeCountry} onChange={handleCountryChange} disabled={disabled}>
           <div className="relative w-32">
             <Listbox.Button
-              className={clsx(
+              className={cn(
                 'relative w-full cursor-pointer rounded-xl border h-[46px] pl-3 pr-8 text-left flex items-center',
                 'focus:outline-none focus:ring-2 focus:ring-primary-500',
                 'bg-white dark:bg-gray-800',
@@ -158,9 +149,9 @@ export function PhoneInput({
               style={disabled ? { cursor: 'not-allowed' } : undefined}
             >
               <span className="flex items-center gap-2">
-                <span className="text-xl leading-none">{selectedCountry.flag}</span>
+                <span className="text-xl leading-none">{activeCountry.flag}</span>
                 <span className="text-sm text-gray-500 dark:text-gray-400 leading-none">
-                  {selectedCountry.dialCode}
+                  {activeCountry.dialCode}
                 </span>
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -192,7 +183,7 @@ export function PhoneInput({
                       key={country.code}
                       value={country}
                       className={({ active }) =>
-                        clsx(
+                        cn(
                           'relative cursor-pointer select-none py-2 pl-3 pr-9 mx-1 rounded-lg',
                           active && 'bg-primary-50 dark:bg-primary-900/20'
                         )
@@ -203,7 +194,7 @@ export function PhoneInput({
                           <span className="text-xl">{country.flag}</span>
                           <span className="flex-1">
                             <span
-                              className={clsx(
+                              className={cn(
                                 'block text-sm',
                                 selected
                                   ? 'font-semibold text-primary-600 dark:text-primary-400'
@@ -230,10 +221,10 @@ export function PhoneInput({
         <div className="flex-1">
           <input
             type="tel"
-            value={phoneNumber}
+            value={displayedPhoneNumber}
             onChange={handlePhoneChange}
             placeholder={placeholder}
-            className={clsx(
+            className={cn(
               'w-full px-4 h-[46px] border rounded-xl transition-all duration-200',
               'focus:ring-2 focus:ring-primary-500 focus:border-transparent',
               'bg-white dark:bg-gray-800 text-gray-900 dark:text-white',

@@ -2,7 +2,7 @@
  * Componente ListGroup - Lista de elementos con estilos
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import type { ReactNode } from 'react'
 
 export interface ListGroupItem {
@@ -29,7 +29,7 @@ export function ListGroup({ items, variant = 'default', className }: ListGroupPr
   }
 
   return (
-    <ul className={clsx(containerStyles[variant], className)}>
+    <ul className={cn(containerStyles[variant], className)}>
       {items.map((item, index) => {
         const ItemIcon = item.icon
         const isFirst = index === 0
@@ -38,7 +38,7 @@ export function ListGroup({ items, variant = 'default', className }: ListGroupPr
         return (
           <li
             key={item.id}
-            className={clsx(
+            className={cn(
               'relative flex items-center justify-between px-4 py-3 transition-all duration-200',
               !isLast && 'border-b border-gray-200 dark:border-gray-700',
               variant === 'default' && [
@@ -55,7 +55,7 @@ export function ListGroup({ items, variant = 'default', className }: ListGroupPr
             <div className="flex items-center gap-3 flex-1">
               {ItemIcon && (
                 <ItemIcon
-                  className={clsx(
+                  className={cn(
                     'h-5 w-5',
                     item.active
                       ? 'text-primary-600 dark:text-primary-400'
@@ -64,7 +64,7 @@ export function ListGroup({ items, variant = 'default', className }: ListGroupPr
                 />
               )}
               <div
-                className={clsx(
+                className={cn(
                   'text-sm',
                   item.active
                     ? 'font-semibold text-primary-700 dark:text-primary-300'
@@ -76,7 +76,7 @@ export function ListGroup({ items, variant = 'default', className }: ListGroupPr
             </div>
             {item.badge !== undefined && (
               <span
-                className={clsx(
+                className={cn(
                   'px-2.5 py-0.5 text-xs font-semibold rounded-full',
                   item.active
                     ? 'bg-primary-600 text-white'

@@ -3,7 +3,7 @@
  */
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface CrudPaginationProps {
   currentPage: number
@@ -28,26 +28,14 @@ export function CrudPagination({
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
   
   // Mostrar solo 7 páginas a la vez
-  let displayPages: (number | string)[] = []
-  if (totalPages <= 7) {
-    displayPages = pages
-  } else {
-    if (currentPage <= 4) {
-      displayPages = [...pages.slice(0, 5), '...', totalPages]
-    } else if (currentPage >= totalPages - 3) {
-      displayPages = [1, '...', ...pages.slice(totalPages - 5)]
-    } else {
-      displayPages = [
-        1,
-        '...',
-        currentPage - 1,
-        currentPage,
-        currentPage + 1,
-        '...',
-        totalPages,
-      ]
-    }
-  }
+  const displayPages: (number | string)[] =
+    totalPages <= 7
+      ? pages
+      : currentPage <= 4
+        ? [...pages.slice(0, 5), '...', totalPages]
+        : currentPage >= totalPages - 3
+          ? [1, '...', ...pages.slice(totalPages - 5)]
+          : [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages]
 
   return (
     <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6">
@@ -99,7 +87,7 @@ export function CrudPagination({
                 <button
                   key={page}
                   onClick={() => onPageChange(page as number)}
-                  className={clsx(
+                  className={cn(
                     'relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20',
                     page === currentPage
                       ? 'z-10 bg-primary-600 text-white ring-primary-600 dark:ring-primary-600'

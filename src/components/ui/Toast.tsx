@@ -12,7 +12,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/24/solid'
 import { useNotificationStore } from '@/store/notificationStore'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 const icons = {
   success: CheckCircleIcon,
@@ -50,7 +50,7 @@ export function ToastContainer() {
             leaveTo="opacity-0"
           >
             <div className="flex items-start gap-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-gray-700">
-              <Icon className={clsx('h-6 w-6 flex-shrink-0', color)} />
+              <Icon className={cn('h-6 w-6 flex-shrink-0', color)} />
               
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">

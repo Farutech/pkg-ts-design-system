@@ -3,7 +3,7 @@
  * Ideal para mostrar progreso de cargas asíncronas o procesos en segundo plano
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Spinner } from './Spinner'
 
 interface ProgressBarProps {
@@ -86,7 +86,7 @@ export function ProgressBar({
       )}
       
       <div
-        className={clsx(
+        className={cn(
           'w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden',
           sizeStyles[size]
         )}
@@ -94,13 +94,13 @@ export function ProgressBar({
         {isIndeterminate ? (
           // Estado indeterminado - animación continua
           <div
-            className={clsx(
+            className={cn(
               'h-full relative overflow-hidden',
               variant === 'gradient' ? gradientStyles[color] : colorStyles[color]
             )}
           >
             <div
-              className={clsx(
+              className={cn(
                 'absolute inset-y-0 w-1/2',
                 'animate-shimmer',
                 variant === 'striped' && 'bg-stripes animate-stripes'
@@ -115,7 +115,7 @@ export function ProgressBar({
         ) : (
           // Progreso determinado
           <div
-            className={clsx(
+            className={cn(
               'h-full transition-all duration-500 ease-out',
               variant === 'gradient' ? gradientStyles[color] : colorStyles[color],
               variant === 'striped' && 'bg-stripes animate-stripes'
@@ -155,7 +155,7 @@ export function MultiProgressBar({
           const percentage = (item.value / max) * 100
           return (
             <div key={item.label} className="flex items-center gap-2">
-              <div className={clsx('w-3 h-3 rounded-full', colorStyles[item.color])} />
+              <div className={cn('w-3 h-3 rounded-full', colorStyles[item.color])} />
               <span className="text-xs text-gray-600 dark:text-gray-400">
                 {item.label}: {Math.round(percentage)}%
               </span>
@@ -164,7 +164,7 @@ export function MultiProgressBar({
         })}
       </div>
       <div
-        className={clsx(
+        className={cn(
           'w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex',
           sizeStyles[size]
         )}
@@ -174,7 +174,7 @@ export function MultiProgressBar({
           return (
             <div
               key={item.label}
-              className={clsx('h-full transition-all duration-500', colorStyles[item.color])}
+              className={cn('h-full transition-all duration-500', colorStyles[item.color])}
               style={{ width: `${percentage}%` }}
             />
           )

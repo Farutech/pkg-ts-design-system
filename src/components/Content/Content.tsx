@@ -1,5 +1,4 @@
 import React from 'react';
-import './Content.css';
 
 /** Eyebrow: etiqueta corta sobre headings (viene de apps/frontend). */
 export interface EyebrowProps {

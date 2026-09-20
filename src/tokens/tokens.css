@@ -1,29 +1,64 @@
 /**
- * Tokens del Design System (TASK-201 / REQ-DS-01).
+ * ============================================================================
+ *  FaruTech Design System — TOKENS CANÓNICOS  (fuente única de verdad)
+ * ============================================================================
  *
- * Los valores viven SOLO aquí como CSS custom properties — ningún componente
- * hardcodea colores/radios (corrige el defecto "estilos quemados" de dashboard).
+ *  Reglas de oro (doc 08 / REQ-DS-01):
+ *   1. Ningún componente hardcodea colores, radios, sombras ni tipografía.
+ *   2. Los componentes `ft-*` consumen tokens SEMÁNTICOS (--ft-color-*, --ft-radius-*).
+ *   3. La paleta primitiva `--ft-primary-N` se declara como CANALES RGB
+ *      ("37 99 235") para que Tailwind pueda aplicar opacidad
+ *      (`bg-primary-600/30`) y para permitir tematizar en vivo.
+ *   4. Las variables `--color-*` heredadas del primer release se mantienen como
+ *      ALIAS DEPRECADOS hacia los tokens canónicos (compatibilidad con
+ *      website / intranet / cli-afilamos). No usar en código nuevo.
  *
- * Cada app consumidora (website/admin/intranet) sobrescribe variables a nivel
- * de :root o de un subárbol, o usa <DesignSystemProvider theme={...}> — sin fork.
+ *  Modos: claro por defecto. Oscuro con `.dark` o `[data-theme="dark"]`
+ *  (lo que emite <DesignSystemProvider colorMode="dark">).
+ * ============================================================================
  */
+
 :root {
-  /* Superficie */
+  /* ---------------------------------------------------------------- superficie */
   --ft-color-background: #ffffff;
   --ft-color-surface: #f8fafc;
   --ft-color-surface-hover: #f1f5f9;
+  --ft-color-surface-raised: #ffffff;
   --ft-color-border: #e2e8f0;
+  --ft-color-border-strong: #cbd5e1;
   --ft-color-foreground: #0f172a;
   --ft-color-muted-foreground: #64748b;
+  --ft-color-overlay: rgb(15 23 42 / 0.6);
 
-  /* Marca */
-  --ft-color-primary: #2563eb;
-  --ft-color-primary-hover: #1d4ed8;
+  /* alias de compatibilidad con nombres publicados en 1.0.x */
+  --ft-color-bg: var(--ft-color-background);
+  --ft-color-bg-subtle: var(--ft-color-surface);
+  --ft-color-text: var(--ft-color-foreground);
+  --ft-color-text-muted: var(--ft-color-muted-foreground);
+
+  /* ------------------------------------------------------------ paleta marca */
+  /* Canales RGB: habilitan `bg-primary-600/25` en Tailwind y tematización viva */
+  --ft-primary-50: 239 246 255;
+  --ft-primary-100: 219 234 254;
+  --ft-primary-200: 191 219 254;
+  --ft-primary-300: 147 197 253;
+  --ft-primary-400: 96 165 250;
+  --ft-primary-500: 59 130 246;
+  --ft-primary-600: 37 99 235;
+  --ft-primary-700: 29 78 216;
+  --ft-primary-800: 30 64 175;
+  --ft-primary-900: 30 58 138;
+  --ft-primary-950: 23 37 84;
+
+  /* Semánticos de marca (los consumen los componentes ft-*) */
+  --ft-color-primary: rgb(var(--ft-primary-600));
+  --ft-color-primary-hover: rgb(var(--ft-primary-700));
+  --ft-color-primary-soft: rgb(var(--ft-primary-100));
   --ft-color-on-primary: #ffffff;
   --ft-color-accent: #10b981;
   --ft-color-spark: #f59e0b;
 
-  /* Feedback (base + versión soft para badges/alerts) */
+  /* ----------------------------------------------------------------- feedback */
   --ft-color-success: #16a34a;
   --ft-color-success-soft: #dcfce7;
   --ft-color-warning: #d97706;
@@ -33,46 +68,133 @@
   --ft-color-info: #0284c7;
   --ft-color-info-soft: #e0f2fe;
 
-  /* Foco */
-  --ft-ring: 0 0 0 2px color-mix(in srgb, var(--ft-color-primary) 55%, transparent);
+  /* ------------------------------------------------------------ escala gray */
+  --ft-gray-50: #f9fafb;
+  --ft-gray-100: #f3f4f6;
+  --ft-gray-200: #e5e7eb;
+  --ft-gray-300: #d1d5db;
+  --ft-gray-400: #9ca3af;
+  --ft-gray-500: #6b7280;
+  --ft-gray-600: #4b5563;
+  --ft-gray-700: #374151;
+  --ft-gray-800: #1f2937;
+  --ft-gray-900: #111827;
+  --ft-gray-950: #030712;
 
-  /* Tipografía */
-  --ft-font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --ft-font-mono: ui-monospace, 'JetBrains Mono', 'Fira Code', monospace;
+  /* --------------------------------------------------------------------- foco */
+  --ft-ring-color: color-mix(in srgb, var(--ft-color-primary) 55%, transparent);
+  --ft-ring: 0 0 0 2px var(--ft-ring-color);
+
+  /* --------------------------------------------------------------- tipografía */
+  --ft-font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ft-font-mono: ui-monospace, 'JetBrains Mono', 'Fira Code', Menlo, monospace;
   --ft-text-xs: 0.75rem;
   --ft-text-sm: 0.875rem;
+  --ft-text-md: 1rem;
   --ft-text-base: 1rem;
   --ft-text-lg: 1.125rem;
+  --ft-text-xl: 1.25rem;
+  --ft-text-2xl: 1.5rem;
+  --ft-text-3xl: 1.875rem;
+  --ft-weight-normal: 400;
+  --ft-weight-medium: 500;
+  --ft-weight-semibold: 600;
+  --ft-weight-bold: 700;
+  --ft-leading-tight: 1.25;
+  --ft-leading-normal: 1.5;
+  --ft-leading-relaxed: 1.625;
 
-  /* Espaciado */
+  /* ----------------------------------------------------------------- espaciado */
+  --ft-space-0: 0;
   --ft-space-1: 0.25rem;
   --ft-space-2: 0.5rem;
   --ft-space-3: 0.75rem;
   --ft-space-4: 1rem;
-  --ft-space-5: 1.5rem;
-  --ft-space-6: 2rem;
+  --ft-space-5: 1.25rem;
+  --ft-space-6: 1.5rem;
+  --ft-space-8: 2rem;
+  --ft-space-10: 2.5rem;
+  --ft-space-12: 3rem;
 
-  /* Radios */
+  /* -------------------------------------------------------------------- radios */
   --ft-radius-sm: 0.375rem;
   --ft-radius-md: 0.5rem;
   --ft-radius-lg: 0.75rem;
+  --ft-radius-xl: 1rem;
   --ft-radius-full: 9999px;
 
-  /* Tema oscuro opt-in por app (website) */
+  /* ------------------------------------------------------------------ sombras */
+  --ft-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ft-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --ft-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ft-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* ------------------------------------------------------------------ z-index */
+  --ft-z-dropdown: 1000;
+  --ft-z-sticky: 1100;
+  --ft-z-overlay: 1300;
+  --ft-z-modal: 1400;
+  --ft-z-popover: 1500;
+  --ft-z-toast: 1600;
+  --ft-z-tooltip: 1700;
+
+  /* ----------------------------------------- canales del tema oscuro (opt-in) */
   --ft-dark-color-background: #0a0a0a;
   --ft-dark-color-surface: #141414;
   --ft-dark-color-surface-hover: #1f1f1f;
+  --ft-dark-color-surface-raised: #171717;
   --ft-dark-color-border: #2a2a2a;
+  --ft-dark-color-border-strong: #3f3f46;
   --ft-dark-color-foreground: #fafafa;
   --ft-dark-color-muted-foreground: #a1a1aa;
+  --ft-dark-color-primary: #60a5fa;
+  --ft-dark-color-primary-hover: #93c5fd;
+  --ft-dark-color-primary-soft: rgb(96 165 250 / 0.15);
+  --ft-dark-color-on-primary: #0a0a0a;
+
+  /* ------------------------------------ alias DEPRECADOS (compatibilidad 1.0.x) */
+  --color-primary-50: rgb(var(--ft-primary-50));
+  --color-primary-100: rgb(var(--ft-primary-100));
+  --color-primary-200: rgb(var(--ft-primary-200));
+  --color-primary-300: rgb(var(--ft-primary-300));
+  --color-primary-400: rgb(var(--ft-primary-400));
+  --color-primary-500: rgb(var(--ft-primary-500));
+  --color-primary-600: rgb(var(--ft-primary-600));
+  --color-primary-700: rgb(var(--ft-primary-700));
+  --color-primary-800: rgb(var(--ft-primary-800));
+  --color-primary-900: rgb(var(--ft-primary-900));
+  --color-primary-950: rgb(var(--ft-primary-950));
+  --color-gray-50: var(--ft-gray-50);
+  --color-gray-100: var(--ft-gray-100);
+  --color-gray-200: var(--ft-gray-200);
+  --color-gray-300: var(--ft-gray-300);
+  --color-gray-400: var(--ft-gray-400);
+  --color-gray-500: var(--ft-gray-500);
+  --color-gray-600: var(--ft-gray-600);
+  --color-gray-700: var(--ft-gray-700);
+  --color-gray-800: var(--ft-gray-800);
+  --color-gray-900: var(--ft-gray-900);
+  --color-gray-950: var(--ft-gray-950);
 }
 
-/* Tema oscuro: se activa con data-theme="dark" en cualquier contenedor */
+/* ==========================================================================
+   Tema oscuro — se activa con la clase `.dark` o con data-theme="dark"
+   ========================================================================== */
+
+.dark,
 [data-theme='dark'] {
   --ft-color-background: var(--ft-dark-color-background);
   --ft-color-surface: var(--ft-dark-color-surface);
   --ft-color-surface-hover: var(--ft-dark-color-surface-hover);
+  --ft-color-surface-raised: var(--ft-dark-color-surface-raised);
   --ft-color-border: var(--ft-dark-color-border);
+  --ft-color-border-strong: var(--ft-dark-color-border-strong);
   --ft-color-foreground: var(--ft-dark-color-foreground);
   --ft-color-muted-foreground: var(--ft-dark-color-muted-foreground);
+  --ft-color-overlay: rgb(0 0 0 / 0.7);
+  --ft-color-primary: var(--ft-dark-color-primary);
+  --ft-color-primary-hover: var(--ft-dark-color-primary-hover);
+  --ft-color-primary-soft: var(--ft-dark-color-primary-soft);
+  --ft-color-on-primary: var(--ft-dark-color-on-primary);
+  color-scheme: dark;
 }

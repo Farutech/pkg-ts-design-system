@@ -17,7 +17,7 @@ import { useState, useRef, Fragment } from 'react'
 import type { KeyboardEvent } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { XMarkIcon, PlusIcon, CheckIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface Tag {
   id: string | number
@@ -206,7 +206,7 @@ export default function TagInput({
         <div className="relative">
           {/* Input Container */}
           <div
-            className={clsx(
+            className={cn(
               'flex flex-wrap gap-2 p-2 min-h-[42px] border rounded-lg transition-colors',
               disabled || isMaxReached
                 ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
@@ -218,7 +218,7 @@ export default function TagInput({
             {value.map((tag) => (
               <div
                 key={tag.id}
-                className={clsx(
+                className={cn(
                   'inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium',
                   tag.color || tagColorClass,
                   tag.isNew && 'ring-2 ring-green-400 dark:ring-green-600'
@@ -277,7 +277,7 @@ export default function TagInput({
                 <Combobox.Option
                   value={null}
                   className={({ active }) =>
-                    clsx(
+                    cn(
                       'relative cursor-pointer select-none py-2 px-3 flex items-center gap-2',
                       active && 'bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-100'
                     )
@@ -296,7 +296,7 @@ export default function TagInput({
                     key={tag.id}
                     value={tag}
                     className={({ active }) =>
-                      clsx(
+                      cn(
                         'relative cursor-pointer select-none py-2 px-3 flex items-center justify-between',
                         active && 'bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-100'
                       )
@@ -304,11 +304,11 @@ export default function TagInput({
                   >
                     {({ selected, active }) => (
                       <>
-                        <span className={clsx('block truncate', selected && 'font-medium')}>
+                        <span className={cn('block truncate', selected && 'font-medium')}>
                           {tag.label}
                         </span>
                         {selected && (
-                          <CheckIcon className={clsx('h-5 w-5', active ? 'text-primary-600' : 'text-primary-600')} />
+                          <CheckIcon className={cn('h-5 w-5', active ? 'text-primary-600' : 'text-primary-600')} />
                         )}
                       </>
                     )}
@@ -326,7 +326,7 @@ export default function TagInput({
 
       {/* Helper text o error */}
       {(helperText || error) && (
-        <p className={clsx('mt-1 text-sm', error ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400')}>
+        <p className={cn('mt-1 text-sm', error ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400')}>
           {error || helperText}
         </p>
       )}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 export interface User {
   id: string;
@@ -34,13 +34,6 @@ function getStoredUser(): User | null {
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(() => getStoredUser());
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const stored = getStoredUser();
-    if (stored) {
-      setUser(stored);
-    }
-  }, []);
 
   const login = useCallback(async (email: string, _password: string) => {
     setIsLoading(true);

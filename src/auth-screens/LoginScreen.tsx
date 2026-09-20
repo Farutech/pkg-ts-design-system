@@ -18,7 +18,7 @@
 
 import { useState, FormEvent } from 'react'
 import { SparklesIcon, ArrowRightIcon, UserIcon } from '@heroicons/react/24/outline'
-import { Button, Input, Checkbox, Alert } from '../components/ui'
+import { Button, Input, Checkbox, Alert } from '@/components/ui'
 
 export interface LoginScreenProps {
   /** Callback que recibe email/password y retorna Promise con el resultado del login */

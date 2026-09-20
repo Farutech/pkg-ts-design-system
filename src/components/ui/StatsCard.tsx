@@ -25,7 +25,7 @@
 
 import type { ReactNode } from 'react'
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/solid'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Card } from './Card'
 
 export interface StatsCardProps {
@@ -119,14 +119,14 @@ function StatsCardSkeleton({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   const styles = sizeStyles[size]
 
   return (
-    <Card className={clsx(styles.padding, 'animate-pulse')}>
+    <Card className={cn(styles.padding, 'animate-pulse')}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className={clsx('h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-3', styles.title)} />
-          <div className={clsx('h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2', styles.value)} />
-          <div className={clsx('h-3 bg-gray-200 dark:bg-gray-700 rounded w-20', styles.description)} />
+          <div className={cn('h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-3', styles.title)} />
+          <div className={cn('h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2', styles.value)} />
+          <div className={cn('h-3 bg-gray-200 dark:bg-gray-700 rounded w-20', styles.description)} />
         </div>
-        <div className={clsx('rounded-lg bg-gray-200 dark:bg-gray-700', styles.icon, styles.iconContainer)} />
+        <div className={cn('rounded-lg bg-gray-200 dark:bg-gray-700', styles.icon, styles.iconContainer)} />
       </div>
     </Card>
   )
@@ -159,7 +159,7 @@ export function StatsCard({
 
   return (
     <Card
-      className={clsx(
+      className={cn(
         styles.padding,
         onClick && 'cursor-pointer hover:shadow-lg transition-all duration-200 active:scale-[0.98]',
         className
@@ -169,16 +169,16 @@ export function StatsCard({
       <div className="flex items-start justify-between">
         {/* Contenido */}
         <div className="flex-1">
-          <p className={clsx('font-medium text-gray-600 dark:text-gray-400 mb-2', styles.title)}>
+          <p className={cn('font-medium text-gray-600 dark:text-gray-400 mb-2', styles.title)}>
             {title}
           </p>
-          <p className={clsx('font-bold text-gray-900 dark:text-white mb-1', styles.value)}>
+          <p className={cn('font-bold text-gray-900 dark:text-white mb-1', styles.value)}>
             {value}
           </p>
 
           {/* Cambio porcentual */}
           {change && (
-            <div className={clsx('flex items-center gap-1 font-medium', colors.trend, styles.change)}>
+            <div className={cn('flex items-center gap-1 font-medium', colors.trend, styles.change)}>
               <TrendIcon className="h-4 w-4" />
               <span>{Math.abs(change.value)}%</span>
               {change.label && (
@@ -191,7 +191,7 @@ export function StatsCard({
 
           {/* Descripción */}
           {description && !change && (
-            <p className={clsx('text-gray-500 dark:text-gray-400', styles.description)}>
+            <p className={cn('text-gray-500 dark:text-gray-400', styles.description)}>
               {description}
             </p>
           )}
@@ -199,7 +199,7 @@ export function StatsCard({
 
         {/* Ícono */}
         {icon && (
-          <div className={clsx('rounded-lg flex-shrink-0', colors.icon, styles.iconContainer)}>
+          <div className={cn('rounded-lg flex-shrink-0', colors.icon, styles.iconContainer)}>
             <div className={styles.icon}>
               {icon}
             </div>
@@ -215,7 +215,7 @@ export function StatsCard({
  */
 export function StatsCardGroup({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={clsx('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
+    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
       {children}
     </div>
   )

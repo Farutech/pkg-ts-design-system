@@ -5,7 +5,7 @@
 import { forwardRef, useState } from 'react'
 import type { InputHTMLAttributes, ReactNode, ChangeEvent } from 'react'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export type ValidationMode = 'block' | 'error'
 
@@ -86,7 +86,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const displayError = error || validationError
 
     return (
-      <div className={clsx('flex flex-col', fullWidth && 'w-full')}>
+      <div className={cn('flex flex-col', fullWidth && 'w-full')}>
         {label && (
           <label
             htmlFor={inputId}
@@ -109,7 +109,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             type={effectiveType}
             aria-invalid={displayError ? 'true' : undefined}
             onChange={handleChange}
-            className={clsx(
+            className={cn(
               'input',
               icon && iconPosition === 'left' && 'pl-10',
               (icon && iconPosition === 'right') || (isPassword && showPasswordToggle) ? 'pr-10' : '',

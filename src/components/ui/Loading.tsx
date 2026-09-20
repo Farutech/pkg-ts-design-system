@@ -2,7 +2,7 @@
  * Componentes de carga y skeleton
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface LoadingProps {
   size?: 'sm' | 'md' | 'lg'
@@ -19,7 +19,7 @@ export function Loading({ size = 'md', text, fullscreen = false }: LoadingProps)
 
   const content = (
     <div className="flex flex-col items-center justify-center gap-3">
-      <div className={clsx('animate-spin rounded-full border-4 border-primary-200 border-t-primary-600', sizes[size])} />
+      <div className={cn('animate-spin rounded-full border-4 border-primary-200 border-t-primary-600', sizes[size])} />
       {text && (
         <p className="text-sm text-gray-600 dark:text-gray-400">{text}</p>
       )}
@@ -47,7 +47,7 @@ interface SkeletonProps {
 export function Skeleton({ className, variant = 'text', width, height }: SkeletonProps) {
   return (
     <div
-      className={clsx(
+      className={cn(
         'animate-pulse bg-gray-200 dark:bg-gray-700',
         variant === 'text' && 'h-4 rounded',
         variant === 'circular' && 'rounded-full',

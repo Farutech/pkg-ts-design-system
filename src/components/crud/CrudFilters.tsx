@@ -4,10 +4,10 @@
 
 import { useState } from 'react'
 import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
-import { Select } from '../ui/Select'
-import { Modal } from '../ui/Modal'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
+import { Modal } from '@/components/ui/Modal'
 
 interface FilterField {
   key: string

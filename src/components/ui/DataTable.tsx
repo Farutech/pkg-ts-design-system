@@ -41,7 +41,7 @@ import {
   FunnelIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Card } from './Card'
 import { Input } from './Input'
 import { Select } from './Select'
@@ -571,7 +571,7 @@ export function DataTable<T extends { id: string | number }>({
                     key={option.value}
                     type="button"
                     onClick={() => handleFilterChange(filter.id, option.value)}
-                    className={clsx(
+                    className={cn(
                       'relative w-10 h-10 rounded-lg border-2 transition-all',
                       value === option.value
                         ? 'ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-gray-800 border-primary-500'
@@ -692,7 +692,7 @@ export function DataTable<T extends { id: string | number }>({
               >
                 {header.isPlaceholder ? null : (
                   <div
-                    className={clsx(
+                    className={cn(
                       'flex items-center gap-2',
                       header.column.getCanSort() && 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200'
                     )}
@@ -702,13 +702,13 @@ export function DataTable<T extends { id: string | number }>({
                     {header.column.getCanSort() && (
                       <span className="flex flex-col">
                         <ChevronUpIcon
-                          className={clsx(
+                          className={cn(
                             'h-3 w-3 -mb-1',
                             header.column.getIsSorted() === 'asc' ? 'text-primary-600' : 'text-gray-300'
                           )}
                         />
                         <ChevronDownIcon
-                          className={clsx(
+                          className={cn(
                             'h-3 w-3',
                             header.column.getIsSorted() === 'desc' ? 'text-primary-600' : 'text-gray-300'
                           )}
@@ -727,7 +727,7 @@ export function DataTable<T extends { id: string | number }>({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={clsx(
+              className={cn(
                 'transition-colors duration-150',
                 onRowClick && 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800',
                 selectedRows.has(row.original.id) && 'bg-primary-50 dark:bg-primary-900/20'
@@ -785,7 +785,7 @@ export function DataTable<T extends { id: string | number }>({
         {table.getRowModel().rows.map((row) => (
           <Card
             key={row.id}
-            className={clsx(
+            className={cn(
               'p-4',
               onRowClick && 'cursor-pointer active:scale-[0.98]',
               selectedRows.has(row.original.id) && 'ring-2 ring-primary-500 bg-primary-50 dark:bg-primary-900/20'

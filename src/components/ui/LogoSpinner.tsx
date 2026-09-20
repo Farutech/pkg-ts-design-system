@@ -13,7 +13,7 @@
  */
 
 import type { HTMLAttributes } from 'react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 type SpinnerVariant = 'spin' | 'flip' | 'flipHorizontal'
 type SpinnerSpeed = 'slow' | 'normal' | 'fast'
@@ -61,13 +61,13 @@ export function LogoSpinner({
   if (variant === 'spin') {
     return (
       <div
-        className={clsx('inline-flex items-center justify-center', className)}
+        className={cn('inline-flex items-center justify-center', className)}
         {...props}
       >
         <img
           src="/Logo.png"
           alt="Loading..."
-          className={clsx(
+          className={cn(
             sizeClass,
             invertColors ? 'animate-spin-invert' : 'animate-spin',
             'object-contain'
@@ -84,13 +84,13 @@ export function LogoSpinner({
     // 3D horizontal flip (moneda girando de lado a lado) con inversión de colores
     return (
       <div
-        className={clsx('inline-flex items-center justify-center perspective-1000', className)}
+        className={cn('inline-flex items-center justify-center perspective-1000', className)}
         {...props}
       >
         <img
           src="/Logo.png"
           alt="Loading..."
-          className={clsx(
+          className={cn(
             sizeClass,
             invertColors ? 'animate-flip-horizontal-invert' : 'animate-flip-horizontal',
             'object-contain'
@@ -107,13 +107,13 @@ export function LogoSpinner({
   // Variant: flip (3D vertical coin flip) con inversión de colores
   return (
     <div
-      className={clsx('inline-flex items-center justify-center perspective-1000', className)}
+      className={cn('inline-flex items-center justify-center perspective-1000', className)}
       {...props}
     >
       <img
         src="/Logo.png"
         alt="Loading..."
-        className={clsx(
+        className={cn(
           sizeClass,
           invertColors ? 'animate-flip-3d-invert' : 'animate-flip-3d',
           'object-contain'

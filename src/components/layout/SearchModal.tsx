@@ -22,7 +22,7 @@ import {
   CommandLineIcon,
 } from '@heroicons/react/24/outline'
 import { useNavigate } from 'react-router-dom'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 // Tipos para los resultados de búsqueda
 export interface SearchResult {
@@ -138,15 +138,19 @@ export function SearchModal({
     return () => clearTimeout(timer)
   }, [query, performSearch])
 
-  // Focus input cuando se abre y limpiar al cerrar
+  // Focus input cuando se abre y limpiar al cerrar.
+  // Los reseteos al cerrar provienen de un cambio de visibilidad externo;
+  // se comparan antes de fijar para no disparar renders en cascada.
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100)
-    } else {
-      // Limpiar búsqueda cuando se cierra el modal
-      setQuery('')
-      setResults([])
+      const focusTimer = setTimeout(() => inputRef.current?.focus(), 100)
+      return () => clearTimeout(focusTimer)
     }
+    // Reset al cerrar: el modal se reabre con estado limpio.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setQuery((prev) => (prev === '' ? prev : ''))
+    setResults((prev) => (prev.length === 0 ? prev : []))
+    return undefined
   }, [isOpen])
 
   // Agrupar resultados por categoría
@@ -300,7 +304,7 @@ export function SearchModal({
                                       key={result.id}
                                       value={result}
                                       className={({ active }) =>
-                                        clsx(
+                                        cn(
                                           'cursor-pointer select-none px-4 py-3 flex items-center gap-3 transition-colors',
                                           active
                                             ? 'bg-primary-600 text-white'
@@ -312,7 +316,7 @@ export function SearchModal({
                                         <>
                                           {ResultIcon && (
                                             <ResultIcon
-                                              className={clsx(
+                                              className={cn(
                                                 'h-5 w-5 flex-shrink-0',
                                                 active
                                                   ? 'text-white'
@@ -326,7 +330,7 @@ export function SearchModal({
                                             </p>
                                             {result.description && (
                                               <p
-                                                className={clsx(
+                                                className={cn(
                                                   'text-sm truncate',
                                                   active
                                                     ? 'text-white/80'

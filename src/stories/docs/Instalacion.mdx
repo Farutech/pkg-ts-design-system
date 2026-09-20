@@ -1,0 +1,167 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Guía/Instalación" />
+
+# 📦 Instalación y configuración
+
+Guía paso a paso para integrar `@farutech/design-system` en cualquier proyecto React.
+
+---
+
+## 1. Instalar la librería
+
+```bash
+# npm
+npm install @farutech/design-system
+
+# pnpm
+pnpm add @farutech/design-system
+
+# yarn
+yarn add @farutech/design-system
+```
+
+**Peer dependencies requeridas:**
+
+```bash
+npm install react@^19 react-dom@^19
+```
+
+---
+
+## 2. Configurar Tailwind CSS
+
+El design system usa Tailwind CSS. En tu `tailwind.config.js`:
+
+```js
+// tailwind.config.js
+import { farutechPreset } from '@farutech/design-system/tokens'
+
+export default {
+  content: [
+    './src/**/*.{ts,tsx}',
+    // ✅ Incluir los componentes de la librería
+    './node_modules/@farutech/design-system/dist/**/*.{js,mjs}',
+  ],
+  presets: [farutechPreset],   // tokens, colores y radios
+}
+```
+
+---
+
+## 3. Importar los estilos base
+
+En tu `main.tsx` o `App.tsx`:
+
+```tsx
+import '@farutech/design-system/styles.css'
+```
+
+---
+
+## 4. Envolver tu app con `DesignSystemProvider`
+
+```tsx
+// main.tsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import '@farutech/design-system/styles.css'
+import { DesignSystemProvider } from '@farutech/design-system'
+import App from './App'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <DesignSystemProvider>
+      <App />
+    </DesignSystemProvider>
+  </StrictMode>
+)
+```
+
+---
+
+## 5. Importar componentes
+
+```tsx
+// Con alias @farutech/design-system (recomendado en apps consumidoras)
+import { Button, Badge, DataTable, Modal } from '@farutech/design-system'
+
+// O con subpaths para tree-shaking óptimo
+import { Button } from '@farutech/design-system/components/ui'
+import { Sidebar, Navbar } from '@farutech/design-system/components/layout'
+import { TopNav } from '@farutech/design-system/components/navigation'
+```
+
+---
+
+## 6. Alias `@/` (proyectos internos)
+
+Si trabajas directamente en este repo, el alias `@/` apunta a `src/`:
+
+```ts
+// tsconfig.json
+{
+  "compilerOptions": {
+    "paths": { "@/*": ["src/*"] }
+  }
+}
+
+// vite.config.ts
+resolve: { alias: { '@': path.resolve('./src') } }
+```
+
+---
+
+## 7. Theming personalizado
+
+### Opción A — CSS Custom Properties
+
+```css
+/* globals.css de tu app */
+:root {
+  --ft-color-primary: #7c3aed;
+  --ft-color-primary-hover: #6d28d9;
+  --ft-primary-600: 124 58 237;   /* canales RGB para Tailwind */
+  --ft-font-sans: 'Outfit', sans-serif;
+  --ft-radius-lg: 1rem;
+}
+```
+
+### Opción B — `DesignSystemProvider`
+
+```tsx
+<DesignSystemProvider
+  theme={{
+    colorPrimary: '#7c3aed',
+    colorPrimaryHover: '#6d28d9',
+    fontSans: 'Outfit, sans-serif',
+    radiusLg: '1rem',
+  }}
+>
+  <App />
+</DesignSystemProvider>
+```
+
+> 💡 Los dos métodos son compatibles. `DesignSystemProvider` actúa sobre un subárbol y puede anidarse.
+
+---
+
+## 8. Dark mode
+
+El design system soporta dark mode vía `data-theme="dark"` en `<html>`:
+
+```tsx
+// Con ThemeToggle incluido
+import { ThemeToggle } from '@farutech/design-system'
+
+// O manualmente
+document.documentElement.setAttribute('data-theme', 'dark')
+```
+
+El `DesignSystemProvider` también acepta `colorMode`:
+
+```tsx
+<DesignSystemProvider colorMode="dark">
+  ...
+</DesignSystemProvider>
+```

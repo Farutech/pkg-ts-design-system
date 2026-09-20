@@ -3,8 +3,8 @@
  */
 
 import { CheckIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
-import { forwardRef } from 'react'
+import { cn } from '@/utils/cn'
+import { forwardRef, useEffect, useId, useRef } from 'react'
 
 interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string
@@ -32,7 +32,25 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       lg: 'h-6 w-6',
     }
 
-    const inputId = props.id || `checkbox-${Math.random().toString(36).substr(2, 9)}`
+    const generatedId = useId()
+    const inputId = props.id || `checkbox-${generatedId.replace(/:/g, '')}`
+    const inputRef = useRef<HTMLInputElement | null>(null)
+
+    const setRefs = (node: HTMLInputElement | null) => {
+      inputRef.current = node
+      if (typeof ref === 'function') {
+        ref(node)
+      } else if (ref) {
+        ref.current = node
+      }
+    }
+
+    // `indeterminate` no es un atributo HTML: debe fijarse en el nodo DOM.
+    useEffect(() => {
+      if (inputRef.current) {
+        inputRef.current.indeterminate = indeterminate
+      }
+    }, [indeterminate])
 
     return (
       <div className={className}>
@@ -40,7 +58,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           <div className="flex items-center h-5">
             <div className="relative">
               <input
-                ref={ref}
+                ref={setRefs}
                 type="checkbox"
                 id={inputId}
                 className="sr-only peer"
@@ -48,7 +66,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               />
               <label
                 htmlFor={inputId}
-                className={clsx(
+                className={cn(
                   'flex items-center justify-center border-2 transition-all duration-200 cursor-pointer',
                   'peer-focus:ring-2 peer-focus:ring-primary-500 peer-focus:ring-offset-2',
                   'peer-checked:bg-primary-600 peer-checked:border-primary-600',
@@ -61,7 +79,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 )}
               >
                 <CheckIcon 
-                  className={clsx(
+                  className={cn(
                     'text-white transition-all duration-200',
                     'peer-checked:scale-100 peer-checked:opacity-100',
                     'scale-0 opacity-0',

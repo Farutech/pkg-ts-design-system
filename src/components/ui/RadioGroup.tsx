@@ -4,7 +4,7 @@
 
 import { RadioGroup as HeadlessRadioGroup } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface RadioOption {
   value: string
@@ -44,7 +44,7 @@ export function RadioGroup({
       )}
       <HeadlessRadioGroup value={value} onChange={onChange}>
         <div
-          className={clsx(
+          className={cn(
             'space-y-2',
             orientation === 'horizontal' && 'flex gap-2 space-y-0'
           )}
@@ -57,7 +57,7 @@ export function RadioGroup({
                 value={option.value}
                 disabled={option.disabled}
                 className={({ checked, disabled }) =>
-                  clsx(
+                  cn(
                     'cursor-pointer focus:outline-none',
                     disabled && 'opacity-50 cursor-not-allowed',
                     variant === 'default' && 'flex items-start',
@@ -82,7 +82,7 @@ export function RadioGroup({
                       <>
                         <div className="flex items-center h-5">
                           <div
-                            className={clsx(
+                            className={cn(
                               'h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all duration-200',
                               checked
                                 ? 'border-primary-600 bg-primary-600'
@@ -96,7 +96,7 @@ export function RadioGroup({
                         </div>
                         <div className="ml-3 flex-1">
                           <HeadlessRadioGroup.Label
-                            className={clsx(
+                            className={cn(
                               'block text-sm font-medium',
                               checked
                                 ? 'text-primary-900 dark:text-primary-100'
@@ -119,7 +119,7 @@ export function RadioGroup({
                         <div className="flex items-center flex-1">
                           {OptionIcon && (
                             <OptionIcon
-                              className={clsx(
+                              className={cn(
                                 'h-6 w-6 mr-3',
                                 checked
                                   ? 'text-primary-600'
@@ -129,7 +129,7 @@ export function RadioGroup({
                           )}
                           <div className="flex-1">
                             <HeadlessRadioGroup.Label
-                              className={clsx(
+                              className={cn(
                                 'block text-sm font-semibold',
                                 checked
                                   ? 'text-primary-900 dark:text-primary-100'

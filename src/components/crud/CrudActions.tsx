@@ -10,7 +10,7 @@ import {
   EyeIcon,
   DocumentDuplicateIcon,
 } from '@heroicons/react/24/solid'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import type { ReactNode } from 'react'
 
 interface Action {
@@ -84,7 +84,7 @@ export function CrudActions({
                     e.stopPropagation()
                     action.onClick()
                   }}
-                  className={clsx(
+                  className={cn(
                     'flex items-center gap-3 w-full px-4 py-2 text-sm transition-colors',
                     active && 'bg-gray-100 dark:bg-gray-700',
                     action.variant === 'danger'

@@ -17,7 +17,7 @@
 
 import { useState, FormEvent } from 'react'
 import { SparklesIcon } from '@heroicons/react/24/outline'
-import { Button, Input, Checkbox, Alert } from '../components/ui'
+import { Button, Input, Checkbox, Alert } from '@/components/ui'
 
 export interface RegisterScreenProps {
   /** Callback que recibe los datos del registro y retorna Promise con el resultado */
@@ -133,7 +133,7 @@ export function RegisterScreen({
           onSuccess(result)
         }
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión. Intente nuevamente.')
     } finally {
       setIsLoading(false)

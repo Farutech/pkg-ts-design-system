@@ -34,7 +34,7 @@
 
 import { useState, useRef, useEffect, type ReactNode } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface FABAction {
   /** Ícono de la acción */
@@ -182,7 +182,7 @@ export function FloatingActionButton({
   return (
     <div
       ref={fabRef}
-      className={clsx(
+      className={cn(
         'fixed',
         positionClasses[position],
         className
@@ -222,7 +222,7 @@ export function FloatingActionButton({
                 <button
                   onClick={() => handleActionClick(action)}
                   disabled={action.disabled}
-                  className={clsx(
+                  className={cn(
                     actionSize,
                     'rounded-full shadow-lg flex items-center justify-center',
                     'transition-all duration-200',
@@ -251,7 +251,7 @@ export function FloatingActionButton({
         {/* Etiqueta del botón principal al hover */}
         {label && showLabel && !isExpanded && (
           <div
-            className={clsx(
+            className={cn(
               'absolute whitespace-nowrap',
               'bg-gray-900 dark:bg-gray-700 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg',
               'animate-in fade-in slide-in-from-right-2',
@@ -267,7 +267,7 @@ export function FloatingActionButton({
           onMouseEnter={() => setShowLabel(true)}
           onMouseLeave={() => setShowLabel(false)}
           disabled={disabled}
-          className={clsx(
+          className={cn(
             sizeClasses[size],
             'rounded-full shadow-2xl',
             'flex items-center justify-center',
@@ -279,7 +279,7 @@ export function FloatingActionButton({
           )}
           aria-label={label || 'Acción flotante'}
         >
-          <div className={clsx(iconSizeClasses[size], 'transition-transform duration-300')}>
+          <div className={cn(iconSizeClasses[size], 'transition-transform duration-300')}>
             {isExpanded && hasActions ? <XMarkIcon /> : icon}
           </div>
         </button>

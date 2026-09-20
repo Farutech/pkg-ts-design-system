@@ -3,7 +3,7 @@
  */
 
 import type { HTMLAttributes, ReactNode } from 'react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode
@@ -32,7 +32,7 @@ export function Card({
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'card',
         hover && 'hover:shadow-md transition-shadow cursor-pointer',
         className

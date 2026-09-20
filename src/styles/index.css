@@ -1,322 +1,231 @@
 /**
- * Estilos base del Design System
- * Importar en la app consumidora para aplicar los tokens y estilos globales
+ * ============================================================================
+ *  FaruTech Design System — ENTRADA ÚNICA DE ESTILOS
+ * ============================================================================
+ *
+ *  Orden de capas (intencional):
+ *    1. tokens            -> custom properties canónicas (--ft-*)
+ *    2. componentes ft-*  -> CSS de los componentes oficiales
+ *    3. Tailwind base     -> preflight
+ *    4. componentes DS    -> .btn-primary, .input, .card ... (compatibilidad)
+ *    5. Tailwind utilities -> SIEMPRE gana, para que `className` sobreescriba
+ *
+ *  Un consumidor sólo necesita:
+ *    import '@farutech/design-system/styles.css'
+ * ============================================================================
  */
 
+/* 1. Tokens canónicos */
+@import '@/components/tokens/tokens.css';
+
+/* 2. Componentes con clases semánticas ft-* */
+@import './components/button.css';
+@import './components/badge.css';
+@import './components/input.css';
+@import './components/alert.css';
+@import './components/spinner.css';
+@import './components/content.css';
+@import './components/reveal.css';
+
+/* 3. Pantallas de autenticación */
+@import './auth.css';
+
+/* 4. Tailwind — base + components. Las utilidades se emiten AL FINAL
+   (ver más abajo) para que `className` siempre pueda sobreescribir. */
 @tailwind base;
 @tailwind components;
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* {
+  border-color: var(--ft-color-border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--ft-color-background);
+  color: var(--ft-color-foreground);
+  font-family: var(--ft-font-sans);
+  line-height: var(--ft-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--ft-color-primary);
+  color: var(--ft-color-on-primary);
+}
+
+/* ==========================================================================
+   Componentes de compatibilidad (nombres publicados en 1.0.x)
+   Se mantienen para no romper website / intranet / cli-afilamos.
+   ========================================================================== */
+
+.btn-primary {
+  background-color: var(--ft-color-primary);
+  color: var(--ft-color-on-primary);
+  font-weight: var(--ft-weight-medium);
+  padding: 0.5rem 1rem;
+  border-radius: var(--ft-radius-md);
+  transition: background-color 0.2s;
+}
+.btn-primary:hover {
+  background-color: var(--ft-color-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--ft-color-surface-hover);
+  color: var(--ft-color-foreground);
+  font-weight: var(--ft-weight-medium);
+  padding: 0.5rem 1rem;
+  border-radius: var(--ft-radius-md);
+  transition: background-color 0.2s;
+}
+.btn-secondary:hover {
+  background-color: var(--ft-color-border);
+}
+
+.input-base,
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ft-color-border-strong);
+  border-radius: var(--ft-radius-md);
+  outline: none;
+  background-color: var(--ft-color-background);
+  color: var(--ft-color-foreground);
+  font-size: var(--ft-text-sm);
+  line-height: 1.25rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-base:focus,
+.input:focus {
+  border-color: var(--ft-color-primary);
+  box-shadow: var(--ft-ring);
+}
+.input::placeholder {
+  color: var(--ft-color-muted-foreground);
+}
+.input:disabled,
+.input-base:disabled {
+  background-color: var(--ft-color-surface-hover);
+  cursor: not-allowed;
+}
+
+.card,
+.card-base {
+  background-color: var(--ft-color-surface-raised);
+  color: var(--ft-color-foreground);
+  border: 1px solid var(--ft-color-border);
+  border-radius: var(--ft-radius-lg);
+  box-shadow: var(--ft-shadow-sm);
+}
+.card-base {
+  padding: 1.5rem;
+}
+
+/* ==========================================================================
+   Utilidades propias (cubren animaciones usadas por los componentes)
+   ========================================================================== */
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.animate-in {
+  animation: ft-animate-in 0.2s ease-out both;
+}
+
+.fade-in {
+  animation: ft-fade-in 0.2s ease-out both;
+}
+
+.zoom-in-95 {
+  animation: ft-zoom-in-95 0.2s ease-out both;
+}
+
+.slide-in-from-top-2 {
+  animation: ft-slide-in-from-top-2 0.2s ease-out both;
+}
+
+.animate-shimmer {
+  animation: ft-shimmer 1.4s ease-in-out infinite;
+}
+
+.bg-stripes {
+  background-image: linear-gradient(
+    45deg,
+    rgb(255 255 255 / 0.25) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgb(255 255 255 / 0.25) 50%,
+    rgb(255 255 255 / 0.25) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1rem 1rem;
+}
+
+.animate-stripes {
+  animation: ft-stripes 0.8s linear infinite;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ft-color-border-strong) transparent;
+}
+
+/* 5. Utilidades Tailwind — último bloque: máxima prioridad en el cascade
+   (así `className="..."` del consumidor siempre gana sobre los componentes). */
 @tailwind utilities;
 
-/* ============================================
-   CSS Custom Properties - Design Tokens
-   Las apps pueden sobreescribir estas variables
-   ============================================ */
+/* ==========================================================================
+   Keyframes compartidos
+   ========================================================================== */
 
-:root {
-  /* Primary colors */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
-  --color-primary-950: #172554;
-
-  /* Secondary colors */
-  --color-secondary-50: #f8fafc;
-  --color-secondary-100: #f1f5f9;
-  --color-secondary-200: #e2e8f0;
-  --color-secondary-300: #cbd5e1;
-  --color-secondary-400: #94a3b8;
-  --color-secondary-500: #64748b;
-  --color-secondary-600: #475569;
-  --color-secondary-700: #334155;
-  --color-secondary-800: #1e293b;
-  --color-secondary-900: #0f172a;
-  --color-secondary-950: #020617;
-
-  /* Semantic colors */
-  --color-success-light: #dcfce7;
-  --color-success-default: #22c55e;
-  --color-success-dark: #15803d;
-  
-  --color-warning-light: #fef3c7;
-  --color-warning-default: #f59e0b;
-  --color-warning-dark: #b45309;
-  
-  --color-error-light: #fee2e2;
-  --color-error-default: #ef4444;
-  --color-error-dark: #b91c1c;
-  
-  --color-info-light: #e0f2fe;
-  --color-info-default: #0ea5e9;
-  --color-info-dark: #0369a1;
-
-  /* Gray scale */
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
-  --color-gray-950: #030712;
-
-  /* Basic */
-  --color-white: #ffffff;
-  --color-black: #000000;
-
-  /* Typography */
-  --font-family-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-family-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-5xl: 3rem;
-  --font-size-6xl: 3.75rem;
-  
-  --font-weight-thin: 100;
-  --font-weight-extralight: 200;
-  --font-weight-light: 300;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-  --font-weight-black: 900;
-  
-  --line-height-none: 1;
-  --line-height-tight: 1.25;
-  --line-height-snug: 1.375;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.625;
-  --line-height-loose: 2;
-
-  /* Spacing */
-  --spacing-px: 1px;
-  --spacing-0: 0;
-  --spacing-0-5: 0.125rem;
-  --spacing-1: 0.25rem;
-  --spacing-1-5: 0.375rem;
-  --spacing-2: 0.5rem;
-  --spacing-2-5: 0.625rem;
-  --spacing-3: 0.75rem;
-  --spacing-3-5: 0.875rem;
-  --spacing-4: 1rem;
-  --spacing-5: 1.25rem;
-  --spacing-6: 1.5rem;
-  --spacing-7: 1.75rem;
-  --spacing-8: 2rem;
-  --spacing-9: 2.25rem;
-  --spacing-10: 2.5rem;
-  --spacing-11: 2.75rem;
-  --spacing-12: 3rem;
-  --spacing-14: 3.5rem;
-  --spacing-16: 4rem;
-  --spacing-20: 5rem;
-  --spacing-24: 6rem;
-  --spacing-28: 7rem;
-  --spacing-32: 8rem;
-  --spacing-36: 9rem;
-  --spacing-40: 10rem;
-  --spacing-44: 11rem;
-  --spacing-48: 12rem;
-  --spacing-52: 13rem;
-  --spacing-56: 14rem;
-  --spacing-60: 15rem;
-  --spacing-64: 16rem;
-  --spacing-72: 18rem;
-  --spacing-80: 20rem;
-  --spacing-96: 24rem;
-
-  /* Border radius */
-  --border-radius-none: 0;
-  --border-radius-sm: 0.125rem;
-  --border-radius-default: 0.25rem;
-  --border-radius-md: 0.375rem;
-  --border-radius-lg: 0.5rem;
-  --border-radius-xl: 0.75rem;
-  --border-radius-2xl: 1rem;
-  --border-radius-3xl: 1.5rem;
-  --border-radius-full: 9999px;
-
-  /* Box shadows */
-  --box-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --box-shadow-default: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --box-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --box-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --box-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  --box-shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-  --box-shadow-none: 0 0 #0000;
+@keyframes ft-animate-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Dark mode */
-.dark {
-  --color-primary-50: #172554;
-  --color-primary-100: #1e3a8a;
-  --color-primary-200: #1e40af;
-  --color-primary-300: #1d4ed8;
-  --color-primary-400: #2563eb;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #60a5fa;
-  --color-primary-700: #93c5fd;
-  --color-primary-800: #bfdbfe;
-  --color-primary-900: #dbeafe;
-  --color-primary-950: #eff6ff;
-
-  --color-gray-50: #030712;
-  --color-gray-100: #111827;
-  --color-gray-200: #1f2937;
-  --color-gray-300: #374151;
-  --color-gray-400: #4b5563;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #9ca3af;
-  --color-gray-700: #d1d5db;
-  --color-gray-800: #e5e7eb;
-  --color-gray-900: #f3f4f6;
-  --color-gray-950: #f9fafb;
+@keyframes ft-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* ============================================
-   Base styles
-   ============================================ */
+@keyframes ft-zoom-in-95 {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
 
-@layer base {
-  * {
-    border-color: var(--color-gray-200, #e5e7eb);
-  }
-  
-  body {
-    background-color: #ffffff;
-    color: var(--color-gray-900, #111827);
-    font-family: var(--font-family-sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+@keyframes ft-slide-in-from-top-2 {
+  from { opacity: 0; transform: translateY(-0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ft-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes ft-stripes {
+  from { background-position: 0 0; }
+  to { background-position: 1rem 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-in,
+  .fade-in,
+  .zoom-in-95,
+  .slide-in-from-top-2,
+  .animate-shimmer,
+  .animate-stripes {
+    animation: none;
   }
 }
 
-/* ============================================
-   Component classes
-   ============================================ */
-
-@layer components {
-  .btn-primary {
-    background-color: var(--color-primary-600, #0284c7);
-    color: #ffffff;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-  }
-  .btn-primary:hover {
-    background-color: var(--color-primary-700, #0369a1);
-  }
-  
-  .btn-secondary {
-    background-color: var(--color-gray-200, #e5e7eb);
-    color: var(--color-gray-800, #1f2937);
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-  }
-  .btn-secondary:hover {
-    background-color: var(--color-gray-300, #d1d5db);
-  }
-  
-  .input-base,
-  .input {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--color-gray-300, #d1d5db);
-    border-radius: 0.5rem;
-    outline: none;
-    background-color: #ffffff;
-    color: var(--color-gray-900, #111827);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .input-base:focus,
-  .input:focus {
-    border-color: var(--color-primary-500, #3b82f6);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
-  }
-  .input::placeholder {
-    color: var(--color-gray-400, #9ca3af);
-  }
-  .dark .input-base,
-  .dark .input {
-    background-color: #1f2937;
-    border-color: #374151;
-    color: #ffffff;
-  }
-  .dark .input-base:focus,
-  .dark .input:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
-  }
-  .dark .input::placeholder {
-    color: #6b7280;
-  }
-  
-  .card-base {
-    background-color: #ffffff;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    padding: 1.5rem;
-  }
-}
-
-/* ============================================
-   Utility classes
-   ============================================ */
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  .animate-in {
-    animation: animate-in 0.2s ease-out;
-  }
-  
-  .slide-in-from-top-2 {
-    animation: slide-in-from-top-2 0.2s ease-out;
-  }
-}
-
-@keyframes animate-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slide-in-from-top-2 {
-  from {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}

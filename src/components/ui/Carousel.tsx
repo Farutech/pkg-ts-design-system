@@ -2,9 +2,9 @@
  * Componente Carousel - Carrusel de contenido totalmente personalizable
  */
 
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import type { ReactNode } from 'react'
 
 interface CarouselProps {
@@ -60,26 +60,29 @@ export function Carousel({
   const [currentIndex, setCurrentIndex] = useState(0)
   const totalSlides = children.length
 
-  const goToSlide = (index: number) => {
-    const newIndex = (index + totalSlides) % totalSlides
-    setCurrentIndex(newIndex)
-    onSlideChange?.(newIndex)
-  }
+  const goToSlide = useCallback(
+    (index: number) => {
+      const newIndex = (index + totalSlides) % totalSlides
+      setCurrentIndex(newIndex)
+      onSlideChange?.(newIndex)
+    },
+    [onSlideChange, totalSlides],
+  )
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     goToSlide(currentIndex - 1)
-  }
+  }, [currentIndex, goToSlide])
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     goToSlide(currentIndex + 1)
-  }
+  }, [currentIndex, goToSlide])
 
   useEffect(() => {
     if (!autoPlay) return
 
     const timer = setInterval(goToNext, interval)
     return () => clearInterval(timer)
-  }, [currentIndex, autoPlay, interval])
+  }, [autoPlay, goToNext, interval])
 
   const borderStyleClass = {
     solid: 'border',
@@ -106,7 +109,7 @@ export function Carousel({
 
   return (
     <div 
-      className={clsx(
+      className={cn(
         'relative overflow-hidden',
         height,
         width,
@@ -121,7 +124,7 @@ export function Carousel({
         {children.map((child, index) => (
           <div
             key={index}
-            className={clsx(
+            className={cn(
               'absolute inset-0 transition-all duration-500 ease-in-out',
               index === currentIndex
                 ? 'opacity-100 translate-x-0 z-10'
@@ -140,7 +143,7 @@ export function Carousel({
         <>
           <button
             onClick={goToPrevious}
-            className={clsx(
+            className={cn(
               'absolute left-4 top-1/2 -translate-y-1/2 z-20',
               'transition-all duration-200 hover:scale-110',
               currentControlStyle.button
@@ -151,7 +154,7 @@ export function Carousel({
           </button>
           <button
             onClick={goToNext}
-            className={clsx(
+            className={cn(
               'absolute right-4 top-1/2 -translate-y-1/2 z-20',
               'transition-all duration-200 hover:scale-110',
               currentControlStyle.button
@@ -166,7 +169,7 @@ export function Carousel({
       {/* Indicators */}
       {showIndicators && totalSlides > 1 && (
         <div 
-          className={clsx(
+          className={cn(
             'absolute left-1/2 -translate-x-1/2 z-20 flex gap-2',
             indicatorPosition === 'bottom' ? 'bottom-4' : 'top-4'
           )}
@@ -175,7 +178,7 @@ export function Carousel({
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={clsx(
+              className={cn(
                 'h-2 rounded-full transition-all duration-300',
                 index === currentIndex
                   ? 'w-8 bg-white shadow-lg'

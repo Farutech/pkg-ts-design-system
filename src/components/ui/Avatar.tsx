@@ -2,7 +2,7 @@
  * Componente Avatar - Avatar de usuario con variantes
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface AvatarProps {
   src?: string
@@ -55,9 +55,9 @@ export function Avatar({
   }
 
   return (
-    <div className={clsx('relative inline-flex', className)}>
+    <div className={cn('relative inline-flex', className)}>
       <div
-        className={clsx(
+        className={cn(
           'flex items-center justify-center font-semibold',
           'bg-gradient-to-br from-primary-500 to-primary-600 text-white',
           'overflow-hidden',
@@ -73,7 +73,7 @@ export function Avatar({
       </div>
       {status && (
         <span
-          className={clsx(
+          className={cn(
             'absolute bottom-0 right-0 block rounded-full ring-2 ring-white dark:ring-gray-900',
             statusStyles[status],
             size === 'xs' && 'h-1.5 w-1.5',
@@ -101,7 +101,7 @@ export function AvatarGroup({ avatars, max = 3, size = 'md', className }: Avatar
   const remaining = avatars.length - max
 
   return (
-    <div className={clsx('flex -space-x-2', className)}>
+    <div className={cn('flex -space-x-2', className)}>
       {displayedAvatars.map((avatar, index) => (
         <div key={index} className="ring-2 ring-white dark:ring-gray-900 rounded-full">
           <Avatar {...avatar} size={size} />
@@ -109,7 +109,7 @@ export function AvatarGroup({ avatars, max = 3, size = 'md', className }: Avatar
       ))}
       {remaining > 0 && (
         <div
-          className={clsx(
+          className={cn(
             'flex items-center justify-center font-semibold',
             'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
             'ring-2 ring-white dark:ring-gray-900 rounded-full',

@@ -28,7 +28,7 @@ import {
   XMarkIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Button } from './Button'
 import { useLocaleStore, formatDateWithLocale, type DateFormat, type TimeFormat } from '@/store/localeStore'
 
@@ -191,14 +191,14 @@ function CalendarNavigation({
                       key={idx}
                       value={idx}
                       className={({ active }) =>
-                        clsx(
+                        cn(
                           'relative cursor-pointer select-none py-2 px-3',
                           active ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'
                         )
                       }
                     >
                       {({ selected }) => (
-                        <span className={clsx('block truncate', selected ? 'font-medium' : 'font-normal')}>
+                        <span className={cn('block truncate', selected ? 'font-medium' : 'font-normal')}>
                           {month}
                         </span>
                       )}
@@ -234,14 +234,14 @@ function CalendarNavigation({
                       key={year}
                       value={year}
                       className={({ active }) =>
-                        clsx(
+                        cn(
                           'relative cursor-pointer select-none py-2 px-3',
                           active ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'
                         )
                       }
                     >
                       {({ selected }) => (
-                        <span className={clsx('block truncate', selected ? 'font-medium' : 'font-normal')}>
+                        <span className={cn('block truncate', selected ? 'font-medium' : 'font-normal')}>
                           {year}
                         </span>
                       )}
@@ -356,7 +356,7 @@ function CalendarGrid({
               type="button"
               disabled={disabled}
               onClick={() => onDateSelect(day)}
-              className={clsx(
+              className={cn(
                 'aspect-square rounded-lg text-sm transition-all duration-200',
                 isSelected || isRangeStartDay || isRangeEndDay
                   ? 'bg-primary-600 text-white font-semibold shadow-md'
@@ -425,7 +425,7 @@ function TimePicker({ value, onChange }: TimePickerProps) {
                   key={hour}
                   value={hour}
                   className={({ active }) =>
-                    clsx(
+                    cn(
                       'relative cursor-pointer select-none py-2 px-3',
                       active ? 'bg-primary-100 dark:bg-primary-900/50' : ''
                     )
@@ -459,7 +459,7 @@ function TimePicker({ value, onChange }: TimePickerProps) {
                   key={minute}
                   value={minute}
                   className={({ active }) =>
-                    clsx(
+                    cn(
                       'relative cursor-pointer select-none py-2 px-3',
                       active ? 'bg-primary-100 dark:bg-primary-900/50' : ''
                     )
@@ -581,7 +581,7 @@ export function DatePicker({
             <Popover.Button
               ref={buttonRef}
               disabled={disabled}
-              className={clsx(
+              className={cn(
                 'w-full flex items-center justify-between px-3 py-2 text-left rounded-lg border transition-colors',
                 disabled
                   ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
@@ -591,7 +591,7 @@ export function DatePicker({
                 open && 'ring-2 ring-primary-500'
               )}
             >
-              <span className={clsx('text-sm', dateValue ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
+              <span className={cn('text-sm', dateValue ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
                 {dateValue ? formatDateWithLocale(dateValue, dateFormat, showTime, timeFormat) : placeholder}
               </span>
               <div className="flex items-center gap-1">
@@ -617,7 +617,7 @@ export function DatePicker({
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel className={clsx(
+              <Popover.Panel className={cn(
                 "absolute z-[9999] w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4",
                 panelPlacement === 'top' ? 'bottom-full mb-2' : 'mt-2'
               )}>
@@ -866,7 +866,7 @@ export function DateRangePicker({
             <Popover.Button
               ref={buttonRef}
               disabled={disabled}
-              className={clsx(
+              className={cn(
                 'w-full flex items-center justify-between px-3 py-2 text-left rounded-lg border transition-colors',
                 disabled
                   ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
@@ -876,7 +876,7 @@ export function DateRangePicker({
                 open && 'ring-2 ring-primary-500'
               )}
             >
-              <span className={clsx('text-sm', (start || end) ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
+              <span className={cn('text-sm', (start || end) ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
                 {displayText()}
               </span>
               <div className="flex items-center gap-1">
@@ -902,7 +902,7 @@ export function DateRangePicker({
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel className={clsx(
+              <Popover.Panel className={cn(
                 "absolute z-[9999] w-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4",
                 panelPlacement === 'top' ? 'bottom-full mb-2' : 'mt-2'
               )}>
@@ -931,14 +931,14 @@ export function DateRangePicker({
                   {/* Calendario */}
                   <div className="w-80">
                     <div className="mb-2 flex items-center gap-2 text-sm">
-                      <span className={clsx(
+                      <span className={cn(
                         'px-2 py-1 rounded',
                         selectingStart ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium' : 'text-gray-500'
                       )}>
                         Inicio: {tempStart ? formatDateWithLocale(tempStart, dateFormat, showTime, timeFormat) : '-'}
                       </span>
                       <span className="text-gray-400">→</span>
-                      <span className={clsx(
+                      <span className={cn(
                         'px-2 py-1 rounded',
                         !selectingStart ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium' : 'text-gray-500'
                       )}>
@@ -1100,7 +1100,7 @@ export function TimeRangePicker({
           <div className="relative flex-1">
             <Listbox.Button
               ref={startButtonRef}
-              className={clsx(
+              className={cn(
                 'relative w-full cursor-pointer rounded-lg py-2 pl-3 pr-10 text-left shadow-sm transition-colors',
                 disabled
                   ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed'
@@ -1118,7 +1118,7 @@ export function TimeRangePicker({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className={clsx(
+              <Listbox.Options className={cn(
                 "absolute z-[9999] max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
                 startPlacement === 'top' ? 'bottom-full mb-1' : 'mt-1'
               )}>
@@ -1128,7 +1128,7 @@ export function TimeRangePicker({
                     value={time}
                     disabled={!!(minTime && time < minTime)}
                     className={({ active, disabled }) =>
-                      clsx(
+                      cn(
                         'relative cursor-pointer select-none py-2 px-3',
                         active && !disabled ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-900 dark:text-primary-100' : '',
                         disabled ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-900 dark:text-gray-100'
@@ -1136,7 +1136,7 @@ export function TimeRangePicker({
                     }
                   >
                     {({ selected }) => (
-                      <span className={clsx('block truncate', selected ? 'font-medium' : 'font-normal')}>
+                      <span className={cn('block truncate', selected ? 'font-medium' : 'font-normal')}>
                         {time}
                       </span>
                     )}
@@ -1154,7 +1154,7 @@ export function TimeRangePicker({
           <div className="relative flex-1">
             <Listbox.Button
               ref={endButtonRef}
-              className={clsx(
+              className={cn(
                 'relative w-full cursor-pointer rounded-lg py-2 pl-3 pr-10 text-left shadow-sm transition-colors',
                 disabled
                   ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed'
@@ -1172,7 +1172,7 @@ export function TimeRangePicker({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className={clsx(
+              <Listbox.Options className={cn(
                 "absolute z-[9999] max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
                 endPlacement === 'top' ? 'bottom-full mb-1' : 'mt-1'
               )}>
@@ -1182,7 +1182,7 @@ export function TimeRangePicker({
                     value={time}
                     disabled={!!(maxTime && time > maxTime)}
                     className={({ active, disabled }) =>
-                      clsx(
+                      cn(
                         'relative cursor-pointer select-none py-2 px-3',
                         active && !disabled ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-900 dark:text-primary-100' : '',
                         disabled ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-900 dark:text-gray-100'
@@ -1190,7 +1190,7 @@ export function TimeRangePicker({
                     }
                   >
                     {({ selected }) => (
-                      <span className={clsx('block truncate', selected ? 'font-medium' : 'font-normal')}>
+                      <span className={cn('block truncate', selected ? 'font-medium' : 'font-normal')}>
                         {time}
                       </span>
                     )}

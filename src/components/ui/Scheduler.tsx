@@ -26,7 +26,7 @@ import {
   FunnelIcon,
 } from '@heroicons/react/24/outline'
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Button } from './Button'
 import { Input } from './Input'
 import { Textarea } from './Textarea'
@@ -244,10 +244,12 @@ function AppointmentModal({
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Actualizar fechas cuando cambia selectedDate o appointment
+  // Actualizar fechas cuando cambia selectedDate o appointment.
+  // El formulario es estado local inicializado por la selección externa.
   useEffect(() => {
     if (appointment) {
-      setFormData({ ...appointment })
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData((prev) => (prev === appointment ? prev : { ...appointment }))
     } else if (selectedDate) {
       const start = new Date(selectedDate)
       start.setMinutes(0, 0, 0)
@@ -466,13 +468,13 @@ function AppointmentModal({
                             </span>
                           </Listbox.Button>
                           <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            <Listbox.Option value="pending" className={({ active }) => clsx('cursor-pointer select-none py-2 px-3', active && 'bg-primary-100 dark:bg-primary-900/50')}>
+                            <Listbox.Option value="pending" className={({ active }) => cn('cursor-pointer select-none py-2 px-3', active && 'bg-primary-100 dark:bg-primary-900/50')}>
                               Pendiente
                             </Listbox.Option>
-                            <Listbox.Option value="completed" className={({ active }) => clsx('cursor-pointer select-none py-2 px-3', active && 'bg-primary-100 dark:bg-primary-900/50')}>
+                            <Listbox.Option value="completed" className={({ active }) => cn('cursor-pointer select-none py-2 px-3', active && 'bg-primary-100 dark:bg-primary-900/50')}>
                               Completada
                             </Listbox.Option>
-                            <Listbox.Option value="cancelled" className={({ active }) => clsx('cursor-pointer select-none py-2 px-3', active && 'bg-primary-100 dark:bg-primary-900/50')}>
+                            <Listbox.Option value="cancelled" className={({ active }) => cn('cursor-pointer select-none py-2 px-3', active && 'bg-primary-100 dark:bg-primary-900/50')}>
                               Cancelada
                             </Listbox.Option>
                           </Listbox.Options>
@@ -492,7 +494,7 @@ function AppointmentModal({
                           key={color}
                           type="button"
                           onClick={() => handleChange('color', color)}
-                          className={clsx(
+                          className={cn(
                             'w-8 h-8 rounded-full border-2 transition-all',
                             formData.color === color ? 'border-gray-900 dark:border-white scale-110' : 'border-transparent'
                           )}
@@ -638,9 +640,12 @@ export function Scheduler({
   const [filterStatus, setFilterStatus] = useState<AppointmentStatus | 'all'>('all')
 
   // Sincronizar con prop appointments
-  useMemo(() => {
+  useEffect(() => {
     if (initialAppointments.length > 0) {
-      setAppointments(initialAppointments)
+      // Prop -> estado espejo: no puede resolverse durante el render porque
+      // la prop cambia después del montaje (datos async).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAppointments((prev) => (prev === initialAppointments ? prev : initialAppointments))
     }
   }, [initialAppointments])
 
@@ -781,21 +786,25 @@ export function Scheduler({
     switch (view) {
       case 'day':
         return `${DAYS[currentDate.getDay()]}, ${currentDate.getDate()} de ${monthName} ${year}`
-      case 'week':
+      case 'week': {
         const weekDays = getWeekDays(currentDate)
         return `${formatDateWithLocale(weekDays[0])} - ${formatDateWithLocale(weekDays[6])}`
+      }
       case 'month':
         return `${monthName} ${year}`
-      case 'bimonth':
+      case 'bimonth': {
         const nextMonth = new Date(currentDate)
         nextMonth.setMonth(nextMonth.getMonth() + 1)
         return `${monthName} - ${MONTHS[nextMonth.getMonth()]} ${year}`
-      case 'quarter':
+      }
+      case 'quarter': {
         const quarter = Math.floor(currentDate.getMonth() / 3) + 1
         return `Q${quarter} ${year}`
-      case 'semester':
+      }
+      case 'semester': {
         const semester = currentDate.getMonth() < 6 ? 1 : 2
         return `Semestre ${semester} ${year}`
+      }
       case 'year':
         return `${year}`
     }
@@ -824,7 +833,7 @@ export function Scheduler({
   }
 
   return (
-    <div className={clsx('bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4', className)}>
+    <div className={cn('bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4', className)}>
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
         {/* Navegación */}
@@ -851,16 +860,16 @@ export function Scheduler({
                 {filterStatus === 'all' ? 'Todas' : filterStatus === 'completed' ? 'Completadas' : filterStatus === 'cancelled' ? 'Canceladas' : 'Pendientes'}
               </Listbox.Button>
               <Listbox.Options className="absolute right-0 z-10 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
-                <Listbox.Option value="all" className={({ active }) => clsx('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
+                <Listbox.Option value="all" className={({ active }) => cn('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
                   Todas
                 </Listbox.Option>
-                <Listbox.Option value="pending" className={({ active }) => clsx('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
+                <Listbox.Option value="pending" className={({ active }) => cn('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
                   Pendientes
                 </Listbox.Option>
-                <Listbox.Option value="completed" className={({ active }) => clsx('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
+                <Listbox.Option value="completed" className={({ active }) => cn('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
                   Completadas
                 </Listbox.Option>
-                <Listbox.Option value="cancelled" className={({ active }) => clsx('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
+                <Listbox.Option value="cancelled" className={({ active }) => cn('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
                   Canceladas
                 </Listbox.Option>
               </Listbox.Options>
@@ -875,7 +884,7 @@ export function Scheduler({
               </Listbox.Button>
               <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
                 {Object.entries(viewLabels).map(([key, label]) => (
-                  <Listbox.Option key={key} value={key} className={({ active }) => clsx('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
+                  <Listbox.Option key={key} value={key} className={({ active }) => cn('cursor-pointer px-3 py-2 text-sm', active && 'bg-gray-100 dark:bg-gray-700')}>
                     {label}
                   </Listbox.Option>
                 ))}
@@ -951,14 +960,14 @@ function MonthView({ currentDate, appointments, onAppointmentClick, onDateClick,
         return (
           <div
             key={index}
-            className={clsx(
+            className={cn(
               'min-h-[100px] bg-white dark:bg-gray-800 p-2',
               !isCurrentMonth && 'bg-gray-50 dark:bg-gray-900/50 text-gray-400'
             )}
           >
             <div className="flex items-center justify-between mb-1">
               <span
-                className={clsx(
+                className={cn(
                   'text-sm font-medium',
                   isToday && 'bg-primary-600 text-white rounded-full w-6 h-6 flex items-center justify-center'
                 )}
@@ -1022,13 +1031,13 @@ function WeekView({ currentDate, appointments, onAppointmentClick, onDateClick, 
             return (
               <div
                 key={index}
-                className={clsx(
+                className={cn(
                   'bg-gray-50 dark:bg-gray-800 text-center py-2',
                   isToday && 'bg-primary-50 dark:bg-primary-900/30'
                 )}
               >
                 <div className="text-xs font-semibold text-gray-600 dark:text-gray-400">{DAYS_SHORT[date.getDay()]}</div>
-                <div className={clsx('text-lg font-bold', isToday && 'text-primary-600 dark:text-primary-400')}>
+                <div className={cn('text-lg font-bold', isToday && 'text-primary-600 dark:text-primary-400')}>
                   {date.getDate()}
                 </div>
               </div>
@@ -1183,7 +1192,7 @@ function MiniCalendar({ date, appointments, onAppointmentClick, onDateClick, con
                     onDateClick(day)
                   }
                 }}
-                className={clsx(
+                className={cn(
                   'aspect-square text-[11px] rounded relative flex items-center justify-center',
                   'hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
                   !isCurrentMonth && 'text-gray-300 dark:text-gray-600',

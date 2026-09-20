@@ -5,7 +5,7 @@
 
 import { Menu } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Spinner } from './Spinner'
 
 export interface DropdownItem {
@@ -69,7 +69,7 @@ export function Dropdown({
   const hasItems = finalItems.length > 0
 
   return (
-    <Menu as="div" className={clsx('relative', className)}>
+    <Menu as="div" className={cn('relative', className)}>
       {label && (
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           {label}
@@ -77,7 +77,7 @@ export function Dropdown({
       )}
       
       <Menu.Button
-        className={clsx(
+        className={cn(
           'relative w-full flex items-center justify-between gap-2',
           'border rounded-lg transition-all duration-200',
           'focus:ring-2 focus:ring-primary-500 focus:border-transparent',
@@ -90,7 +90,7 @@ export function Dropdown({
       >
         <span className="flex items-center gap-2 flex-1 text-left">
           {selectedItem?.icon && <selectedItem.icon className="h-5 w-5" />}
-          <span className={clsx(!selectedItem && 'text-gray-500 dark:text-gray-400')}>
+          <span className={cn(!selectedItem && 'text-gray-500 dark:text-gray-400')}>
             {isLoading ? loadingMessage : (selectedItem?.label || placeholder)}
           </span>
         </span>
@@ -126,7 +126,7 @@ export function Dropdown({
                           onChange?.(item.value)
                           item.onClick?.()
                         }}
-                        className={clsx(
+                        className={cn(
                           'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200',
                           active && !item.disabled && 'bg-gray-100 dark:bg-gray-700',
                           item.disabled && 'opacity-50 cursor-not-allowed',

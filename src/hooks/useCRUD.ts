@@ -96,7 +96,7 @@ export function useCRUD<T extends { id: string | number }>({
       const fetchedData = await onFetch();
       setData(fetchedData);
       setPagination(prev => ({ ...prev, totalItems: fetchedData.length }));
-    } catch (err) {
+    } catch {
       setError('Failed to fetch data');
     } finally {
       setIsLoading(false);

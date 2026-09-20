@@ -1,0 +1,111 @@
+/**
+ * Auth screens — tarjetas de login / registro / recuperación.
+ * Corrige tokens inexistentes del release 1.0.x
+ * (--ft-color-bg / --ft-color-bg-subtle / --ft-color-text / --ft-shadow-md).
+ */
+.ft-auth {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  padding: var(--ft-space-6);
+  background: var(--ft-color-surface);
+}
+
+.ft-auth__card {
+  width: 100%;
+  max-width: 26rem;
+  display: grid;
+  gap: var(--ft-space-4);
+  padding: var(--ft-space-8);
+  background: var(--ft-color-surface-raised);
+  border: 1px solid var(--ft-color-border);
+  border-radius: var(--ft-radius-lg);
+  box-shadow: var(--ft-shadow-md);
+}
+
+.ft-auth__header {
+  text-align: center;
+  display: grid;
+  gap: var(--ft-space-2);
+  justify-items: center;
+}
+
+.ft-auth__logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-xl);
+  font-weight: var(--ft-weight-bold);
+  color: var(--ft-color-on-primary);
+  background: var(--ft-color-primary);
+  border-radius: var(--ft-radius-lg);
+}
+
+.ft-auth__title {
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-xl);
+  font-weight: var(--ft-weight-bold);
+  color: var(--ft-color-foreground);
+  margin: 0;
+}
+
+.ft-auth__subtitle {
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-sm);
+  color: var(--ft-color-muted-foreground);
+  margin: 0;
+}
+
+.ft-auth__remember {
+  display: flex;
+  align-items: center;
+  gap: var(--ft-space-2);
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-sm);
+  color: var(--ft-color-foreground);
+  cursor: pointer;
+}
+
+.ft-auth__link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-sm);
+  color: var(--ft-color-primary);
+  text-decoration: underline;
+}
+
+.ft-auth__link:hover { color: var(--ft-color-primary-hover); }
+
+.ft-auth__card-body {
+  display: grid;
+  gap: var(--ft-space-4);
+  margin: 0;
+}
+
+.ft-auth__sent {
+  text-align: center;
+  display: grid;
+  gap: var(--ft-space-3);
+  justify-items: center;
+}
+
+.ft-auth__sent-title {
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-lg);
+  font-weight: var(--ft-weight-semibold);
+  color: var(--ft-color-foreground);
+  margin: 0;
+}
+
+.ft-auth__sent-text {
+  font-family: var(--ft-font-sans);
+  font-size: var(--ft-text-sm);
+  color: var(--ft-color-muted-foreground);
+  margin: 0;
+  word-break: break-word;
+}

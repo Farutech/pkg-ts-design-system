@@ -6,7 +6,7 @@ import {
   InformationCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export type AlertVariant = 'success' | 'error' | 'warning' | 'info' | 'danger'
 
@@ -66,7 +66,7 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'rounded-xl border p-4 shadow-sm transition-all duration-200',
         'ft-alert',
         `ft-alert--${variant}`,
@@ -77,15 +77,15 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
     >
       <div className="flex gap-3">
         <div className="flex-shrink-0">
-          <IconComponent className={clsx('h-5 w-5', styles.icon)} />
+          <IconComponent className={cn('h-5 w-5', styles.icon)} />
         </div>
         <div className="flex-1">
           {title && (
-            <h3 className={clsx('text-sm font-bold mb-1', styles.title)}>
+            <h3 className={cn('text-sm font-bold mb-1', styles.title)}>
               {title}
             </h3>
           )}
-          <div className={clsx('text-sm', styles.text)}>
+          <div className={cn('text-sm', styles.text)}>
             {children}
           </div>
         </div>
@@ -94,7 +94,7 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
             type="button"
             aria-label="Cerrar aviso"
             onClick={handleClose}
-            className={clsx(
+            className={cn(
               'flex-shrink-0 rounded-lg p-1 transition-colors duration-200',
               'hover:bg-black/5 dark:hover:bg-white/5',
               styles.icon

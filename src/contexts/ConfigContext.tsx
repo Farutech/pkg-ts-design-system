@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 interface ConfigContextType {
   appName: string;
@@ -26,15 +26,19 @@ interface ConfigProviderProps {
 }
 
 export function ConfigProvider({ children, config }: ConfigProviderProps) {
-  const mergedConfig = { ...defaultConfig, ...config };
-  
-  const updateConfig = (newConfig: Partial<ConfigContextType>) => {
-    // En una implementación real, esto actualizaría el contexto
-    console.log('Config actualizada:', newConfig);
-  };
+  const [overrides, setOverrides] = useState<Partial<ConfigContextType>>({});
+
+  const updateConfig = useCallback((newConfig: Partial<ConfigContextType>) => {
+    setOverrides((prev) => ({ ...prev, ...newConfig }));
+  }, []);
+
+  const value = useMemo(
+    () => ({ ...defaultConfig, ...config, ...overrides, updateConfig }),
+    [config, overrides, updateConfig],
+  );
 
   return (
-    <ConfigContext.Provider value={{ ...mergedConfig, updateConfig }}>
+    <ConfigContext.Provider value={value}>
       {children}
     </ConfigContext.Provider>
   );

@@ -2,7 +2,7 @@
  * Componente Divider - Separador de secciones
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface DividerProps {
   label?: string
@@ -34,7 +34,7 @@ export function Divider({
   if (orientation === 'vertical') {
     return (
       <div
-        className={clsx(
+        className={cn(
           'inline-block h-full border-l border-gray-300 dark:border-gray-600',
           lineStyles[variant],
           'mx-4',
@@ -46,19 +46,19 @@ export function Divider({
 
   if (label) {
     return (
-      <div className={clsx('flex items-center', spacingStyles[spacing], className)}>
-        <div className={clsx('flex-1 border-t border-gray-300 dark:border-gray-600', lineStyles[variant])} />
+      <div className={cn('flex items-center', spacingStyles[spacing], className)}>
+        <div className={cn('flex-1 border-t border-gray-300 dark:border-gray-600', lineStyles[variant])} />
         <span className="px-4 text-sm font-medium text-gray-600 dark:text-gray-400">
           {label}
         </span>
-        <div className={clsx('flex-1 border-t border-gray-300 dark:border-gray-600', lineStyles[variant])} />
+        <div className={cn('flex-1 border-t border-gray-300 dark:border-gray-600', lineStyles[variant])} />
       </div>
     )
   }
 
   return (
     <hr
-      className={clsx(
+      className={cn(
         'border-gray-300 dark:border-gray-600',
         lineStyles[variant],
         spacingStyles[spacing],
@@ -77,7 +77,7 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, subtitle, className }: SectionHeaderProps) {
   return (
-    <div className={clsx('mb-6', className)}>
+    <div className={cn('mb-6', className)}>
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
         {title}
       </h2>

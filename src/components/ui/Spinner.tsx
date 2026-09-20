@@ -2,7 +2,7 @@
  * Componente Spinner - Indicadores de carga
  */
 
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface SpinnerProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -35,9 +35,9 @@ export function Spinner({
 }: SpinnerProps) {
   if (variant === 'circle') {
     return (
-      <div className={clsx('flex flex-col items-center gap-3', className)}>
+      <div className={cn('flex flex-col items-center gap-3', className)}>
         <svg
-          className={clsx('animate-spin', sizeStyles[size], colorStyles[color])}
+          className={cn('animate-spin', sizeStyles[size], colorStyles[color])}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -65,11 +65,11 @@ export function Spinner({
 
   if (variant === 'dots') {
     return (
-      <div className={clsx('flex items-center gap-2', className)}>
+      <div className={cn('flex items-center gap-2', className)}>
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className={clsx(
+            className={cn(
               'rounded-full animate-bounce',
               size === 'xs' && 'w-1.5 h-1.5',
               size === 'sm' && 'w-2 h-2',
@@ -89,11 +89,11 @@ export function Spinner({
 
   if (variant === 'bars') {
     return (
-      <div className={clsx('flex items-center gap-1', className)}>
+      <div className={cn('flex items-center gap-1', className)}>
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={clsx(
+            className={cn(
               'animate-pulse',
               size === 'xs' && 'w-1 h-3',
               size === 'sm' && 'w-1.5 h-4',
@@ -113,10 +113,10 @@ export function Spinner({
 
   if (variant === 'pulse') {
     return (
-      <div className={clsx('flex flex-col items-center gap-3', className)}>
+      <div className={cn('flex flex-col items-center gap-3', className)}>
         <div className="relative">
           <div
-            className={clsx(
+            className={cn(
               'rounded-full animate-ping absolute',
               sizeStyles[size],
               color === 'primary' && 'bg-primary-600',
@@ -126,7 +126,7 @@ export function Spinner({
             )}
           />
           <div
-            className={clsx(
+            className={cn(
               'rounded-full relative',
               sizeStyles[size],
               color === 'primary' && 'bg-primary-600',
@@ -180,7 +180,7 @@ export function ProgressSpinner({
   }
 
   return (
-    <div className={clsx('relative inline-flex', className)}>
+    <div className={cn('relative inline-flex', className)}>
       <svg
         width={sizePx[size]}
         height={sizePx[size]}
@@ -204,7 +204,7 @@ export function ProgressSpinner({
           fill="none"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className={clsx('transition-all duration-300', colorStyles[color])}
+          className={cn('transition-all duration-300', colorStyles[color])}
           strokeLinecap="round"
         />
       </svg>

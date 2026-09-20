@@ -1,0 +1,93 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Guía/Introducción" />
+
+# 👋 FaruTech Design System
+
+Sistema de diseño oficial de **FaruTech** — componentes UI accesibles, tokens tematizables y documentación viva para todas las aplicaciones del ecosistema.
+
+---
+
+## ¿Qué es este Design System?
+
+`@farutech/design-system` es una librería de componentes React construida sobre:
+
+| Capa | Tecnología |
+|---|---|
+| UI Components | React 18/19 + TypeScript |
+| Estilos | Tailwind CSS v3 + CSS Custom Properties |
+| Animaciones | Framer Motion |
+| Accesibilidad | Headless UI + ARIA |
+| Estado global | Zustand |
+| Tablas | TanStack Table v8 |
+| Gráficos | Recharts (opcional) |
+| Documentación | Storybook 10 |
+
+---
+
+## 📦 Instalación rápida
+
+```bash
+npm install @farutech/design-system
+# peerDependencies requeridas:
+npm install react react-dom
+```
+
+## 🔧 Setup mínimo
+
+```tsx
+// main.tsx de tu app
+import '@farutech/design-system/styles.css'
+import { DesignSystemProvider } from '@farutech/design-system'
+
+function App() {
+  return (
+    <DesignSystemProvider>
+      <MiApp />
+    </DesignSystemProvider>
+  )
+}
+```
+
+---
+
+## 🗂️ Estructura de este Storybook
+
+| Sección | Contenido |
+|---|---|
+| **1-Foundations** | Colores, tipografía, espaciado, íconos |
+| **2-Layout** | MainLayout, Sidebar, Navbar |
+| **3-Navigation** | TopNav, Breadcrumb, Tabs |
+| **4-Inputs** | Todos los controles de formulario |
+| **5-Data Display** | Tablas, gráficos, badges, listas |
+| **6-Feedback** | Alerts, toasts, loaders, steppers |
+| **7-Overlays** | Modales, drawers, popovers, tooltips |
+| **8-Auth** | Pantallas de login, registro, recuperación |
+| **9-Hooks & Stores** | useToast, useTheme, useSidebar |
+| **10-Helpers** | Utilidades y primitivas |
+| **11-Templates** | Dashboards y landings completos |
+
+---
+
+## 🎨 Theming sin fork
+
+Personaliza cualquier color, radio o fuente desde el `:root` de tu app:
+
+```css
+:root {
+  --ft-color-primary: #7c3aed;
+  --ft-color-primary-hover: #6d28d9;
+  --ft-font-sans: 'Outfit', sans-serif;
+  --ft-radius-lg: 1rem;
+}
+```
+
+O dinámicamente con `DesignSystemProvider`:
+
+```tsx
+<DesignSystemProvider theme={{ colorPrimary: '#7c3aed' }}>
+  <MiApp />
+</DesignSystemProvider>
+```
+
+> Prueba el theming en vivo en **Guía → Theming**.

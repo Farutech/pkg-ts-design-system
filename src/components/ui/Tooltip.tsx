@@ -2,7 +2,7 @@
  * Componente Tooltip - Información flotante al hover con soporte para tipos
  */
 
-import { useState, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   InformationCircleIcon,
@@ -10,7 +10,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import type { ReactNode } from 'react'
 
 export type TooltipType = 'info' | 'warning' | 'success' | 'error' | 'default'
@@ -76,7 +76,7 @@ export function Tooltip({
   const config = typeConfig[type]
   const Icon = config.icon
 
-  const updatePosition = () => {
+  const updatePosition = useCallback(() => {
     if (!triggerRef.current || !tooltipRef.current) return
 
     const triggerRect = triggerRef.current.getBoundingClientRect()
@@ -114,8 +114,8 @@ export function Tooltip({
       y = window.innerHeight - tooltipRect.height - 8
     }
 
-    setCoords({ x, y })
-  }
+    setCoords((prev) => (prev.x === x && prev.y === y ? prev : { x, y }))
+  }, [position])
 
   const handleMouseEnter = () => {
     timeoutRef.current = setTimeout(() => {
@@ -141,7 +141,10 @@ export function Tooltip({
         window.removeEventListener('resize', updatePosition)
       }
     }
-  }, [isVisible])
+    return undefined
+    // La posición depende del DOM visible; no puede derivarse del render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+  }, [isVisible, updatePosition])
 
   const arrowPositionStyles = {
     top: `bottom-[-6px] left-1/2 -translate-x-1/2 border-t-${config.bg.replace('bg-', '')}`,
@@ -173,7 +176,7 @@ export function Tooltip({
             }}
             className="animate-in fade-in zoom-in-95 duration-200"
           >
-            <div className={clsx(
+            <div className={cn(
               'relative px-3 py-2 text-sm rounded-lg shadow-xl max-w-xs flex items-center gap-2',
               config.bg,
               config.text
@@ -183,7 +186,7 @@ export function Tooltip({
               )}
               <span>{content}</span>
               <div
-                className={clsx(
+                className={cn(
                   'absolute w-0 h-0 border-[6px] border-transparent',
                   arrowPositionStyles[position]
                 )}

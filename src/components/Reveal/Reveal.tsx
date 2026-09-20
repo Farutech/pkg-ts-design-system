@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './Reveal.css';
 
 /**
  * Reveal: animacion de entrada on-scroll (viene de apps/frontend).
@@ -14,20 +13,21 @@ export interface RevealProps {
 
 export function Reveal({ children, delay = 0, className }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() =>
+    typeof IntersectionObserver === 'undefined' ? true : false,
+  );
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (typeof IntersectionObserver === 'undefined') {
-      // SSR / entorno sin observer: contenido visible sin animacion.
-      setVisible(true);
+      // SSR / entorno sin observer: el estado inicial ya deja el contenido visible.
       return;
     }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          setVisible((prev) => (prev ? prev : true));
           observer.disconnect();
         }
       },
@@ -35,6 +35,8 @@ export function Reveal({ children, delay = 0, className }: RevealProps) {
     );
     observer.observe(el);
     return () => observer.disconnect();
+    // El observer escribe una sola vez al volverse visible; no hay cascada.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, []);
 
   return (

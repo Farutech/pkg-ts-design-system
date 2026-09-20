@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export type BadgeVariant = 'neutral' | 'default' | 'outline' | 'primary' | 'success' | 'danger' | 'warning' | 'info'
 export type BadgeSize = 'sm' | 'md' | 'lg'
@@ -40,7 +40,7 @@ export function Badge({
 
   return (
     <span
-      className={clsx(
+      className={cn(
         'inline-flex items-center rounded-full font-medium',
         'ft-badge',
         `ft-badge--${variant}`,

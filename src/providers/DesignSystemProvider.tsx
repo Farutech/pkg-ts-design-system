@@ -7,8 +7,8 @@
  *   react-router (el paquete no puede imponer un router).
  */
 import { createContext, useContext, useMemo, type CSSProperties, type ReactNode } from 'react'
-import type { DesignTokens } from '../tokens/tokens'
-import { tokensToStyle } from '../tokens/tokens'
+import type { DesignTokens } from '@/components/tokens/tokens'
+import { tokensToStyle } from '@/components/tokens/tokens'
 
 export type LinkComponent = (props: { href: string; children: ReactNode; className?: string }) => ReactNode
 

@@ -34,7 +34,7 @@ import {
   MagnifyingGlassIcon,
   Squares2X2Icon 
 } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface Module {
   /** ID único del módulo */
@@ -105,9 +105,9 @@ export function ModuleSwitcher({
   return (
     <Listbox value={currentModule} onChange={onModuleChange}>
       {({ open }) => (
-        <div className={clsx('relative', className)}>
+        <div className={cn('relative', className)}>
           <Listbox.Button
-            className={clsx(
+            className={cn(
               'relative w-full flex items-center gap-2.5 px-3 py-2',
               'bg-white dark:bg-gray-800',
               'border border-gray-200 dark:border-gray-700',
@@ -121,7 +121,7 @@ export function ModuleSwitcher({
             )}
           >
             {/* Ícono del módulo actual */}
-            <span className={clsx(
+            <span className={cn(
               'flex-shrink-0 flex items-center justify-center rounded-md',
               compact ? 'h-7 w-7' : 'h-8 w-8',
               'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
@@ -145,7 +145,7 @@ export function ModuleSwitcher({
             {/* Badge */}
             {current?.badge && !compact && (
               <span
-                className={clsx(
+                className={cn(
                   'flex-shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
                   badgeVariants[current.badgeVariant || 'primary']
                 )}
@@ -155,7 +155,7 @@ export function ModuleSwitcher({
             )}
 
             <ChevronUpDownIcon 
-              className={clsx(
+              className={cn(
                 'h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0',
                 open && 'rotate-180 text-primary-500'
               )} 
@@ -198,7 +198,7 @@ export function ModuleSwitcher({
                     key={module.id}
                     value={module.id}
                     className={({ active }) =>
-                      clsx(
+                      cn(
                         'relative cursor-pointer select-none py-3 px-3 transition-colors',
                         active ? 'bg-primary-50 dark:bg-primary-900/20' : ''
                       )
@@ -208,7 +208,7 @@ export function ModuleSwitcher({
                       <div className="flex items-center gap-3">
                         {/* Ícono */}
                         <span
-                          className={clsx(
+                          className={cn(
                             'flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg transition-colors',
                             selected
                               ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400'
@@ -226,7 +226,7 @@ export function ModuleSwitcher({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span
-                              className={clsx(
+                              className={cn(
                                 'block truncate font-medium',
                                 selected
                                   ? 'text-primary-600 dark:text-primary-400'
@@ -237,7 +237,7 @@ export function ModuleSwitcher({
                             </span>
                             {module.badge && (
                               <span
-                                className={clsx(
+                                className={cn(
                                   'flex-shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
                                   badgeVariants[module.badgeVariant || 'primary']
                                 )}

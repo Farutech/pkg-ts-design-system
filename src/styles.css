@@ -1,12 +1,8 @@
-/* Entrada de estilos del paquete: tokens base del Platform + estilos de componentes */
+/**
+ * Punto de entrada de estilos publicado con el paquete.
+ * Se exporta como `@farutech/design-system/styles.css`.
+ *
+ * Generado por `npm run build:styles` (Tailwind CLI) hacia dist/styles.css,
+ * e importado directamente por Storybook en desarrollo.
+ */
 @import './styles/index.css';
-@import './tokens/tokens.css';
-
-@import './components/Button/Button.css';
-@import './components/Badge/Badge.css';
-@import './components/Input/Input.css';
-@import './components/Alert/Alert.css';
-@import './components/Spinner/Spinner.css';
-@import './components/Content/Content.css';
-@import './components/Reveal/Reveal.css';
-@import './auth-screens/auth.css';

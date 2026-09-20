@@ -4,7 +4,7 @@
 
 import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface BreadcrumbItem {
   label: string
@@ -41,7 +41,7 @@ export function Breadcrumb({
   }
 
   return (
-    <nav aria-label="Breadcrumb" className={clsx('flex items-center', className)}>
+    <nav aria-label="Breadcrumb" className={cn('flex items-center', className)}>
       <ol className="flex items-center space-x-0">
         {allItems.map((item, index) => {
           const isLast = index === allItems.length - 1
@@ -53,7 +53,7 @@ export function Breadcrumb({
               
               {isLast || !item.href ? (
                 <span
-                  className={clsx(
+                  className={cn(
                     'flex items-center gap-1.5 text-sm font-semibold',
                     isLast 
                       ? 'text-gray-900 dark:text-white'
@@ -66,7 +66,7 @@ export function Breadcrumb({
               ) : (
                 <Link
                   to={item.href}
-                  className={clsx(
+                  className={cn(
                     'flex items-center gap-1.5 text-sm font-medium transition-colors duration-200',
                     'text-gray-600 dark:text-gray-400',
                     'hover:text-primary-600 dark:hover:text-primary-400',

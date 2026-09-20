@@ -33,7 +33,7 @@ import {
   CheckCircleIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Badge } from './Badge'
 
 export interface Notification {
@@ -146,19 +146,19 @@ export function NotificationPanel({
     if (notification.onClick) {
       notification.onClick()
     } else if (notification.link) {
-      window.location.href = notification.link
+      window.location.assign(notification.link)
     } else if (onNotificationClick) {
       onNotificationClick(notification)
     }
   }
 
   return (
-    <Popover className={clsx('relative', className)}>
+    <Popover className={cn('relative', className)}>
       {({ open }) => (
         <>
           {/* Bell Button */}
           <Popover.Button
-            className={clsx(
+            className={cn(
               'relative rounded-lg p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors',
               open && 'bg-gray-100 dark:bg-gray-800'
             )}
@@ -212,7 +212,7 @@ export function NotificationPanel({
                 <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
                   <button
                     onClick={() => setFilter('all')}
-                    className={clsx(
+                    className={cn(
                       'px-3 py-1 rounded-md text-xs font-medium transition-colors',
                       filter === 'all'
                         ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
@@ -223,7 +223,7 @@ export function NotificationPanel({
                   </button>
                   <button
                     onClick={() => setFilter('unread')}
-                    className={clsx(
+                    className={cn(
                       'px-3 py-1 rounded-md text-xs font-medium transition-colors',
                       filter === 'unread'
                         ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
@@ -254,20 +254,20 @@ export function NotificationPanel({
                     return (
                       <div
                         key={notification.id}
-                        className={clsx(
+                        className={cn(
                           'group relative flex gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-0',
                           !notification.read && 'bg-primary-50/30 dark:bg-primary-900/10'
                         )}
                         onClick={() => handleNotificationClick(notification)}
                       >
                         {/* Icon */}
-                        <div className={clsx('flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg', styles.bg)}>
+                        <div className={cn('flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg', styles.bg)}>
                           {notification.icon ? (
-                            <span className={clsx('h-5 w-5', styles.text)}>{notification.icon}</span>
+                            <span className={cn('h-5 w-5', styles.text)}>{notification.icon}</span>
                           ) : (
                             (() => {
                               const IconComponent = styles.icon
-                              return <IconComponent className={clsx('h-5 w-5', styles.text)} />
+                              return <IconComponent className={cn('h-5 w-5', styles.text)} />
                             })()
                           )}
                         </div>

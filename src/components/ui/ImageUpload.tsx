@@ -5,7 +5,7 @@
 import { useState, useRef } from 'react'
 import { PhotoIcon, XMarkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 import { Button } from './Button'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface ImageUploadProps {
   label: string
@@ -113,7 +113,7 @@ export function ImageUpload({
       </label>
 
       <div
-        className={clsx(
+        className={cn(
           'relative border-2 border-dashed rounded-xl transition-all duration-200',
           getAspectClasses(),
           isDragging

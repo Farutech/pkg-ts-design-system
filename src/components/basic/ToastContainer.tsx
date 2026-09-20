@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toast } from './Toast';
-import useToastStore from '../../store/toastStore';
+import useToastStore from '@/store/toastStore';
 
 export interface ToastContainerProps {
   position?: 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center';

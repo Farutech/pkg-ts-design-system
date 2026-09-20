@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { useSidebarStore } from '@/store/sidebarStore'
 import { useModuleStore } from '@/store/moduleStore'
 import { useConfig } from '@/contexts/ConfigContext'
@@ -21,7 +21,7 @@ function isCategory(entry: MenuEntry): entry is MenuCategory {
 
 function MenuIcon({ icon, className }: { icon?: ReactNode; className?: string }) {
   if (!icon) return null
-  return <span className={clsx('inline-flex shrink-0', className)}>{icon}</span>
+  return <span className={cn('inline-flex shrink-0', className)}>{icon}</span>
 }
 
 function Badge({ value }: { value: string | number }) {
@@ -46,7 +46,7 @@ function MenuLink({ item, onNavigate }: { item: MenuItem; onNavigate: () => void
       target={item.external ? '_blank' : undefined}
       rel={item.external ? 'noreferrer' : undefined}
       onClick={onNavigate}
-      className={({ isActive }) => clsx(
+      className={({ isActive }) => cn(
         'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors',
         isActive ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
       )}
@@ -69,7 +69,7 @@ function CategoryItem({ category, isExpanded, onToggle, onNavigate }: {
       <button type="button" onClick={onToggle}
         className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors uppercase tracking-wider">
         <span className="flex items-center gap-2.5"><MenuIcon icon={category.icon} className="h-4 w-4" /><span>{category.label}</span></span>
-        <ChevronRightIcon className={clsx('h-3.5 w-3.5 transition-transform', isExpanded && 'rotate-90')} />
+        <ChevronRightIcon className={cn('h-3.5 w-3.5 transition-transform', isExpanded && 'rotate-90')} />
       </button>
       {isExpanded && <div className="ml-4 mt-1 space-y-0.5">{category.items.map((item) => <MenuLink key={item.id} item={item} onNavigate={onNavigate} />)}</div>}
     </div>
@@ -125,7 +125,7 @@ export function Sidebar() {
       {isMobile && isOpen && <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={close} aria-hidden="true" />}
       <aside
         style={{ width: isOpen && !isMobile ? `${localWidth}px` : undefined }}
-        className={clsx(
+        className={cn(
           'fixed top-0 left-0 z-50 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-xl transition-transform duration-300',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-[63px]',
           isMobile && 'w-64'
@@ -153,7 +153,7 @@ export function Sidebar() {
             )}
           </nav>
 
-          {isOpen && <div role="separator" aria-label="Resize sidebar" onMouseDown={handleMouseDown} className={clsx('absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary-400', isResizing && 'bg-primary-500')} />}
+          {isOpen && <div role="separator" aria-label="Resize sidebar" onMouseDown={handleMouseDown} className={cn('absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary-400', isResizing && 'bg-primary-500')} />}
         </div>
       </aside>
     </>

@@ -33,9 +33,9 @@
  * ```
  */
 
-import { forwardRef, useState, useEffect } from 'react'
+import { forwardRef, useId, useState } from 'react'
 import type { InputHTMLAttributes, ChangeEvent } from 'react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 // Máscaras predefinidas
@@ -269,7 +269,10 @@ export interface MaskedInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
   customFormatter?: (value: string) => string
   /** Función para extraer valor sin formato (para máscaras custom avanzadas) */
   customUnformatter?: (formatted: string) => string
-  /** Carácter de máscara (default: #) */
+  /**
+   * @deprecated Reservado para compatibilidad histórica; el reemplazo se hace
+   * con `customFormatter`. No tiene efecto desde la versión 1.1.0.
+   */
   maskChar?: string
   /** Valor sin formato (el que se guarda) */
   value?: string
@@ -298,7 +301,6 @@ export const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(
       customMask,
       customFormatter,
       customUnformatter,
-      maskChar = '#',
       value = '',
       onChange,
       validation: customValidation,
@@ -315,17 +317,17 @@ export const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(
     },
     ref
   ) => {
-    const maskConfig = mask === 'custom' 
-      ? { 
-          format: customMask || '', 
-          placeholder: customPlaceholder || '', 
+    const generatedId = useId()
+    const maskConfig = mask === 'custom'
+      ? {
+          format: customMask || '',
+          placeholder: customPlaceholder || '',
           validation: customValidation,
           formatter: customFormatter,
           unformatter: customUnformatter,
         }
       : MASK_CONFIGS[mask]
 
-    const [formattedValue, setFormattedValue] = useState('')
     const [internalError, setInternalError] = useState('')
     const [touched, setTouched] = useState(false)
 
@@ -335,23 +337,16 @@ export const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(
     const showError = touched && (externalError || internalError)
     const showSuccess = touched && showValidation && !showError && isValid && value.length > 0
 
-    // Formatear valor inicial
-    useEffect(() => {
-      if (maskConfig.formatter) {
-        setFormattedValue(maskConfig.formatter(value))
-      } else {
-        setFormattedValue(value)
-      }
-    }, [value, mask])
+    // El valor formateado se deriva del valor controlado en cada render:
+    // el formateador es puro y sincronizar en efecto provocaba desfaces.
+    const formattedValue = maskConfig.formatter ? maskConfig.formatter(value) : value
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value
-      
+
       // Aplicar formatter
       const formatted = maskConfig.formatter ? maskConfig.formatter(inputValue) : inputValue
       const unmasked = maskConfig.unformatter ? maskConfig.unformatter(formatted) : formatted
-
-      setFormattedValue(formatted)
 
       // Validar si es necesario
       if (validateOnChange && validationRegex && unmasked.length > 0) {
@@ -376,10 +371,10 @@ export const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(
     }
 
     const displayError = externalError || internalError
-    const inputId = props.id || `masked-input-${Math.random().toString(36).substring(7)}`
+    const inputId = props.id || `masked-input-${generatedId.replace(/:/g, '')}`
 
     return (
-      <div className={clsx('flex flex-col', fullWidth && 'w-full')}>
+      <div className={cn('flex flex-col', fullWidth && 'w-full')}>
         {label && (
           <label
             htmlFor={inputId}
@@ -399,7 +394,7 @@ export const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(
             onBlur={handleBlur}
             placeholder={maskConfig.placeholder}
             disabled={disabled}
-            className={clsx(
+            className={cn(
               'input',
               showValidation && 'pr-10',
               displayError && 'border-red-500 focus:ring-red-500',

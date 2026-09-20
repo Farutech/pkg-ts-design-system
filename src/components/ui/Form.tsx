@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode
@@ -23,7 +23,7 @@ interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
  */
 export function Form({ children, className, ...props }: FormProps) {
   return (
-    <form className={clsx('space-y-6', className)} {...props}>
+    <form className={cn('space-y-6', className)} {...props}>
       {children}
     </form>
   )
@@ -57,7 +57,7 @@ export function FormRow({ children, className, gap = 'md' }: FormRowProps) {
   }
 
   return (
-    <div className={clsx('grid grid-cols-12', gapClasses[gap], className)}>
+    <div className={cn('grid grid-cols-12', gapClasses[gap], className)}>
       {children}
     </div>
   )
@@ -110,7 +110,7 @@ export function FormGroup({ children, className, cols, col }: FormGroupProps) {
     : ['col-span-12']
 
   return (
-    <div className={clsx(...colClasses, className)}>
+    <div className={cn(...colClasses, className)}>
       {children}
     </div>
   )
@@ -140,7 +140,7 @@ export function FormSection({
   className 
 }: FormSectionProps) {
   return (
-    <div className={clsx('space-y-4', className)}>
+    <div className={cn('space-y-4', className)}>
       {(title || description) && (
         <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
           {title && (
@@ -183,7 +183,7 @@ export function FormActions({ children, className, align = 'right' }: FormAction
   }
 
   return (
-    <div className={clsx('flex items-center gap-3', alignClasses[align], className)}>
+    <div className={cn('flex items-center gap-3', alignClasses[align], className)}>
       {children}
     </div>
   )

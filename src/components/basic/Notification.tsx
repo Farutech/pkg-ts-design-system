@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNotification } from '../../hooks/useNotification';
+import { useNotification } from '@/hooks/useNotification';
 
 export interface NotificationProps {
   id?: string;
@@ -22,12 +22,12 @@ export const Notification: React.FC<NotificationProps> = ({
 }) => {
   const { removeNotification } = useNotification();
 
-  const handleClose = () => {
+  // Auto-dismiss
+  const handleClose = React.useCallback(() => {
     if (onClose) onClose();
     removeNotification(id);
-  };
+  }, [onClose, removeNotification, id]);
 
-  // Auto-dismiss
   React.useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => {
@@ -35,7 +35,7 @@ export const Notification: React.FC<NotificationProps> = ({
       }, duration);
       return () => clearTimeout(timer);
     }
-  }, [duration]);
+  }, [duration, handleClose]);
 
   const icons = {
     success: (

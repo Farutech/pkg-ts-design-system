@@ -1,0 +1,21 @@
+/**
+ * Reveal (.ft-reveal) — animación de entrada on-scroll (IntersectionObserver).
+ */
+.ft-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.ft-reveal--visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

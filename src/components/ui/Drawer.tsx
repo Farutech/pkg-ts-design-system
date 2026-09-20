@@ -27,7 +27,7 @@
 import { Fragment, type ReactNode } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 import { Button } from './Button'
 
 export interface DrawerProps {
@@ -157,7 +157,7 @@ export function Drawer({
 
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
-            <div className={clsx('pointer-events-none fixed flex', posStyles.panel, isVertical ? 'w-screen' : 'h-screen')}>
+            <div className={cn('pointer-events-none fixed flex', posStyles.panel, isVertical ? 'w-screen' : 'h-screen')}>
               <Transition.Child
                 as={Fragment}
                 enter={posStyles.enter}
@@ -168,7 +168,7 @@ export function Drawer({
                 leaveTo={posStyles.leaveTo}
               >
                 <Dialog.Panel
-                  className={clsx(
+                  className={cn(
                     'pointer-events-auto w-full',
                     sizeClass,
                     'flex flex-col bg-white dark:bg-gray-900 shadow-xl',

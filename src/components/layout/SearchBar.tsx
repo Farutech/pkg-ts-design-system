@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useSearchStore } from '@/store/searchStore'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 type SearchBarProps = {
   placeholder?: string
@@ -22,26 +22,28 @@ export function SearchBar({
   const [local, setLocal] = useState(query)
   const timer = useRef<number | null>(null)
 
-  useEffect(() => {
-    setLocal(query)
-  }, [query])
+  const commit = useCallback(
+    (next: string) => {
+      if (next.length >= minChars || next.length === 0) {
+        setQuery(next)
+        if (onSubmit) onSubmit(next)
+      }
+    },
+    [minChars, onSubmit, setQuery],
+  )
 
   // Debounce to avoid spamming subscribers
   useEffect(() => {
     if (timer.current) window.clearTimeout(timer.current)
-    
+
     timer.current = window.setTimeout(() => {
-      // Only trigger search if meets minimum character requirement
-      if (local.length >= minChars || local.length === 0) {
-        setQuery(local)
-        if (onSubmit) onSubmit(local)
-      }
+      commit(local)
     }, debounceMs)
 
     return () => {
       if (timer.current) window.clearTimeout(timer.current)
     }
-  }, [local, minChars, debounceMs])
+  }, [local, debounceMs, commit])
 
   return (
     <div className="relative w-full max-w-md">
@@ -56,11 +58,8 @@ export function SearchBar({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               // commit immediately if meets minimum chars
-              if (local.length >= minChars || local.length === 0) {
-                if (timer.current) window.clearTimeout(timer.current)
-                setQuery(local)
-                if (onSubmit) onSubmit(local)
-              }
+              if (timer.current) window.clearTimeout(timer.current)
+              commit(local)
             }
           }}
         />
@@ -68,7 +67,7 @@ export function SearchBar({
         {local ? (
           <button
             onClick={() => { setLocal(''); clear(); if (onSubmit) onSubmit('') }}
-            className={clsx('p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 flex-shrink-0')}
+            className={cn('p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 flex-shrink-0')}
             title="Limpiar búsqueda"
           >
             <XMarkIcon className="h-4 w-4 text-gray-500" />

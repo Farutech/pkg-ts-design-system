@@ -24,7 +24,7 @@ import { Fragment, useState, useEffect, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { Dialog, Combobox, Transition } from '@headlessui/react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
+import { cn } from '@/utils/cn'
 
 export interface Command {
   /** ID único */
@@ -128,7 +128,7 @@ export function CommandPalette({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className={clsx(
+        className={cn(
           'group relative flex h-9 w-full items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-400 transition-colors hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500',
           className
         )}
@@ -197,7 +197,7 @@ export function CommandPalette({
                               key={command.id}
                               value={command}
                               className={({ active }) =>
-                                clsx(
+                                cn(
                                   'flex cursor-pointer select-none items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors',
                                   active
                                     ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
@@ -210,7 +210,7 @@ export function CommandPalette({
                                   {/* Icon */}
                                   {command.icon && (
                                     <div
-                                      className={clsx(
+                                      className={cn(
                                         'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
                                         active
                                           ? 'bg-primary-100 dark:bg-primary-900/40'

@@ -1,0 +1,94 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Guía/Migración" />
+
+# 🔄 Guía de Migración
+
+Historial de cambios importantes y pasos de migración entre versiones de `@farutech/design-system`.
+
+---
+
+## v1.1.0 → v1.2.x
+
+### ✨ Novedades
+
+- **TopNav**: nuevo componente de navegación horizontal multinivel con soporte de permisos
+- **Storybook 10**: documentación viva completa con play functions e interaction testing
+- **`@storybook/test`**: testing integrado sin `*.test.tsx` separados
+- Eliminados los archivos `.test.tsx` de vitest (migrados a play functions)
+
+### 🔧 Cambios en imports
+
+```tsx
+// Antes (v1.1.x)
+import { Button } from '@farutech/design-system'
+
+// Ahora — igual, sin cambios en la API pública
+import { Button } from '@farutech/design-system'
+```
+
+---
+
+## v1.0.x → v1.1.0
+
+### Breaking Changes
+
+#### DataTable: prop `columns` renombrada
+
+```tsx
+// ❌ v1.0.x
+<DataTable cols={columns} data={data} />
+
+// ✅ v1.1.0
+<DataTable columns={columns} data={data} />
+```
+
+#### Navbar: requiere `MemoryRouter` o `BrowserRouter`
+
+El `Navbar` y `Sidebar` usan `react-router-dom` internamente. Asegúrate de que tu app tenga un router en el árbol:
+
+```tsx
+import { BrowserRouter } from 'react-router-dom'
+
+<BrowserRouter>
+  <DesignSystemProvider>
+    <App />
+  </DesignSystemProvider>
+</BrowserRouter>
+```
+
+#### Tokens CSS: prefijo `--ft-` (antes `--ds-`)
+
+```css
+/* ❌ v1.0.x */
+--ds-color-primary: #2563eb;
+
+/* ✅ v1.1.0 */
+--ft-color-primary: #2563eb;
+```
+
+### Deprecaciones
+
+| API deprecada | Reemplazar con |
+|---|---|
+| `<Toast>` (basic) | `useToast()` hook |
+| `useSidebar()` | `useSidebarStore()` de Zustand |
+| `<NavMenu>` | `<Sidebar>` + `<TopNav>` |
+
+---
+
+## Soporte de versiones
+
+| Versión DS | React | Storybook | Node |
+|---|---|---|---|
+| 1.2.x | 18 / 19 | 10.x | ≥20.19 |
+| 1.1.x | 18 / 19 | 8.x | ≥20.0 |
+| 1.0.x | 18 | 7.x | ≥18.0 |
+
+---
+
+## Ayuda
+
+- 📂 [Repositorio](https://github.com/Farutech/pkg-ts-design-system)
+- 🐛 [Issues](https://github.com/Farutech/pkg-ts-design-system/issues)
+- 📝 [CHANGELOG](https://github.com/Farutech/pkg-ts-design-system/blob/main/MIGRATION.md)

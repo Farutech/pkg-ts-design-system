@@ -19,6 +19,8 @@ import { useBrandConfig } from '@/providers/DesignSystemProvider'
 export interface SidebarProps {
   /** Nombre de la aplicación a mostrar en la cabecera */
   appName?: string
+  /** Alias brandName para parametrización */
+  brandName?: string
   /** Nodo JSX del logo (SVG, icono o elemento personalizado) */
   logo?: ReactNode
   /** URL de la imagen del logo */
@@ -108,6 +110,7 @@ function CategoryItem({ category, isExpanded, onToggle, onNavigate }: {
 
 export function Sidebar({
   appName,
+  brandName,
   logo,
   logoUrl,
   showCreator: propShowCreator,
@@ -128,7 +131,7 @@ export function Sidebar({
   const brand = useBrandConfig()
   const navigate = useNavigate()
 
-  const effectiveAppName = appName || brand.appName || config?.appName || 'Mi Aplicación'
+  const effectiveAppName = brandName || appName || brand.brandName || brand.appName || config?.appName || 'Mi Aplicación'
   const effectiveShowCreator = propShowCreator ?? brand.showCreator ?? true
   const effectiveCreatorName = propCreatorName ?? brand.creatorName ?? 'FaruTech'
   const effectiveCreatorUrl = propCreatorUrl ?? brand.creatorUrl ?? 'https://farutech.com'

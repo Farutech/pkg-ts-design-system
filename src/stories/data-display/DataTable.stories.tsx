@@ -109,3 +109,61 @@ export const TablaCompleta: Story = {
     )
   },
 }
+
+// 100 registros para generar 10 páginas completas de 10 filas (Anexo A)
+const MOCK_100_USERS = Array.from({ length: 100 }, (_, i) => {
+  const num = i + 1
+  return {
+    id: `USR-${String(num).padStart(3, '0')}`,
+    name: `Usuario de Prueba ${num}`,
+    email: `usuario${num}@farutech.com`,
+    role: num % 3 === 0 ? 'Administradora' : num % 2 === 0 ? 'Editor' : 'Vista',
+    status: num % 4 === 0 ? 'inactive' : num % 3 === 0 ? 'pending' : 'active',
+  }
+})
+
+export const PaginacionCompleta10Paginas: Story = {
+  name: 'Paginación de 10 Páginas (Anexo A)',
+  render: () => {
+    const [page, setPage] = useState(5)
+    const perPage = 10
+    const currentData = MOCK_100_USERS.slice((page - 1) * perPage, page * perPage)
+
+    return (
+      <div style={{ width: '920px', maxWidth: '100%' }}>
+        <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: 'var(--ft-color-muted)', borderRadius: '8px' }}>
+          <h4 style={{ margin: '0 0 0.5rem', fontWeight: 600 }}>Paginación dinámica de 10 páginas (Anexo A):</h4>
+          <p style={{ margin: '0 0 0.5rem', fontSize: '0.8125rem', color: 'var(--ft-color-muted-foreground)' }}>
+            Botones: Primero (<code>&lt;&lt;</code>), Anterior (<code>&lt;</code>), Centro dinámico de 3 valores, Siguiente (<code>&gt;</code>), Último (<code>&gt;&gt;</code>).
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <Button size="sm" variant={page === 1 ? 'primary' : 'outline'} onClick={() => setPage(1)}>
+              Ir a Página 1 (Extremo inicial: [1, 2, 3])
+            </Button>
+            <Button size="sm" variant={page === 5 ? 'primary' : 'outline'} onClick={() => setPage(5)}>
+              Ir a Página 5 (Centro dinámico: [5, 6, 7])
+            </Button>
+            <Button size="sm" variant={page === 7 ? 'primary' : 'outline'} onClick={() => setPage(7)}>
+              Ir a Página 7 (Centro dinámico: [6, 7, 8])
+            </Button>
+            <Button size="sm" variant={page === 10 ? 'primary' : 'outline'} onClick={() => setPage(10)}>
+              Ir a Página 10 (Extremo final: [8, 9, 10])
+            </Button>
+          </div>
+        </div>
+
+        <DataTable
+          data={currentData}
+          columns={COLUMNS}
+          pagination={{
+            page,
+            perPage,
+            total: MOCK_100_USERS.length,
+            totalPages: 10,
+            onPageChange: (newPage) => setPage(newPage),
+          }}
+        />
+      </div>
+    )
+  },
+}

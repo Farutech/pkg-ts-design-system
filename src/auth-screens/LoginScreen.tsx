@@ -90,7 +90,7 @@ export function LoginScreen({
   onRegister,
   appName,
   brandName,
-  logoUrl = '/logo.png',
+  logoUrl = '/Logo.png',
   logoNode,
   description = 'Ingresa tus credenciales para continuar',
   accessTag = 'Acceso',
@@ -115,7 +115,7 @@ export function LoginScreen({
   isLoading: externalIsLoading,
   className = '',
 }: LoginScreenProps) {
-  const effectiveAppName = appName || brandName || 'Mi Aplicación'
+  const effectiveAppName = brandName || appName || 'FaruTech'
 
   const [formData, setFormData] = useState({
     email: '',

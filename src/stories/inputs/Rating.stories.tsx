@@ -62,14 +62,45 @@ export const CalificacionInteractiva: Story = {
   },
 }
 
+export const ConDecimalesYMedios: Story = {
+  name: 'Decimales (4.3) y Medias Estrellas (C-17 / N-03)',
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '420px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600 }}>Valor de BD exacto (4.3 con precisión 'exact')</p>
+        <Rating value={4.3} precision="exact" readOnly showValue size="lg" />
+        <span style={{ fontSize: '0.75rem', color: 'var(--ft-color-muted-foreground)' }}>
+          Relleno exacto proporcional del 30% en la 5ta estrella.
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600 }}>Media estrella (4.5 con precisión 0.5)</p>
+        <Rating value={4.5} precision={0.5} readOnly showValue size="lg" />
+        <span style={{ fontSize: '0.75rem', color: 'var(--ft-color-muted-foreground)' }}>
+          Redondeo a mitad visual (media estrella).
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600 }}>Interactivo con medias estrellas (allowHalf)</p>
+        <Rating defaultValue={3.5} allowHalf showValue size="lg" />
+        <span style={{ fontSize: '0.75rem', color: 'var(--ft-color-muted-foreground)' }}>
+          Haz clic o hover en la mitad izquierda o derecha de cada estrella.
+        </span>
+      </div>
+    </div>
+  ),
+}
+
 export const SoloLectura: Story = {
   name: 'Solo lectura (promedio)',
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '360px' }}>
       {[
         { value: 5, label: 'Excelente', description: 'Calificación promedio' },
-        { value: 4, label: 'Buena', description: 'Calificación promedio' },
-        { value: 3, label: 'Regular', description: 'Calificación promedio' },
+        { value: 4.3, label: 'Muy Buena (4.3)', description: 'Calificación promedio con decimal' },
+        { value: 3.5, label: 'Buena (3.5)', description: 'Calificación promedio con media estrella' },
         { value: 2, label: 'Baja', description: 'Calificación promedio' },
         { value: 1, label: 'Pobre', description: 'Calificación promedio' },
       ].map(({ value, label, description }) => (
@@ -77,7 +108,7 @@ export const SoloLectura: Story = {
           <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--ft-color-muted-foreground)' }}>
             {description}: <strong>{label}</strong>
           </p>
-          <Rating value={value} readOnly showValue size="md" />
+          <Rating value={value} precision="exact" readOnly showValue size="md" />
         </div>
       ))}
     </div>

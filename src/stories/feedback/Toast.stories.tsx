@@ -1,58 +1,59 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ToastContainer } from '@/components/ui/Toast'
+import { ToastContainer, toast } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
-import { useState } from 'react'
 
 /**
  * Toast — notificaciones emergentes (toast notifications).
  *
  * El Toast usa useNotificationStore internamente. Este story demuestra cómo
- * agregar notificaciones de distintos tipos: success, error, warning, info.
+ * disparar y visualizar notificaciones emergentes de distintos tipos: success, error, warning, info.
  */
 function ToastDemo() {
-  type Notification = {
-    id: string
-    type: 'success' | 'error' | 'warning' | 'info'
-    title: string
-    message: string
-    read: boolean
-    createdAt: Date
-  }
-
-  const [, setNotifications] = useState<Notification[]>([])
-
-  const addToast = (type: 'success' | 'error' | 'warning' | 'info', title: string, message: string) => {
-    const id = `toast-${Date.now()}`
-    setNotifications((prev) => [...prev, { id, type, title, message, read: false, createdAt: new Date() }])
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id))
-    }, 4000)
-  }
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '360px' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <Button variant="success" size="sm" onClick={() => addToast('success', '¡Éxito!', 'Operación completada correctamente')}>
-          Success
-        </Button>
-        <Button variant="danger" size="sm" onClick={() => addToast('error', 'Error', 'No se pudo completar la operación')}>
-          Error
-        </Button>
-        <Button variant="warning" size="sm" onClick={() => addToast('warning', 'Advertencia', 'Tu sesión expirará pronto')}>
-          Warning
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => addToast('info', 'Información', 'Los cambios se guardarán automáticamente')}>
-          Info
-        </Button>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '380px' }}>
+      <ToastContainer />
 
-      <div style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 100 }}>
-        <ToastContainer />
+      <div>
+        <h4 style={{ margin: '0 0 0.5rem', fontWeight: 600 }}>Disparar notificaciones emergentes (C-18)</h4>
+        <p style={{ margin: '0 0 1rem', fontSize: '0.8125rem', color: 'var(--ft-color-muted-foreground)' }}>
+          Haz clic en cualquiera de los botones para ver la notificación animada flotante en la esquina superior derecha:
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <Button
+            variant="success"
+            size="sm"
+            onClick={() => toast.success('Operación completada exitosamente.', '¡Guardado con éxito!')}
+          >
+            Toast Success
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => toast.error('No se pudo conectar con el servidor remoto.', 'Error de red')}
+          >
+            Toast Error
+          </Button>
+          <Button
+            variant="warning"
+            size="sm"
+            onClick={() => toast.warning('Tu sesión de usuario expirará en 5 minutos.', 'Sesión por expirar')}
+          >
+            Toast Warning
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => toast.info('Los cambios se sincronizarán en segundo plano.', 'Información')}
+          >
+            Toast Info
+          </Button>
+        </div>
       </div>
 
       <div style={{ padding: '1rem', background: 'var(--ft-color-surface)', border: '1px solid var(--ft-color-border)', borderRadius: '0.5rem' }}>
         <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--ft-color-muted-foreground)' }}>
-          Los toasts desaparecen automáticamente después de 4 segundos. Haz clic en × para cerrarlos manualmente.
+          ✓ Las alertas flotan en la esquina superior derecha con sombra suave y transición.<br />
+          ✓ Desaparecen automáticamente tras 5 segundos o al hacer clic en la <strong>×</strong>.
         </p>
       </div>
     </div>

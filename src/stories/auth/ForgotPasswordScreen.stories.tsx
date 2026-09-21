@@ -18,6 +18,10 @@ const meta = {
     },
   },
   argTypes: {
+    brandName: {
+      control: 'text',
+      description: 'Nombre de la marca o aplicación (alias prioritario de appName)',
+    },
     appName: {
       control: 'text',
       description: 'Nombre de la aplicación',
@@ -48,7 +52,8 @@ const meta = {
   },
   args: {
     onSubmit: defaultSubmit,
-    appName: 'FaruTech Platform',
+    brandName: 'FaruTech Platform',
+    appName: '',
     title: 'Recuperar contraseña',
     method: 'email',
     showCreator: true,

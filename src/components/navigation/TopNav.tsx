@@ -69,7 +69,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   permissions = [],
 }) => {
   const brand = useBrandConfig();
-  const effectiveAppName = appName || brandName || brand.appName || brand.brandName || 'FaruTech';
+  const effectiveAppName = brandName || appName || brand.brandName || brand.appName || 'FaruTech';
   const effectiveHomeUrl = homeUrl || '/';
   
   const effectiveUserMenu: UserMenu | undefined = propUserMenu || (brand.user?.name ? {
@@ -421,31 +421,33 @@ export const TopNav: React.FC<TopNavProps> = ({
           <a href={effectiveHomeUrl} className="topnav__logo">
             {logo ? (
               logo
-            ) : logoUrl ? (
-              <img
-                src={logoUrl}
-                alt={effectiveAppName}
-                className="topnav__logo-img"
-                style={{ height: '36px', width: 'auto', borderRadius: 'var(--radius-md, 0.375rem)' }}
-              />
             ) : (
               <>
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    borderRadius: 'var(--radius-md, 0.375rem)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontWeight: '700',
-                    fontSize: '1.25rem',
-                  }}
-                >
-                  {effectiveAppName.charAt(0).toUpperCase()}
-                </div>
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt={effectiveAppName}
+                    className="topnav__logo-img"
+                    style={{ height: '36px', width: 'auto', borderRadius: 'var(--radius-md, 0.375rem)' }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      borderRadius: 'var(--radius-md, 0.375rem)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: '700',
+                      fontSize: '1.25rem',
+                    }}
+                  >
+                    {effectiveAppName.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <span className="topnav__brand">{effectiveAppName}</span>
               </>
             )}

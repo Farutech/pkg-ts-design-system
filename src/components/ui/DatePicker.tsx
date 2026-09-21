@@ -42,7 +42,7 @@
 
 import { useState, useRef } from 'react'
 import { Popover } from '@headlessui/react'
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, XMarkIcon, ClockIcon } from '@heroicons/react/24/outline'
 import { cn } from '@/utils/cn'
 import { Button } from './Button'
 
@@ -59,8 +59,10 @@ export interface DatePickerProps {
   minDate?: Date
   /** Fecha máxima permitida */
   maxDate?: Date
-  /** Formato de fecha para mostrar (default: 'dd/MM/yyyy') */
+  /** Formato de fecha para mostrar */
   format?: string
+  /** Modo de selección: solo fecha, solo hora o fecha y hora */
+  mode?: 'date' | 'time' | 'datetime'
   /** Disabled */
   disabled?: boolean
   /** Error message */
@@ -72,7 +74,7 @@ export interface DatePickerProps {
 }
 
 export interface DateTimePickerProps extends DatePickerProps {
-  /** Incluir selector de hora */
+  /** Incluir selector de hora (alias de mode="datetime") */
   showTime?: boolean
 }
 
@@ -137,10 +139,11 @@ export function DatePicker({
   value,
   onChange,
   label,
-  placeholder = 'Seleccionar fecha',
+  placeholder,
   minDate,
   maxDate,
-  format = 'dd/MM/yyyy',
+  mode = 'date',
+  format,
   disabled = false,
   error,
   className,
@@ -148,7 +151,14 @@ export function DatePicker({
 }: DatePickerProps) {
   const dateValue = value ? (typeof value === 'string' ? new Date(value) : value) : null
   const [viewDate, setViewDate] = useState(dateValue || new Date())
+  const [selectedHours, setSelectedHours] = useState(dateValue ? dateValue.getHours() : 12)
+  const [selectedMinutes, setSelectedMinutes] = useState(dateValue ? dateValue.getMinutes() : 0)
   const buttonRef = useRef<HTMLButtonElement>(null)
+
+  const defaultFormat = mode === 'time' ? 'HH:mm' : mode === 'datetime' ? 'dd/MM/yyyy HH:mm' : 'dd/MM/yyyy'
+  const displayFormat = format || defaultFormat
+  const defaultPlaceholder = mode === 'time' ? 'Seleccionar hora' : mode === 'datetime' ? 'Seleccionar fecha y hora' : 'Seleccionar fecha'
+  const displayPlaceholder = placeholder || defaultPlaceholder
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -182,8 +192,25 @@ export function DatePicker({
   }
 
   const handleDateSelect = (date: Date, close: () => void) => {
-    onChange?.(date)
-    close()
+    const updated = new Date(date)
+    if (mode === 'datetime') {
+      updated.setHours(selectedHours, selectedMinutes, 0, 0)
+    }
+    onChange?.(updated)
+    if (mode === 'date') {
+      close()
+    }
+  }
+
+  const handleTimeChange = (hours: number, minutes: number, close?: () => void) => {
+    setSelectedHours(hours)
+    setSelectedMinutes(minutes)
+    const baseDate = dateValue ? new Date(dateValue) : new Date()
+    baseDate.setHours(hours, minutes, 0, 0)
+    onChange?.(baseDate)
+    if (mode === 'time' && close) {
+      close()
+    }
   }
 
   const handleClear = (e: React.MouseEvent) => {
@@ -224,7 +251,7 @@ export function DatePicker({
               )}
             >
               <span className={cn('text-sm', dateValue ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
-                {dateValue ? formatDate(dateValue, format) : placeholder}
+                {dateValue ? formatDate(dateValue, displayFormat) : displayPlaceholder}
               </span>
               <div className="flex items-center gap-1">
                 {clearable && dateValue && !disabled && (
@@ -232,89 +259,173 @@ export function DatePicker({
                     type="button"
                     onClick={handleClear}
                     className="p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    aria-label="Limpiar fecha"
                   >
                     <XMarkIcon className="h-4 w-4 text-gray-400" />
                   </button>
                 )}
-                <CalendarIcon className="h-5 w-5 text-gray-400" />
+                {mode === 'time' ? (
+                  <ClockIcon className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <CalendarIcon className="h-5 w-5 text-gray-400" />
+                )}
               </div>
             </Popover.Button>
 
             <Popover.Panel className="absolute z-50 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <button
-                  type="button"
-                  onClick={handlePrevMonth}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                >
-                  <ChevronLeftIcon className="h-5 w-5" />
-                </button>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleNextMonth}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                >
-                  <ChevronRightIcon className="h-5 w-5" />
-                </button>
-              </div>
-
-              {/* Días de la semana */}
-              <div className="grid grid-cols-7 gap-1 mb-2">
-                {DAYS.map((day) => (
-                  <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              {/* Días del mes */}
-              <div className="grid grid-cols-7 gap-1">
-                {days.map((day, index) => {
-                  if (!day) {
-                    return <div key={`empty-${index}`} />
-                  }
-
-                  const isSelected = dateValue && isSameDay(day, dateValue)
-                  const isToday = isSameDay(day, new Date())
-                  const disabled = isDateDisabled(day)
-
-                  return (
+              {/* Selector de Fecha (solo para 'date' y 'datetime') */}
+              {mode !== 'time' && (
+                <>
+                  {/* Header de mes */}
+                  <div className="flex items-center justify-between mb-4">
                     <button
-                      key={index}
                       type="button"
-                      disabled={disabled}
-                      onClick={() => handleDateSelect(day, close)}
-                      className={cn(
-                        'aspect-square rounded-lg text-sm transition-colors',
-                        isSelected
-                          ? 'bg-primary-600 text-white font-semibold'
-                          : isToday
-                          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium'
-                          : disabled
-                          ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                      )}
+                      onClick={handlePrevMonth}
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
                     >
-                      {day.getDate()}
+                      <ChevronLeftIcon className="h-5 w-5" />
                     </button>
-                  )
-                })}
-              </div>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleNextMonth}
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    >
+                      <ChevronRightIcon className="h-5 w-5" />
+                    </button>
+                  </div>
 
-              {/* Botón Hoy */}
-              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleDateSelect(new Date(), close)}
-                  className="w-full"
-                >
-                  Hoy
-                </Button>
+                  {/* Días de la semana */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {DAYS.map((day) => (
+                      <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-2">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Días del mes */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {days.map((day, index) => {
+                      if (!day) {
+                        return <div key={`empty-${index}`} />
+                      }
+
+                      const isSelected = dateValue && isSameDay(day, dateValue)
+                      const isToday = isSameDay(day, new Date())
+                      const disabledDay = isDateDisabled(day)
+
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          disabled={disabledDay}
+                          onClick={() => handleDateSelect(day, close)}
+                          className={cn(
+                            'aspect-square rounded-lg text-sm transition-colors',
+                            isSelected
+                              ? 'bg-primary-600 text-white font-semibold'
+                              : isToday
+                              ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium'
+                              : disabledDay
+                              ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          )}
+                        >
+                          {day.getDate()}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
+
+              {/* Selector de Hora (para 'time' y 'datetime') */}
+              {(mode === 'time' || mode === 'datetime') && (
+                <div className={cn('pt-3 border-gray-200 dark:border-gray-700', mode === 'datetime' ? 'mt-3 border-t' : '')}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <ClockIcon className="h-4 w-4" /> Hora
+                    </span>
+                    <span className="text-xs font-semibold text-primary-600 dark:text-primary-400">
+                      {String(selectedHours).padStart(2, '0')}:{String(selectedMinutes).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    {/* Selector de Horas */}
+                    <div className="flex flex-col items-center">
+                      <label className="text-[10px] text-gray-400 uppercase font-medium">Hora</label>
+                      <select
+                        aria-label="Seleccionar hora"
+                        value={selectedHours}
+                        onChange={(e) => handleTimeChange(Number(e.target.value), selectedMinutes)}
+                        className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-2 py-1 text-sm focus:ring-2 focus:ring-primary-500"
+                      >
+                        {Array.from({ length: 24 }, (_, i) => (
+                          <option key={i} value={i}>
+                            {String(i).padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <span className="text-lg font-bold text-gray-400 mt-3">:</span>
+                    {/* Selector de Minutos */}
+                    <div className="flex flex-col items-center">
+                      <label className="text-[10px] text-gray-400 uppercase font-medium">Min</label>
+                      <select
+                        aria-label="Seleccionar minutos"
+                        value={selectedMinutes}
+                        onChange={(e) => handleTimeChange(selectedHours, Number(e.target.value))}
+                        className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-2 py-1 text-sm focus:ring-2 focus:ring-primary-500"
+                      >
+                        {Array.from({ length: 60 }, (_, i) => (
+                          <option key={i} value={i}>
+                            {String(i).padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Botones de acción inferior */}
+              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex gap-2">
+                {mode !== 'time' && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleDateSelect(new Date(), close)}
+                    className="flex-1"
+                  >
+                    Hoy
+                  </Button>
+                )}
+                {mode === 'time' && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      const now = new Date()
+                      handleTimeChange(now.getHours(), now.getMinutes(), close)
+                    }}
+                    className="flex-1"
+                  >
+                    Ahora
+                  </Button>
+                )}
+                {(mode === 'datetime' || mode === 'time') && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => close()}
+                    className="flex-1"
+                  >
+                    Listo
+                  </Button>
+                )}
               </div>
             </Popover.Panel>
           </>

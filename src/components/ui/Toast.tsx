@@ -77,3 +77,5 @@ export function ToastContainer() {
     </div>
   )
 }
+
+export { notify, notify as toast } from '@/store/notificationStore'

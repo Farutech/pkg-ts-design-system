@@ -89,6 +89,62 @@ export const ConItemPorDefectoAbierto: Story = {
   ),
 }
 
+export const UnoSoloDesplegado: Story = {
+  name: 'Uno solo desplegado (allowMultiple = false)',
+  render: () => (
+    <div style={{ width: '500px' }}>
+      <p style={{ fontSize: '0.8125rem', color: 'var(--ft-color-muted-foreground)', marginBottom: '0.75rem' }}>
+        Al abrir un nuevo panel, los paneles abiertos previamente se contraen automáticamente.
+      </p>
+      <Accordion allowMultiple={false} defaultOpenItems={['item-1']}>
+        <AccordionItem id="item-1" title="Primer item (Acordeón exclusivo)">
+          <p style={{ margin: 0, color: 'var(--ft-color-muted-foreground)', fontSize: '0.875rem' }}>
+            Este item está abierto inicialmente. Si haces clic en el segundo item, este se cerrará.
+          </p>
+        </AccordionItem>
+        <AccordionItem id="item-2" title="Segundo item">
+          <p style={{ margin: 0, color: 'var(--ft-color-muted-foreground)', fontSize: '0.875rem' }}>
+            Contenido exclusivo del segundo item.
+          </p>
+        </AccordionItem>
+        <AccordionItem id="item-3" title="Tercer item">
+          <p style={{ margin: 0, color: 'var(--ft-color-muted-foreground)', fontSize: '0.875rem' }}>
+            Contenido exclusivo del tercer item.
+          </p>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  ),
+}
+
+export const MultiplesDesplegados: Story = {
+  name: 'Múltiples desplegados (allowMultiple = true)',
+  render: () => (
+    <div style={{ width: '500px' }}>
+      <p style={{ fontSize: '0.8125rem', color: 'var(--ft-color-muted-foreground)', marginBottom: '0.75rem' }}>
+        Permite mantener abiertos varios o todos los paneles a la vez.
+      </p>
+      <Accordion allowMultiple={true} defaultOpenItems={['m-1', 'm-2']}>
+        <AccordionItem id="m-1" title="Panel 1: Información General">
+          <p style={{ margin: 0, color: 'var(--ft-color-muted-foreground)', fontSize: '0.875rem' }}>
+            Detalles y resumen de la cuenta.
+          </p>
+        </AccordionItem>
+        <AccordionItem id="m-2" title="Panel 2: Preferencias de Seguridad">
+          <p style={{ margin: 0, color: 'var(--ft-color-muted-foreground)', fontSize: '0.875rem' }}>
+            Autenticación de dos factores y sesiones activas.
+          </p>
+        </AccordionItem>
+        <AccordionItem id="m-3" title="Panel 3: Historial de Facturación">
+          <p style={{ margin: 0, color: 'var(--ft-color-muted-foreground)', fontSize: '0.875rem' }}>
+            Facturas descargables y métodos de pago registrados.
+          </p>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  ),
+}
+
 export const VarianteFlush: Story = {
   name: 'Variante flush (separación mínima)',
   render: () => (

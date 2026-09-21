@@ -53,35 +53,97 @@ export const Confirmacion: Story = {
   render: () => <ModalDemo title="¿Eliminar registro?" />,
 }
 
-export const ConFormulario: Story = {
-  name: 'Modal con formulario',
-  render: () => (
-    <ModalDemo title="Agregar usuario">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.25rem', color: 'var(--ft-color-foreground)' }}>
-            Nombre completo
-          </label>
-          <input
-            style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid var(--ft-color-border)', background: 'var(--ft-color-surface)', color: 'var(--ft-color-foreground)', outline: 'none', boxSizing: 'border-box' }}
-            placeholder="María García"
+import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
+import { Switch } from '@/components/ui/Switch'
+
+function FormModalDemo() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    role: 'editor',
+    active: true,
+  })
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault()
+    alert(`Usuario guardado exitosamente:\nNombre: ${formData.name || 'Sin nombre'}\nCorreo: ${formData.email || 'Sin correo'}\nRol: ${formData.role}`)
+    setIsOpen(false)
+  }
+
+  return (
+    <>
+      <Button variant="primary" onClick={() => setIsOpen(true)}>
+        Abrir Modal con Formulario
+      </Button>
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Crear nuevo colaborador"
+      >
+        <form onSubmit={handleSave} className="flex flex-col gap-4 py-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 -mt-1">
+            Ingresa los datos del nuevo miembro del equipo. Recibirá un correo de bienvenida con sus credenciales.
+          </p>
+
+          <Input
+            label="Nombre completo *"
+            placeholder="Ej. María García"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
           />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.25rem', color: 'var(--ft-color-foreground)' }}>
-            Correo electrónico
-          </label>
-          <input
-            style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid var(--ft-color-border)', background: 'var(--ft-color-surface)', color: 'var(--ft-color-foreground)', outline: 'none', boxSizing: 'border-box' }}
+
+          <Input
+            label="Correo electrónico corporativo *"
             type="email"
-            placeholder="maria@empresa.com"
+            placeholder="maria@farutech.com"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
           />
-        </div>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', paddingTop: '0.5rem', borderTop: '1px solid var(--ft-color-border)' }}>
-          <Button variant="ghost">Cancelar</Button>
-          <Button>Guardar usuario</Button>
-        </div>
-      </div>
-    </ModalDemo>
-  ),
+
+          <Select
+            label="Rol de acceso"
+            value={formData.role}
+            onChange={(e: any) => setFormData({ ...formData, role: e.target.value })}
+            options={[
+              { value: 'admin', label: 'Administrador (Acceso total)' },
+              { value: 'editor', label: 'Editor (Gestión de contenidos)' },
+              { value: 'viewer', label: 'Visualizador (Solo lectura)' },
+            ]}
+          />
+
+          <div className="pt-1">
+            <Switch
+              label="Usuario activo de inmediato"
+              description="Permite el inicio de sesión una vez creado"
+              checked={formData.active}
+              onChange={(checked) => setFormData({ ...formData, active: checked })}
+            />
+          </div>
+
+          <div className="flex gap-3 justify-end pt-4 border-t border-gray-200 dark:border-gray-700 mt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" variant="primary">
+              Guardar colaborador
+            </Button>
+          </div>
+        </form>
+      </Modal>
+    </>
+  )
+}
+
+export const ConFormulario: Story = {
+  name: 'Modal con formulario (C-19)',
+  render: () => <FormModalDemo />,
 }

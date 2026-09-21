@@ -20,13 +20,14 @@ function FABDemo() {
   ]
 
   return (
-    <div style={{ position: 'relative', height: '320px', overflow: 'hidden', background: 'var(--ft-color-background)', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
+    <div style={{ position: 'relative', height: '360px', width: '450px', overflow: 'hidden', background: 'var(--ft-color-background)', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
       <FloatingActionButton
         icon={<PlusIcon className="h-6 w-6" />}
         label="Acciones principales"
         onClick={() => alert('Acción principal')}
         actions={actions}
         position="bottom-right"
+        positioningMode="absolute"
         size="md"
         variant="primary"
         offset={24}
@@ -57,9 +58,10 @@ function FABDemo() {
 const meta = {
   title: '7-Overlays/FloatingActionButton',
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
-        component: 'FAB (Floating Action Button) con acciones expandibles. Se expande al hacer clic para mostrar acciones secundarias flotantes.',
+        component: 'FAB (Floating Action Button) con acciones expandibles. Soporta posicionamiento fijo (`fixed`) para viewport completo o absoluto (`absolute`) para previews y contenedores relativos.',
       },
     },
   },
@@ -75,12 +77,13 @@ export const ConAccionesExpandibles: Story = {
 export const SimpleFAB: Story = {
   name: 'FAB simple (sin acciones)',
   render: () => (
-    <div style={{ position: 'relative', height: '320px', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
+    <div style={{ position: 'relative', height: '320px', width: '400px', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
       <FloatingActionButton
         icon={<PlusIcon className="h-6 w-6" />}
         label="Nuevo registro"
         onClick={() => alert('Nuevo registro')}
         position="bottom-right"
+        positioningMode="absolute"
         size="lg"
         variant="primary"
         offset={32}
@@ -92,33 +95,36 @@ export const SimpleFAB: Story = {
 export const VariosColores: Story = {
   name: 'Variantes de color',
   render: () => (
-    <div style={{ position: 'relative', height: '320px', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', gap: '1.5rem', padding: '2rem', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
+    <div style={{ position: 'relative', height: '240px', width: '500px', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', gap: '1.5rem', padding: '2rem', borderRadius: '8px', border: '1px solid var(--ft-color-border)', alignItems: 'center', justifyContent: 'space-around' }}>
       <FloatingActionButton
         icon={<PlusIcon className="h-5 w-5" />}
         label="Primary"
         onClick={() => {}}
-        position="bottom-right"
+        position="bottom-left"
+        positioningMode="absolute"
         size="sm"
         variant="primary"
-        offset={24}
+        offset={20}
       />
       <FloatingActionButton
         icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-        label="Secundary"
+        label="Secondary"
         onClick={() => {}}
-        position="bottom-right"
+        position="bottom-center"
+        positioningMode="absolute"
         size="sm"
         variant="secondary"
-        offset={24}
+        offset={20}
       />
       <FloatingActionButton
         icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}
         label="Success"
         onClick={() => {}}
         position="bottom-right"
+        positioningMode="absolute"
         size="sm"
         variant="success"
-        offset={24}
+        offset={20}
       />
     </div>
   ),

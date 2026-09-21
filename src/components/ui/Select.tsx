@@ -7,6 +7,7 @@ import { forwardRef, useMemo } from 'react'
 import type { SelectHTMLAttributes } from 'react'
 import { cn } from '@/utils/cn'
 import { Spinner } from './Spinner'
+import { ListBox } from './ListBox'
 
 export interface SelectOption {
   label: string
@@ -30,6 +31,14 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   emptyMessage?: string
   fullWidth?: boolean
   placeholder?: string
+  /** Habilitar campo input para digitar y filtrar elementos (C-11 / Anexo C) */
+  searchable?: boolean
+  /** Placeholder del input de búsqueda */
+  searchPlaceholder?: string
+  /** Callback para búsqueda remota / llamada a API con debounce */
+  onSearch?: (query: string) => Promise<SelectOption[]> | void
+  /** Milisegundos de debounce para la búsqueda (default: 300ms) */
+  debounceMs?: number
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
@@ -45,6 +54,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       emptyMessage = 'No hay opciones disponibles',
       fullWidth = true,
       placeholder,
+      searchable = false,
+      searchPlaceholder = 'Buscar opción...',
+      onSearch,
+      debounceMs = 300,
       className,
       id,
       disabled,
@@ -61,6 +74,51 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       }
       return options
     }, [asyncData, options])
+
+    // Si es searchable, delegamos al componente ListBox con modo de búsqueda y debounce
+    if (searchable) {
+      const listBoxOptions = finalOptions.map((opt) => ({
+        id: String(opt.value),
+        label: opt.label,
+        disabled: opt.disabled,
+      }))
+
+      return (
+        <ListBox
+          options={listBoxOptions}
+          value={props.value !== undefined ? String(props.value) : undefined}
+          onChange={(val) => {
+            if (typeof props.onChange === 'function') {
+              props.onChange({ target: { value: val } } as any)
+            }
+          }}
+          label={label}
+          placeholder={placeholder}
+          className={cn(fullWidth && 'w-full', className)}
+          error={error}
+          searchable
+          searchPlaceholder={searchPlaceholder}
+          onSearch={
+            onSearch
+              ? async (query) => {
+                  const res = await onSearch(query)
+                  if (Array.isArray(res)) {
+                    return res.map((item) => ({
+                      id: String(item.value),
+                      label: item.label,
+                      disabled: item.disabled,
+                    }))
+                  }
+                  return []
+                }
+              : undefined
+          }
+          debounceMs={debounceMs}
+          loading={isLoading}
+          emptyMessage={emptyMessage}
+        />
+      )
+    }
 
     const hasOptions = finalOptions && finalOptions.length > 0
     const isDisabled = disabled || (isLoading && !hasOptions)

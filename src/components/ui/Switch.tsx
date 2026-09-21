@@ -1,13 +1,11 @@
-/**
- * Componente Switch/Toggle - Interruptor on/off
- */
-
+import { useState } from 'react'
 import { Switch as HeadlessSwitch } from '@headlessui/react'
 import { cn } from '@/utils/cn'
 
-interface SwitchProps {
-  checked: boolean
-  onChange: (checked: boolean) => void
+export interface SwitchProps {
+  checked?: boolean
+  defaultChecked?: boolean
+  onChange?: (checked: boolean) => void
   label?: string
   description?: string
   size?: 'sm' | 'md' | 'lg'
@@ -42,7 +40,8 @@ const colorStyles = {
 }
 
 export function Switch({
-  checked,
+  checked: controlledChecked,
+  defaultChecked = false,
   onChange,
   label,
   description,
@@ -51,6 +50,17 @@ export function Switch({
   disabled = false,
   className
 }: SwitchProps) {
+  const [internalChecked, setInternalChecked] = useState(defaultChecked)
+  const isControlled = controlledChecked !== undefined
+  const isChecked = isControlled ? controlledChecked : internalChecked
+
+  const handleChange = (val: boolean) => {
+    if (!isControlled) {
+      setInternalChecked(val)
+    }
+    onChange?.(val)
+  }
+
   const sizes = sizeStyles[size]
 
   return (
@@ -71,8 +81,8 @@ export function Switch({
           </div>
         )}
         <HeadlessSwitch
-          checked={checked}
-          onChange={onChange}
+          checked={isChecked}
+          onChange={handleChange}
           disabled={disabled}
           className={cn(
             'relative inline-flex flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent',
@@ -80,7 +90,7 @@ export function Switch({
             'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             sizes.container,
-            checked ? colorStyles[color] : 'bg-gray-200 dark:bg-gray-700'
+            isChecked ? colorStyles[color] : 'bg-gray-200 dark:bg-gray-700'
           )}
         >
           <span
@@ -88,7 +98,7 @@ export function Switch({
               'pointer-events-none inline-block rounded-full bg-white shadow-lg ring-0',
               'transition-transform duration-200 ease-in-out',
               sizes.toggle,
-              checked ? sizes.translate : 'translate-x-0'
+              isChecked ? sizes.translate : 'translate-x-0'
             )}
           />
         </HeadlessSwitch>

@@ -40,7 +40,7 @@ export function ForgotPasswordScreen<TPayload = unknown>({
   brandName,
   title = 'Recuperar contraseña',
   subtitle,
-  logoUrl,
+  logoUrl = '/Logo.png',
   logoNode,
   emailLabel = 'Correo electrónico',
   submitButtonText = 'Enviar solicitud',
@@ -52,7 +52,7 @@ export function ForgotPasswordScreen<TPayload = unknown>({
   footerContent,
   className,
 }: ForgotPasswordScreenProps<TPayload>) {
-  const effectiveAppName = appName || brandName || 'Mi Aplicación'
+  const effectiveAppName = brandName || appName || 'FaruTech'
   const [email, setEmail] = useState('')
   const [step, setStep] = useState<'input' | 'sent' | 'error'>('input')
   const [loading, setLoading] = useState(false)

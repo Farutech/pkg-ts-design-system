@@ -102,7 +102,7 @@ export function EmptyState({
     <div className={cn('flex flex-col items-center justify-center px-4 text-center', styles.padding, className)}>
       {/* Ícono */}
       {icon && (
-        <div className={cn('mb-4', iconColor, styles.icon)}>
+        <div className={cn('mb-4 flex items-center justify-center mx-auto [&>svg]:h-full [&>svg]:w-full', iconColor, styles.icon)}>
           {icon}
         </div>
       )}

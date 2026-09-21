@@ -11,6 +11,8 @@ export interface MainLayoutProps {
   children?: ReactNode
   /** Nombre de la aplicación a mostrar en Sidebar y Navbar */
   appName?: string
+  /** Alias brandName para parametrización */
+  brandName?: string
   /** Nodo JSX del logo */
   logo?: ReactNode
   /** URL de la imagen del logo */
@@ -38,6 +40,7 @@ export interface MainLayoutProps {
 export function MainLayout({
   children,
   appName,
+  brandName,
   logo,
   logoUrl,
   showCreator,
@@ -50,6 +53,7 @@ export function MainLayout({
   className,
   contentClassName,
 }: MainLayoutProps) {
+  const effectiveAppName = brandName || appName
   const { isOpen, isMobile, sidebarWidth, setMobile } = useSidebarStore()
 
   useEffect(() => {
@@ -71,7 +75,7 @@ export function MainLayout({
   return (
     <div className={cn('h-screen overflow-hidden bg-gray-50 dark:bg-gray-900', className)}>
       <Sidebar
-        appName={appName}
+        appName={effectiveAppName}
         logo={logo}
         logoUrl={logoUrl}
         showCreator={showCreator}

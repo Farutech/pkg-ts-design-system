@@ -13,3 +13,5 @@ export type {
   RowAction,
   FilterConfig 
 } from './CRUDTable'
+export { CRUDPage } from './CRUDPage'
+export type { CRUDPageProps, CRUDFieldConfig, CRUDRecord } from './CRUDPage'

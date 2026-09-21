@@ -79,7 +79,7 @@ export function RegisterScreen({
   onLogin,
   appName,
   brandName,
-  logoUrl,
+  logoUrl = '/Logo.png',
   logoNode,
   submitButtonText = 'Crear cuenta',
   requirePhone = false,
@@ -98,7 +98,7 @@ export function RegisterScreen({
   footerContent,
   className = '',
 }: RegisterScreenProps) {
-  const effectiveAppName = appName || brandName || 'FaruTech'
+  const effectiveAppName = brandName || appName || 'FaruTech'
   const [formData, setFormData] = useState({
     name: '',
     email: '',

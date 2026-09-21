@@ -202,12 +202,14 @@ export {
   DateTimePicker,
   DateRangePicker,
 } from './DatePicker'
+export { DatePickerInterval } from './DatePickerInterval'
 
 export type {
   DatePickerProps,
   DateTimePickerProps,
   DateRangePickerProps,
 } from './DatePicker'
+export type { DatePickerIntervalProps } from './DatePickerInterval'
 
 // Advanced Date Controls
 export {

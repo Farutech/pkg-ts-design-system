@@ -1,17 +1,14 @@
 import React, { useEffect } from 'react'
 import type { Decorator, Preview } from '@storybook/react'
 import { withThemeByDataAttribute } from '@storybook/addon-themes'
+import { MemoryRouter } from 'react-router-dom'
 
 import '@/styles.css'
 import { DesignSystemProvider } from '@/providers/DesignSystemProvider'
 
 /**
- * Decorador raíz: DesignSystemProvider + fondo del canvas acorde al tema.
- * Así cada story se ve exactamente como se verá en las apps consumidoras.
- * El modo (light/dark) llega del toolbar de `@storybook/addon-themes`
- * (global `theme` → data-theme, el mismo atributo que consumen los tokens).
- *
- * Para stories con layout: 'fullscreen', el padding se elimina automáticamente.
+ * Decorador raíz: MemoryRouter + DesignSystemProvider + fondo del canvas acorde al tema.
+ * Así cada story se ve exactamente como se verá en las apps consumidoras sin fallar por hooks de router.
  */
 const withDesignSystem: Decorator = (Story, context) => {
   const colorMode = context.globals.theme === 'dark' ? 'dark' : 'light'
@@ -23,25 +20,27 @@ const withDesignSystem: Decorator = (Story, context) => {
   }, [colorMode])
 
   return (
-    <DesignSystemProvider colorMode={colorMode}>
-      <div
-        style={{
-          minHeight: !isDocs && isFullscreen ? '100vh' : 'auto',
-          padding: isFullscreen ? 0 : isDocs ? '1rem' : '1.5rem',
-          background: 'var(--ft-color-background)',
-          color: 'var(--ft-color-foreground)',
-          fontFamily: 'var(--ft-font-sans)',
-          boxSizing: 'border-box',
-          width: '100%',
-          display: isFullscreen ? 'block' : 'flex',
-          justifyContent: isFullscreen ? 'normal' : 'center',
-          alignItems: isFullscreen ? 'normal' : 'center',
-          transition: 'background-color .2s ease, color .2s ease',
-        }}
-      >
-        <Story />
-      </div>
-    </DesignSystemProvider>
+    <MemoryRouter initialEntries={['/dashboard']}>
+      <DesignSystemProvider colorMode={colorMode}>
+        <div
+          style={{
+            minHeight: !isDocs && isFullscreen ? '100vh' : 'auto',
+            padding: isFullscreen ? 0 : isDocs ? '1rem' : '1.5rem',
+            background: 'var(--ft-color-background)',
+            color: 'var(--ft-color-foreground)',
+            fontFamily: 'var(--ft-font-sans)',
+            boxSizing: 'border-box',
+            width: '100%',
+            display: isFullscreen ? 'block' : 'flex',
+            justifyContent: isFullscreen ? 'normal' : 'center',
+            alignItems: isFullscreen ? 'normal' : 'center',
+            transition: 'background-color .2s ease, color .2s ease',
+          }}
+        >
+          <Story />
+        </div>
+      </DesignSystemProvider>
+    </MemoryRouter>
   )
 }
 
@@ -69,6 +68,33 @@ const preview: Preview = {
         date: /Date$/,
       },
       expanded: true,
+    },
+    viewport: {
+      viewports: {
+        mobileSmall: {
+          name: 'Mobile (Small - 375px)',
+          styles: { width: '375px', height: '667px' },
+        },
+        mobileLarge: {
+          name: 'Mobile (Large - 414px)',
+          styles: { width: '414px', height: '896px' },
+        },
+        tablet: {
+          name: 'Tablet (iPad - 768px)',
+          styles: { width: '768px', height: '1024px' },
+        },
+        laptop: {
+          name: 'Laptop (1280px)',
+          styles: { width: '1280px', height: '800px' },
+        },
+        desktop: {
+          name: 'Desktop (1440px)',
+          styles: { width: '1440px', height: '900px' },
+        },
+      },
+    },
+    a11y: {
+      test: 'todo',
     },
     layout: 'centered',
     backgrounds: { disable: true },

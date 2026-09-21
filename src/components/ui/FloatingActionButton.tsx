@@ -70,6 +70,8 @@ export interface FloatingActionButtonProps {
   className?: string
   /** Deshabilitar el botón */
   disabled?: boolean
+  /** Modo de posicionamiento: 'fixed' (viewport) o 'absolute' (contenedor relativo) */
+  positioningMode?: 'fixed' | 'absolute'
   /** Z-index del FAB */
   zIndex?: number
 }
@@ -119,6 +121,7 @@ export function FloatingActionButton({
   size = 'md',
   variant = 'primary',
   offset = 24,
+  positioningMode = 'fixed',
   className,
   disabled = false,
   zIndex = 1000,
@@ -183,7 +186,7 @@ export function FloatingActionButton({
     <div
       ref={fabRef}
       className={cn(
-        'fixed',
+        positioningMode === 'absolute' ? 'absolute' : 'fixed',
         positionClasses[position],
         className
       )}

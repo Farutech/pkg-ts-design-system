@@ -100,6 +100,47 @@ export const ConBusqueda: Story = {
   },
 }
 
+export const BusquedaApiDebounce: Story = {
+  name: 'Búsqueda remota API con Debounce (Anexo C)',
+  render: () => {
+    const [value, setValue] = useState('')
+    const [queryLog, setQueryLog] = useState<string[]>([])
+
+    // Simular API con delay de 400ms
+    const handleApiSearch = async (query: string) => {
+      setQueryLog((prev) => [...prev.slice(-4), `Consultando API: "${query}"`])
+      await new Promise((resolve) => setTimeout(resolve, 400))
+      return FRUITS.filter((f) => f.label.toLowerCase().includes(query.toLowerCase()))
+    }
+
+    return (
+      <div style={{ width: '320px' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--ft-color-muted-foreground)', marginBottom: '0.5rem' }}>
+          Aplica debounce de 300ms y descarta consultas previas, ejecutando solo la última consulta (Anexo C).
+        </p>
+        <ListBox
+          label="Búsqueda remota (simulada)"
+          options={FRUITS}
+          value={value}
+          onChange={(next) => setValue(typeof next === 'string' ? next : next[0] ?? '')}
+          searchable
+          searchPlaceholder="Escribe para consultar API..."
+          onSearch={handleApiSearch}
+          debounceMs={300}
+        />
+        {queryLog.length > 0 && (
+          <div style={{ marginTop: '0.75rem', padding: '0.5rem', background: 'var(--ft-color-muted)', borderRadius: '6px', fontSize: '0.75rem' }}>
+            <span style={{ fontWeight: 600 }}>Log de consultas API:</span>
+            {queryLog.map((log, i) => (
+              <div key={i} style={{ fontFamily: 'monospace' }}>{log}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  },
+}
+
 export const ConError: Story = {
   name: 'Con estado de error',
   render: () => (

@@ -1,8 +1,4 @@
-/**
- * SegmentedControl — grupo de opciones exclusivas (iOS/Bootstrap button group).
- * Radio group accesible con rol="radiogroup" y flechas de teclado.
- */
-import { useRef, type KeyboardEvent } from 'react'
+import { useRef, useState, type KeyboardEvent } from 'react'
 import { cn } from '@/utils/cn'
 
 export interface SegmentedOption<T extends string = string> {
@@ -14,8 +10,9 @@ export interface SegmentedOption<T extends string = string> {
 
 export interface SegmentedControlProps<T extends string = string> {
   options: SegmentedOption<T>[]
-  value: T
-  onChange: (value: T) => void
+  value?: T
+  defaultValue?: T
+  onChange?: (value: T) => void
   label?: string
   size?: 'sm' | 'md' | 'lg'
   /** Ocupa todo el ancho disponible. */
@@ -32,7 +29,8 @@ const SIZES = {
 
 export function SegmentedControl<T extends string = string>({
   options,
-  value,
+  value: controlledValue,
+  defaultValue,
   onChange,
   label,
   size = 'md',
@@ -40,12 +38,23 @@ export function SegmentedControl<T extends string = string>({
   disabled = false,
   className,
 }: SegmentedControlProps<T>) {
+  const initialValue = defaultValue ?? (options[0]?.value as T)
+  const [internalValue, setInternalValue] = useState<T>(initialValue)
+  const isControlled = controlledValue !== undefined
+  const activeValue = isControlled ? controlledValue : internalValue
   const groupRef = useRef<HTMLDivElement>(null)
+
+  const handleSelect = (val: T) => {
+    if (!isControlled) {
+      setInternalValue(val)
+    }
+    onChange?.(val)
+  }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return
     const enabled = options.filter((option) => !option.disabled)
-    const currentIndex = enabled.findIndex((option) => option.value === value)
+    const currentIndex = enabled.findIndex((option) => option.value === activeValue)
     let nextIndex: number | null = null
 
     if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
@@ -57,7 +66,7 @@ export function SegmentedControl<T extends string = string>({
     if (nextIndex !== null) {
       event.preventDefault()
       const next = enabled[nextIndex]
-      onChange(next.value)
+      handleSelect(next.value)
       const buttons = groupRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')
       const target = Array.from(buttons ?? []).find((button) => button.dataset.value === next.value)
       target?.focus()
@@ -79,7 +88,7 @@ export function SegmentedControl<T extends string = string>({
         )}
       >
         {options.map((option) => {
-          const selected = option.value === value
+          const selected = option.value === activeValue
           return (
             <button
               key={option.value}
@@ -89,7 +98,7 @@ export function SegmentedControl<T extends string = string>({
               aria-checked={selected}
               tabIndex={selected ? 0 : -1}
               disabled={disabled || option.disabled}
-              onClick={() => onChange(option.value)}
+              onClick={() => handleSelect(option.value)}
               className={cn(
                 'inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg font-medium transition-all',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',

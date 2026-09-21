@@ -1,16 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
+import { within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 const meta = {
   title: '4-Inputs/SegmentedControl',
   component: SegmentedControl,
   argTypes: {
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
-    fullWidth: { control: 'boolean' },
+    size: { control: 'radio', options: ['sm', 'md', 'lg'], description: 'Tamaño del control' },
+    fullWidth: { control: 'boolean', description: 'Ocupar ancho total' },
+    disabled: { control: 'boolean', description: 'Deshabilitar opciones' },
+    defaultValue: { control: 'text', description: 'Valor activo por defecto' },
   },
   args: {
-    value: 'mensual',
-    onChange: () => {},
+    defaultValue: 'mensual',
     options: [
       { value: 'mensual', label: 'Mensual' },
       { value: 'trimestral', label: 'Trimestral' },
@@ -19,14 +23,27 @@ const meta = {
   },
   parameters: {
     layout: 'centered',
-    docs: { description: { component: 'Control segmentado como alternativa al radio group para pocas opciones (2-5). Exclusivo y compacto.' } },
+    docs: {
+      description: {
+        component: 'Control segmentado interactivo como alternativa al radio group para pocas opciones (2-5). Soporta navegación con flechas de teclado y clic directo.',
+      },
+    },
   },
 } satisfies Meta<typeof SegmentedControl>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+export const Default: Story = {
+  name: 'Interactivo (Clic para cambiar opción)',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const annualOption = canvas.getByRole('radio', { name: /Anual/i })
+    expect(annualOption.getAttribute('aria-checked')).toBe('false')
+    await userEvent.click(annualOption)
+    expect(annualOption.getAttribute('aria-checked')).toBe('true')
+  },
+}
 
 export const Usos: Story = {
   name: 'Casos de uso',

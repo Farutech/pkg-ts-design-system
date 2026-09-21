@@ -65,14 +65,49 @@ export const SeleccionDeFecha: Story = {
   render: () => <DatePickerDemo />,
 }
 
-export const DatePickerSimple: Story = {
-  name: 'Solo fecha (sin hora)',
+export const ModoFecha: Story = {
+  name: 'Modo Fecha (Solo Fecha)',
   args: {
-    label: 'Fecha de vencimiento',
+    label: 'Fecha de nacimiento',
+    mode: 'date',
     placeholder: 'DD/MM/YYYY',
   },
   render: (args: any) => {
-    const [date, setDate] = useState<Date | null>(null)
+    const [date, setDate] = useState<Date | null>(new Date())
+    return (
+      <div style={{ width: '360px' }}>
+        <DatePicker {...args} value={date} onChange={setDate} />
+      </div>
+    )
+  },
+}
+
+export const ModoHora: Story = {
+  name: 'Modo Hora (Solo Hora)',
+  args: {
+    label: 'Hora de inicio de reunión',
+    mode: 'time',
+    placeholder: 'HH:mm',
+  },
+  render: (args: any) => {
+    const [date, setDate] = useState<Date | null>(new Date())
+    return (
+      <div style={{ width: '360px' }}>
+        <DatePicker {...args} value={date} onChange={setDate} />
+      </div>
+    )
+  },
+}
+
+export const ModoFechaYHora: Story = {
+  name: 'Modo Fecha y Hora (Datetime)',
+  args: {
+    label: 'Cita médica (Fecha y hora)',
+    mode: 'datetime',
+    placeholder: 'DD/MM/YYYY HH:mm',
+  },
+  render: (args: any) => {
+    const [date, setDate] = useState<Date | null>(new Date())
     return (
       <div style={{ width: '360px' }}>
         <DatePicker {...args} value={date} onChange={setDate} />

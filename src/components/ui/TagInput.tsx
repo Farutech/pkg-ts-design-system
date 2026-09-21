@@ -78,6 +78,7 @@ export default function TagInput({
   const [query, setQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [searchResults, setSearchResults] = useState<Tag[]>(availableTags)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Validar si se alcanzó el límite
@@ -100,6 +101,7 @@ export default function TagInput({
   // Buscar tags (con debounce simulado)
   const handleSearch = async (searchQuery: string) => {
     setQuery(searchQuery)
+    setIsDropdownOpen(searchQuery.trim().length > 0)
 
     if (onSearchTags && searchQuery.length > 0) {
       setIsLoading(true)
@@ -123,6 +125,7 @@ export default function TagInput({
 
     onChange([...value, tag])
     setQuery('')
+    setIsDropdownOpen(false)
     inputRef.current?.focus()
   }
 
@@ -163,6 +166,7 @@ export default function TagInput({
 
     onChange([...value, newTag])
     setQuery('')
+    setIsDropdownOpen(false)
     inputRef.current?.focus()
   }
 
@@ -265,6 +269,7 @@ export default function TagInput({
 
           {/* Dropdown */}
           <Transition
+            show={isDropdownOpen && (showCreateOption || filteredTags.length > 0)}
             as={Fragment}
             leave="transition ease-in duration-100"
             leaveFrom="opacity-100"

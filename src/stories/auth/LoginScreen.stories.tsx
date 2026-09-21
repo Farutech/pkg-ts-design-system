@@ -28,6 +28,10 @@ const meta = {
     },
   },
   argTypes: {
+    brandName: {
+      control: 'text',
+      description: 'Nombre de la marca o aplicación (alias prioritario de appName)',
+    },
     appName: {
       control: 'text',
       description: 'Nombre de la aplicación o producto',
@@ -70,7 +74,8 @@ const meta = {
   },
   args: {
     onSubmit: defaultSubmit,
-    appName: 'FaruTech Platform',
+    brandName: 'FaruTech Platform',
+    appName: '',
     description: 'Ingresa tus credenciales para continuar',
     showCreator: true,
     creatorName: 'FaruTech',

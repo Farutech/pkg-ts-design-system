@@ -198,3 +198,62 @@ export const SinUserMenu: Story = {
     permissions: ['admin'],
   },
 }
+
+/** Configurado para cliente específico */
+export const ClienteAfilamos: Story = {
+  name: 'Cliente — Afilamos Operaciones',
+  args: {
+    appName: 'Afilamos Operaciones',
+    menuItems: [
+      { id: 'home', label: 'Inicio', path: '/' },
+      {
+        id: 'planta',
+        label: 'Planta Industrial',
+        children: [
+          { id: 'linea-1', label: 'Línea de Afilado #1' },
+          { id: 'linea-2', label: 'Línea de Afilado #2' },
+          { id: 'calibracion', label: 'Mesa de Calibración', badge: 'Activo' },
+        ],
+      },
+      { id: 'despachos', label: 'Despachos', badge: 4 },
+      { id: 'calidad', label: 'Control de Calidad' },
+    ],
+    userMenu: {
+      name: 'Carlos Díaz',
+      email: 'cdiaz@afilamos.com',
+      items: [
+        { id: 'profile', label: 'Mi Perfil' },
+        { id: 'logout', label: 'Cerrar Sesión' },
+      ],
+    },
+  },
+}
+
+/** Configuración de marca blanca pura */
+export const WhiteLabel: Story = {
+  name: 'Marca Blanca — Ordeon Logistics',
+  args: {
+    appName: 'Ordeon Logistics',
+    menuItems: [
+      { id: 'dash', label: 'Monitoreo Global' },
+      {
+        id: 'flota',
+        label: 'Flota y Envíos',
+        children: [
+          { id: 'en-transito', label: 'En Tránsito', badge: 18 },
+          { id: 'rutas', label: 'Planificador de Rutas' },
+        ],
+      },
+      { id: 'facturacion', label: 'Facturación' },
+    ],
+    userMenu: {
+      name: 'Valeria Rivas',
+      email: 'vrivas@ordeon.io',
+      items: [
+        { id: 'settings', label: 'Configuración de Tenant' },
+        { id: 'logout', label: 'Cerrar Sesión' },
+      ],
+    },
+  },
+}
+

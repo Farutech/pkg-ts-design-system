@@ -14,6 +14,36 @@ import { useConfig } from '@/contexts/ConfigContext'
 import type { MenuCategory, MenuItem, MenuEntry } from '@/config/menu.config'
 import { useMenu } from '@/hooks/useMenu'
 import { ModuleSwitcher } from '@/components/ui'
+import { useBrandConfig } from '@/providers/DesignSystemProvider'
+
+export interface SidebarProps {
+  /** Nombre de la aplicación a mostrar en la cabecera */
+  appName?: string
+  /** Nodo JSX del logo (SVG, icono o elemento personalizado) */
+  logo?: ReactNode
+  /** URL de la imagen del logo */
+  logoUrl?: string
+  /** Si se debe mostrar la atribución al creador al pie (default: true). False para marca blanca */
+  showCreator?: boolean
+  /** Nombre del creador de la plataforma (default: "FaruTech") */
+  creatorName?: string
+  /** URL del enlace del creador (default: "https://farutech.com") */
+  creatorUrl?: string
+  /** Prefijo del creador (default: "Desarrollado por") */
+  creatorPrefix?: string
+  /** Menú de navegación personalizado (omite el menú por defecto) */
+  menu?: MenuEntry[]
+  /** Módulos de la aplicación */
+  modules?: any[]
+  /** ID del módulo activo */
+  currentModule?: string
+  /** Evento de cambio de módulo */
+  onModuleChange?: (moduleId: string) => void
+  /** Contenido extra al pie del menú */
+  footerContent?: ReactNode
+  /** Clases CSS adicionales */
+  className?: string
+}
 
 function isCategory(entry: MenuEntry): entry is MenuCategory {
   return 'items' in entry
@@ -76,20 +106,48 @@ function CategoryItem({ category, isExpanded, onToggle, onNavigate }: {
   )
 }
 
-export function Sidebar() {
+export function Sidebar({
+  appName,
+  logo,
+  logoUrl,
+  showCreator: propShowCreator,
+  creatorName: propCreatorName,
+  creatorUrl: propCreatorUrl,
+  creatorPrefix: propCreatorPrefix,
+  menu: customMenu,
+  modules: customModules,
+  currentModule: customCurrentModule,
+  onModuleChange: customOnModuleChange,
+  footerContent,
+  className,
+}: SidebarProps = {}) {
   const { isOpen, isMobile, close, setSidebarWidth } = useSidebarStore()
-  const { currentModule, modules, setCurrentModule } = useModuleStore()
+  const { currentModule: storeCurrentModule, modules: storeModules, setCurrentModule } = useModuleStore()
   const config = useConfig()
-  const { menu } = useMenu()
+  const { menu: defaultMenu } = useMenu()
+  const brand = useBrandConfig()
   const navigate = useNavigate()
+
+  const effectiveAppName = appName || brand.appName || config?.appName || 'Mi Aplicación'
+  const effectiveShowCreator = propShowCreator ?? brand.showCreator ?? true
+  const effectiveCreatorName = propCreatorName ?? brand.creatorName ?? 'FaruTech'
+  const effectiveCreatorUrl = propCreatorUrl ?? brand.creatorUrl ?? 'https://farutech.com'
+  const effectiveCreatorPrefix = propCreatorPrefix ?? brand.creatorPrefix ?? 'Desarrollado por'
+  const effectiveMenu = customMenu ?? defaultMenu
+  const effectiveModules = customModules ?? storeModules
+
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const [localWidth, setLocalWidth] = useState(256)
   const [isResizing, setIsResizing] = useState(false)
   const resizeStart = useRef<{ x: number; width: number } | null>(null)
 
   const handleModuleChange = (moduleId: string) => {
+    if (customOnModuleChange) {
+      customOnModuleChange(moduleId)
+      return
+    }
     setCurrentModule(moduleId)
-    const module = modules.find((candidate) => candidate.id === moduleId)
+    const module = effectiveModules.find((candidate: any) => candidate.id === moduleId)
     if (module?.path) navigate(module.path)
   }
 
@@ -118,7 +176,7 @@ export function Sidebar() {
     }
   }, [isResizing, setSidebarWidth])
 
-  const currentModuleId = currentModule ?? modules[0]?.id ?? ''
+  const currentModuleId = customCurrentModule ?? storeCurrentModule ?? effectiveModules[0]?.id ?? ''
 
   return (
     <>
@@ -128,32 +186,83 @@ export function Sidebar() {
         className={cn(
           'fixed top-0 left-0 z-50 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-xl transition-transform duration-300',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-[63px]',
-          isMobile && 'w-64'
+          isMobile && 'w-64',
+          className
         )}
       >
         <div className="flex h-full flex-col">
-          <div className="flex h-14 items-center justify-center border-b border-gray-200 dark:border-gray-700 px-3">
-            <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold">{config.appName.charAt(0).toUpperCase()}</div>
-              {isOpen && <span className="text-sm font-bold text-gray-900 dark:text-white">{config.appName}</span>}
+          <div className="flex h-14 items-center justify-between border-b border-gray-200 dark:border-gray-700 px-3">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              {logo ? (
+                <div className="shrink-0">{logo}</div>
+              ) : logoUrl ? (
+                <img src={logoUrl} alt={effectiveAppName} className="h-8 w-8 rounded-lg object-contain" />
+              ) : (
+                <div className="h-9 w-9 shrink-0 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold">
+                  {effectiveAppName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              {isOpen && (
+                <span className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                  {effectiveAppName}
+                </span>
+              )}
             </div>
-            {isMobile && <button type="button" onClick={close} className="ml-auto p-1.5 text-gray-500 lg:hidden" aria-label="Close sidebar"><XMarkIcon className="h-5 w-5" /></button>}
+            {isMobile && (
+              <button type="button" onClick={close} className="p-1.5 text-gray-500 lg:hidden" aria-label="Close sidebar">
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            )}
           </div>
 
-          {isOpen && modules.length > 0 && (
+          {isOpen && effectiveModules && effectiveModules.length > 0 && (
             <div className="p-2.5 border-b border-gray-200 dark:border-gray-700">
-              <ModuleSwitcher modules={modules} currentModule={currentModuleId} onModuleChange={handleModuleChange} searchable={false} compact={false} className="w-full" />
+              <ModuleSwitcher
+                modules={effectiveModules}
+                currentModule={currentModuleId}
+                onModuleChange={handleModuleChange}
+                searchable={false}
+                compact={false}
+                className="w-full"
+              />
             </div>
           )}
 
           <nav className="flex-1 overflow-y-auto p-2.5 space-y-1">
-            {menu.map((entry) => isCategory(entry)
+            {effectiveMenu.map((entry) => isCategory(entry)
               ? <CategoryItem key={entry.id} category={entry} isExpanded={expandedCategory === entry.id} onToggle={() => setExpandedCategory((value) => value === entry.id ? null : entry.id)} onNavigate={() => isMobile && close()} />
               : <MenuLink key={entry.id} item={entry} onNavigate={() => isMobile && close()} />
             )}
           </nav>
 
-          {isOpen && <div role="separator" aria-label="Resize sidebar" onMouseDown={handleMouseDown} className={cn('absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary-400', isResizing && 'bg-primary-500')} />}
+          {footerContent && isOpen && (
+            <div className="border-t border-gray-200 dark:border-gray-700 p-2.5">
+              {footerContent}
+            </div>
+          )}
+
+          {isOpen && effectiveShowCreator && (
+            <div className="border-t border-gray-200 dark:border-gray-700 px-3 py-2 text-center text-[11px] text-gray-400 dark:text-gray-500">
+              <span>{effectiveCreatorPrefix}{' '}</span>
+              <a
+                href={effectiveCreatorUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+              >
+                {effectiveCreatorName}
+              </a>
+            </div>
+          )}
+
+          {isOpen && (
+            <div
+              role="separator"
+              aria-label="Resize sidebar"
+              onMouseDown={handleMouseDown}
+              className={cn('absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary-400', isResizing && 'bg-primary-500')}
+            />
+          )}
         </div>
       </aside>
     </>

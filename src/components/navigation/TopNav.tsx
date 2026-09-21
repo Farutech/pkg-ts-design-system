@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useBrandConfig } from '@/providers/DesignSystemProvider';
 
 export interface MenuItem {
   id: string;
@@ -25,8 +26,16 @@ export interface UserMenu {
 }
 
 export interface TopNavProps {
+  /** Nodo JSX del logo */
   logo?: React.ReactNode;
+  /** URL de la imagen del logo */
+  logoUrl?: string;
+  /** Nombre de la marca o aplicación */
   brandName?: string;
+  /** Nombre de la aplicación (alias moderno de brandName) */
+  appName?: string;
+  /** URL de inicio al hacer click en el logo (default: '/') */
+  homeUrl?: string;
   menuItems: MenuItem[];
   userMenu?: UserMenu;
   onMenuClick?: (item: MenuItem) => void;
@@ -48,14 +57,32 @@ export interface TopNavProps {
  */
 export const TopNav: React.FC<TopNavProps> = ({
   logo,
-  brandName = 'Farutech',
+  logoUrl,
+  brandName,
+  appName,
+  homeUrl = '/',
   menuItems = [],
-  userMenu,
+  userMenu: propUserMenu,
   onMenuClick,
   onUserAction,
   className = '',
   permissions = [],
 }) => {
+  const brand = useBrandConfig();
+  const effectiveAppName = appName || brandName || brand.appName || brand.brandName || 'FaruTech';
+  const effectiveHomeUrl = homeUrl || '/';
+  
+  const effectiveUserMenu: UserMenu | undefined = propUserMenu || (brand.user?.name ? {
+    name: brand.user.name,
+    email: brand.user.email || '',
+    avatar: brand.user.avatarUrl,
+    items: [
+      { id: 'profile', label: 'Mi Perfil', path: '/settings/profile' },
+      { id: 'settings', label: 'Configuración', path: '/settings/general' },
+      { id: 'logout', label: 'Cerrar Sesión' },
+    ],
+  } : undefined);
+
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -391,8 +418,17 @@ export const TopNav: React.FC<TopNavProps> = ({
         {/* Left: Logo + Menu */}
         <div className="topnav__left">
           {/* Logo */}
-          <a href="/" className="topnav__logo">
-            {logo || (
+          <a href={effectiveHomeUrl} className="topnav__logo">
+            {logo ? (
+              logo
+            ) : logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={effectiveAppName}
+                className="topnav__logo-img"
+                style={{ height: '36px', width: 'auto', borderRadius: 'var(--radius-md, 0.375rem)' }}
+              />
+            ) : (
               <>
                 <div
                   style={{
@@ -408,9 +444,9 @@ export const TopNav: React.FC<TopNavProps> = ({
                     fontSize: '1.25rem',
                   }}
                 >
-                  F
+                  {effectiveAppName.charAt(0).toUpperCase()}
                 </div>
-                <span className="topnav__brand">{brandName}</span>
+                <span className="topnav__brand">{effectiveAppName}</span>
               </>
             )}
           </a>
@@ -423,14 +459,14 @@ export const TopNav: React.FC<TopNavProps> = ({
 
         {/* Right: User menu */}
         <div className="topnav__right">
-          {userMenu && (
+          {effectiveUserMenu && (
             <div className="topnav__user">
               <button
                 className="topnav__user-button"
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
               >
-                {userMenu.avatar ? (
-                  <img src={userMenu.avatar} alt={userMenu.name} className="topnav__avatar" />
+                {effectiveUserMenu.avatar ? (
+                  <img src={effectiveUserMenu.avatar} alt={effectiveUserMenu.name} className="topnav__avatar" />
                 ) : (
                   <div
                     style={{
@@ -446,12 +482,12 @@ export const TopNav: React.FC<TopNavProps> = ({
                       fontSize: '0.875rem',
                     }}
                   >
-                    {userMenu.name.charAt(0).toUpperCase()}
+                    {effectiveUserMenu.name.charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div className="topnav__user-info">
-                  <span className="topnav__user-name">{userMenu.name}</span>
-                  <span className="topnav__user-email">{userMenu.email}</span>
+                  <span className="topnav__user-name">{effectiveUserMenu.name}</span>
+                  <span className="topnav__user-email">{effectiveUserMenu.email}</span>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M6 9l6 6 6-6" />
@@ -460,14 +496,17 @@ export const TopNav: React.FC<TopNavProps> = ({
 
               {showUserDropdown && (
                 <div className="topnav__dropdown">
-                  {userMenu.items.map((item) => (
+                  {effectiveUserMenu.items.map((item) => (
                     <React.Fragment key={item.id}>
                       {item.id === 'divider' ? (
                         <div className="topnav__dropdown-divider" />
                       ) : (
                         <button
                           className="topnav__dropdown-item"
-                          onClick={() => handleUserAction(item.id)}
+                          onClick={() => {
+                            item.onClick?.()
+                            handleUserAction(item.id)
+                          }}
                         >
                           {item.icon}
                           {item.label}

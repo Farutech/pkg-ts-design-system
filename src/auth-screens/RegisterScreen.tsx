@@ -15,7 +15,7 @@
  * ```
  */
 
-import { useState, FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { SparklesIcon } from '@heroicons/react/24/outline'
 import { Button, Input, Checkbox, Alert } from '@/components/ui'
 
@@ -34,10 +34,14 @@ export interface RegisterScreenProps {
   onSuccess?: (result: any) => void
   /** Callback cuando el usuario quiere iniciar sesión */
   onLogin?: () => void
-  /** URL del logo de la marca */
-  logoUrl?: string
-  /** Nombre de la marca */
+  /** Nombre de la aplicación (ej: "Afilamos Operaciones", "Ordeon") */
+  appName?: string
+  /** Nombre de la marca o aplicación (alias para appName) */
   brandName?: string
+  /** URL del logo de la aplicación */
+  logoUrl?: string
+  /** Elemento personalizado para el logo */
+  logoNode?: ReactNode
   /** Texto del botón de registro */
   submitButtonText?: string
   /** Campos adicionales requeridos */
@@ -47,26 +51,54 @@ export interface RegisterScreenProps {
   termsUrl?: string
   /** Mensaje de éxito */
   successMessage?: string
+  /** Título del panel lateral informativo */
+  welcomeTitle?: string
+  /** Subtítulo del panel lateral informativo */
+  welcomeSubtitle?: string
+  /** Lista de beneficios o características a destacar */
+  features?: string[]
+  /** Texto de enlace para iniciar sesión */
+  loginPromptText?: string
+  loginLinkText?: string
+  /** Si se debe mostrar el crédito del creador (default: true). False para marca blanca pura */
+  showCreator?: boolean
+  /** Nombre del creador (default: "FaruTech") */
+  creatorName?: string
+  /** URL del creador */
+  creatorUrl?: string
+  /** Prefijo del creador (default: "Desarrollado por") */
+  creatorPrefix?: string
+  /** Contenido adicional para el pie del formulario */
+  footerContent?: ReactNode
+  className?: string
 }
 
-/**
- * Pantalla de registro reutilizable con psicología del color aplicada
- * - Gradientes verdes para confianza y crecimiento
- * - Validación en tiempo real
- * - Diseño responsive con sidebar decorativo
- */
 export function RegisterScreen({
   onSubmit,
   onSuccess,
   onLogin,
+  appName,
+  brandName,
   logoUrl,
-  brandName = 'Farutech',
+  logoNode,
   submitButtonText = 'Crear cuenta',
   requirePhone = false,
   requireCompany = false,
   termsUrl = '/terms',
   successMessage = '¡Cuenta creada exitosamente! Redirigiendo...',
+  welcomeTitle,
+  welcomeSubtitle,
+  features,
+  loginPromptText = '¿Ya tienes una cuenta?',
+  loginLinkText = 'Iniciar sesión',
+  showCreator = true,
+  creatorName = 'FaruTech',
+  creatorUrl = 'https://farutech.com',
+  creatorPrefix = 'Desarrollado por',
+  footerContent,
+  className = '',
 }: RegisterScreenProps) {
+  const effectiveAppName = appName || brandName || 'FaruTech'
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -164,7 +196,7 @@ export function RegisterScreen({
   const passwordStrength = getPasswordStrength(formData.password)
 
   return (
-    <div className="min-h-screen flex">
+    <div className={`min-h-screen flex ${className}`}>
       {/* Sidebar decorativo */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
@@ -175,45 +207,37 @@ export function RegisterScreen({
         
         <div className="relative z-10 flex flex-col justify-center px-12 text-white">
           <div className="mb-8">
-            {logoUrl ? (
-              <img src={logoUrl} alt={brandName} className="h-16 mb-6" />
+            {logoNode ? (
+              logoNode
+            ) : logoUrl ? (
+              <img src={logoUrl} alt={effectiveAppName} className="h-16 mb-6 object-contain" />
             ) : (
               <SparklesIcon className="h-16 w-16 mb-6" />
             )}
           </div>
           
           <h1 className="text-5xl font-bold mb-6 leading-tight">
-            Únete a {brandName}
+            {welcomeTitle || `Únete a ${effectiveAppName}`}
           </h1>
           <p className="text-xl text-emerald-100 mb-8 max-w-md">
-            Gestiona tus leads, automatiza tu marketing y haz crecer tu negocio con nuestra plataforma todo-en-uno.
+            {welcomeSubtitle || 'Gestiona tu negocio y haz crecer tus proyectos con nuestra plataforma todo-en-uno.'}
           </p>
           
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+            {(features || [
+              'Gestión de datos avanzada',
+              'Automatización y flujos inteligentes',
+              'Reportes y analítica en tiempo real',
+            ]).map((feature, idx) => (
+              <div key={idx} className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-lg">{feature}</span>
               </div>
-              <span className="text-lg">Gestión de Leads avanzada</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span className="text-lg">Automatización de Marketing</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span className="text-lg">Reportes y Analytics</span>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -223,12 +247,14 @@ export function RegisterScreen({
         <div className="max-w-md w-full space-y-8">
           {/* Header móvil */}
           <div className="lg:hidden text-center mb-8">
-            {logoUrl ? (
-              <img src={logoUrl} alt={brandName} className="h-12 mx-auto mb-4" />
+            {logoNode ? (
+              <div className="flex justify-center mb-4">{logoNode}</div>
+            ) : logoUrl ? (
+              <img src={logoUrl} alt={effectiveAppName} className="h-12 mx-auto mb-4 object-contain" />
             ) : (
               <SparklesIcon className="h-12 w-12 mx-auto mb-4 text-emerald-600" />
             )}
-            <h2 className="text-2xl font-bold text-gray-900">Crear cuenta en {brandName}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Crear cuenta en {effectiveAppName}</h2>
           </div>
 
           {/* Mensaje de éxito */}
@@ -407,18 +433,40 @@ export function RegisterScreen({
           {/* Footer */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              ¿Ya tienes una cuenta?{' '}
+              {loginPromptText}{' '}
               <button
+                type="button"
                 onClick={onLogin}
                 className="font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
               >
-                Iniciar sesión
+                {loginLinkText}
               </button>
             </p>
           </div>
 
+          {/* Creator / White-label section */}
+          {showCreator && creatorName && (
+            <div className="mt-6 pt-3 border-t border-gray-200 text-center text-xs text-gray-400">
+              {creatorPrefix}{' '}
+              {creatorUrl ? (
+                <a
+                  href={creatorUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium hover:underline text-gray-600"
+                >
+                  {creatorName}
+                </a>
+              ) : (
+                <span className="font-medium text-gray-600">{creatorName}</span>
+              )}
+            </div>
+          )}
+
+          {footerContent && <div className="mt-4">{footerContent}</div>}
+
           {/* Disclaimer */}
-          <p className="text-xs text-center text-gray-500 mt-8">
+          <p className="text-xs text-center text-gray-500 mt-6">
             Al registrarte, aceptas nuestros términos de servicio y política de privacidad.
             Tus datos están protegidos con encriptación de grado bancario.
           </p>

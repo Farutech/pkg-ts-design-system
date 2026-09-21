@@ -134,7 +134,25 @@ function DashboardChart({
   )
 }
 
-function AdminDashboard() {
+interface AdminDashboardProps {
+  appName?: string
+  creatorName?: string
+  creatorUrl?: string
+  creatorPrefix?: string
+  showCreator?: boolean
+  user?: { name: string; role: string; email: string }
+  height?: string
+}
+
+function AdminDashboard({
+  appName = 'FaruTech ERP',
+  creatorName = 'FaruTech',
+  creatorUrl = 'https://farutech.com',
+  creatorPrefix = 'Desarrollado por',
+  showCreator = true,
+  user = { name: 'Admin User', role: 'Administrador', email: 'admin@empresa.com' },
+  height = '640px',
+}: AdminDashboardProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [expandedMenu, setExpandedMenu] = useState<string | null>('ventas')
   const [darkMode, setDarkMode] = useState(false)
@@ -142,10 +160,13 @@ function AdminDashboard() {
 
   return (
     <div style={{
-      display: 'flex', height: '100vh', overflow: 'hidden',
+      display: 'flex', height, overflow: 'hidden',
       fontFamily: 'var(--ft-font-sans)',
       background: 'var(--ft-color-background)',
       color: 'var(--ft-color-foreground)',
+      borderRadius: '12px',
+      border: '1px solid var(--ft-color-border)',
+      boxShadow: 'var(--ft-shadow-lg)',
     }}>
       {/* ── Sidebar ─────────────────────────────────────────────────── */}
       <aside style={{
@@ -168,10 +189,10 @@ function AdminDashboard() {
             background: 'linear-gradient(135deg, var(--ft-color-primary), var(--ft-color-accent))',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'white', fontWeight: 800, fontSize: '0.875rem',
-          }}>F</div>
+          }}>{appName.charAt(0).toUpperCase()}</div>
           {sidebarOpen && (
             <span style={{ fontWeight: 700, fontSize: '0.9375rem', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-              FaruTech ERP
+              {appName}
             </span>
           )}
         </div>
@@ -234,13 +255,23 @@ function AdminDashboard() {
           })}
         </nav>
 
-        {/* Bottom */}
+        {/* Creator Attribution */}
+        {sidebarOpen && showCreator && (
+          <div style={{ padding: '0.375rem 0.75rem', borderTop: '1px solid var(--ft-color-border)', fontSize: '0.6875rem', color: 'var(--ft-color-muted-foreground)', textAlign: 'center' }}>
+            <span>{creatorPrefix}{' '}</span>
+            <a href={creatorUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--ft-color-primary)', fontWeight: 600, textDecoration: 'none' }}>
+              {creatorName}
+            </a>
+          </div>
+        )}
+
+        {/* User profile */}
         {sidebarOpen && (
           <div style={{ padding: '0.75rem', borderTop: '1px solid var(--ft-color-border)', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <Avatar name="Admin User" size="sm" status="online" />
+            <Avatar name={user.name} size="sm" status="online" />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ margin: 0, fontSize: '0.8125rem', fontWeight: 600, color: 'var(--ft-color-foreground)' }}>Admin User</p>
-              <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--ft-color-muted-foreground)' }}>admin@farutech.com</p>
+              <p style={{ margin: 0, fontSize: '0.8125rem', fontWeight: 600, color: 'var(--ft-color-foreground)' }}>{user.name}</p>
+              <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--ft-color-muted-foreground)' }}>{user.email}</p>
             </div>
             <ArrowRightOnRectangleIcon style={{ width: '16px', height: '16px', color: 'var(--ft-color-muted-foreground)', cursor: 'pointer', flexShrink: 0 }} />
           </div>
@@ -295,7 +326,7 @@ function AdminDashboard() {
 
             {/* User */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-              <Avatar name="Admin User" size="sm" status="online" />
+              <Avatar name={user.name} size="sm" status="online" />
               <ChevronDownIcon style={{ width: '14px', height: '14px', color: 'var(--ft-color-muted-foreground)' }} />
             </div>
           </div>
@@ -305,13 +336,13 @@ function AdminDashboard() {
         <main style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
           {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
               <h1 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 700, color: 'var(--ft-color-foreground)' }}>
                 Panel de control
               </h1>
               <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: 'var(--ft-color-muted-foreground)' }}>
-                Bienvenido, Admin. Aquí tienes un resumen del día.
+                Bienvenido, {user.name}. Aquí tienes un resumen del día.
               </p>
             </div>
             <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -403,27 +434,55 @@ function AdminDashboard() {
 
 const meta = {
   title: '11-Templates/Dashboard Admin',
+  component: AdminDashboard,
   parameters: {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: `Template completo de panel de administración empresarial.
-Incluye:
-- Sidebar colapsable con navegación multinivel (categorías expandibles)
-- Topbar con búsqueda, dark mode, notificaciones y avatar
-- Grid de 4 StatsCards KPI con tendencias
-- Gráfico de línea de ingresos vs gastos (recharts)
-- Widget de actividad reciente (Timeline)
-- Tabla de transacciones con badges de estado`,
+        component: `Template completo de panel de administración empresarial altamente configurable.
+Permite personalizar el nombre de la app, atribución de creador, usuario activo y más, para acelerar el desarrollo en cualquier proyecto interno o de cliente.`,
       },
     },
   },
-} satisfies Meta
+  argTypes: {
+    appName: { control: 'text', description: 'Nombre de la aplicación a mostrar en Sidebar y cabecera' },
+    showCreator: { control: 'boolean', description: 'Mostrar atribución al creador (false para marca blanca pura)' },
+    creatorName: { control: 'text', description: 'Nombre del creador' },
+    creatorPrefix: { control: 'text', description: 'Prefijo del creador' },
+  },
+} satisfies Meta<typeof AdminDashboard>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const AdminPanel: Story = {
-  name: 'Panel de administración',
-  render: () => <AdminDashboard />,
+export const FarutechERP: Story = {
+  name: '1. FaruTech ERP (Por defecto con crédito)',
+  args: {
+    appName: 'FaruTech ERP',
+    showCreator: true,
+    creatorName: 'FaruTech',
+    creatorPrefix: 'Desarrollado por',
+    user: { name: 'Admin FaruTech', role: 'Super Administrador', email: 'admin@farutech.com' },
+  },
 }
+
+export const ClientAppAfilamos: Story = {
+  name: '2. Cliente — Afilamos Operaciones',
+  args: {
+    appName: 'Afilamos Operaciones',
+    showCreator: true,
+    creatorName: 'FaruTech',
+    creatorPrefix: 'Desarrollado por',
+    user: { name: 'Carlos Díaz', role: 'Gerente de Planta', email: 'cdiaz@afilamos.com' },
+  },
+}
+
+export const WhiteLabelFintech: Story = {
+  name: '3. Marca Blanca — Ordeon Capital',
+  args: {
+    appName: 'Ordeon Capital',
+    showCreator: false,
+    user: { name: 'Valeria Rivas', role: 'Directora Financiera', email: 'vrivas@ordeon.io' },
+  },
+}
+

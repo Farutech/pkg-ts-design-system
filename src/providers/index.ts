@@ -5,6 +5,9 @@
 export {
   DesignSystemProvider,
   useDesignSystem,
+  useBrandConfig,
   type DesignSystemProviderProps,
   type LinkComponent,
+  type BrandConfig,
+  type BrandUserConfig,
 } from './DesignSystemProvider'

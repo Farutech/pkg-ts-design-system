@@ -49,29 +49,38 @@ const TOP_PAGES_ROWS = [
   { id: '5', cells: { page: '/blog', visitors: '1,540', avgTime: '6:22', bounce: '19%' } },
 ]
 
-const meta = {
-  title: '11-Templates/Dashboard Analytics',
-  parameters: {
-    layout: 'fullscreen',
-    docs: {
-      description: {
-        component: 'Dashboard analítica: StatsCards KPI + ChartArea tendencias + ChartPie distribución + tabla top páginas.',
-      },
-    },
-  },
-} satisfies Meta
+interface AnalyticsTemplateProps {
+  appName?: string
+  title?: string
+  subtitle?: string
+  periodLabel?: string
+  statusLabel?: string
+}
 
-export default meta
-type Story = StoryObj<typeof meta>
-
-export const DashboardDeAnalitica: Story = {
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1.5rem', height: '100vh', overflow: 'auto', background: 'var(--ft-color-background)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>Analítica del Sitio</h1>
+function AnalyticsDashboardView({
+  appName,
+  title = 'Analítica del Sitio',
+  subtitle,
+  periodLabel = 'Este mes',
+  statusLabel = 'En línea',
+}: AnalyticsTemplateProps) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1.5rem', background: 'var(--ft-color-background)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div>
+          {appName && (
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--ft-color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {appName}
+            </span>
+          )}
+          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: 'var(--ft-color-foreground)' }}>{title}</h1>
+          {subtitle && (
+            <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: 'var(--ft-color-muted-foreground)' }}>{subtitle}</p>
+          )}
+        </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Badge variant="primary">Este mes</Badge>
-          <Badge variant="success">En línea</Badge>
+          <Badge variant="primary">{periodLabel}</Badge>
+          <Badge variant="success">{statusLabel}</Badge>
         </div>
       </div>
 
@@ -92,7 +101,7 @@ export const DashboardDeAnalitica: Story = {
         </div>
       </Card>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
         <Card style={{ padding: '1.25rem', background: 'var(--ft-color-surface)', border: '1px solid var(--ft-color-border)', borderRadius: '0.75rem' }}>
           <h2 style={{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: 600 }}>Fuente de tráfico</h2>
           <div style={{ height: '220px', display: 'flex', justifyContent: 'center' }}>
@@ -106,5 +115,61 @@ export const DashboardDeAnalitica: Story = {
         </Card>
       </div>
     </div>
-  ),
+  )
 }
+
+const meta = {
+  title: '11-Templates/Dashboard Analytics',
+  component: AnalyticsDashboardView,
+  parameters: {
+    docs: {
+      description: {
+        component: 'Dashboard analítica altamente parametrizable: StatsCards KPI + ChartArea tendencias + ChartPie distribución + tabla top páginas. Se adapta a cualquier cliente o proyecto interno.',
+      },
+    },
+  },
+  argTypes: {
+    appName: { control: 'text', description: 'Nombre del producto o cliente' },
+    title: { control: 'text', description: 'Título del reporte' },
+    subtitle: { control: 'text', description: 'Subtítulo o descripción' },
+    periodLabel: { control: 'text', description: 'Texto del badge de período' },
+    statusLabel: { control: 'text', description: 'Texto del badge de estado' },
+  },
+} satisfies Meta<typeof AnalyticsDashboardView>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const FarutechAnalytics: Story = {
+  name: '1. FaruTech Analytics (Por defecto)',
+  args: {
+    appName: 'FaruTech Platform',
+    title: 'Analítica del Sitio Web',
+    subtitle: 'Métricas de rendimiento en tiempo real',
+    periodLabel: 'Este mes',
+    statusLabel: 'En vivo',
+  },
+}
+
+export const ClientAppAnalytics: Story = {
+  name: '2. Cliente — Afilamos Operaciones',
+  args: {
+    appName: 'Afilamos Operaciones',
+    title: 'Métricas de Producción y Despachos',
+    subtitle: 'Panel ejecutivo para supervisores y directores de planta',
+    periodLabel: 'Q3 2026',
+    statusLabel: 'Sincronizado',
+  },
+}
+
+export const WhiteLabelAnalytics: Story = {
+  name: '3. Marca Blanca — Ordeon Logistics',
+  args: {
+    appName: 'Ordeon Logistics Portal',
+    title: 'Dashboard de Indicadores Logísticos',
+    subtitle: 'Consolidado multi-almacén sin marcas de proveedor',
+    periodLabel: 'Hoy',
+    statusLabel: 'Operativo',
+  },
+}
+

@@ -12,20 +12,70 @@ import { tokensToStyle } from '@/tokens/tokens'
 
 export type LinkComponent = (props: { href: string; children: ReactNode; className?: string }) => ReactNode
 
-interface DesignSystemContextValue {
-  LinkComponent?: LinkComponent
+export interface BrandUserConfig {
+  name?: string
+  email?: string
+  role?: string
+  avatarUrl?: string
 }
 
-const DesignSystemContext = createContext<DesignSystemContextValue>({})
+export interface BrandConfig {
+  /** Nombre de la aplicación o producto (ej: "Afilamos Operaciones", "Ordeon", "Portal Clientes") */
+  appName?: string
+  /** Alias compatible con appName */
+  brandName?: string
+  /** URL del logo */
+  logoUrl?: string
+  /** Nodo JSX del logo (SVG o elemento personalizado) */
+  logoNode?: ReactNode
+  /** Si se debe mostrar la atribución al creador al pie (default: true). False para marca blanca pura */
+  showCreator?: boolean
+  /** Nombre del creador de la plataforma (default: "FaruTech") */
+  creatorName?: string
+  /** URL del enlace del creador (default: "https://farutech.com") */
+  creatorUrl?: string
+  /** Prefijo del creador (default: "Desarrollado por") */
+  creatorPrefix?: string
+  /** Datos del usuario actual para el Navbar y perfiles */
+  user?: BrandUserConfig
+}
+
+export interface DesignSystemContextValue {
+  LinkComponent?: LinkComponent
+  brand?: BrandConfig
+}
+
+const defaultBrandConfig: BrandConfig = {
+  appName: 'FaruTech',
+  showCreator: true,
+  creatorName: 'FaruTech',
+  creatorUrl: 'https://farutech.com',
+  creatorPrefix: 'Desarrollado por',
+}
+
+const DesignSystemContext = createContext<DesignSystemContextValue>({
+  brand: defaultBrandConfig,
+})
 
 export function useDesignSystem(): DesignSystemContextValue {
   return useContext(DesignSystemContext)
+}
+
+/** Hook que devuelve la configuración de marca activa del árbol */
+export function useBrandConfig(): BrandConfig {
+  const { brand } = useDesignSystem()
+  return useMemo(() => ({
+    ...defaultBrandConfig,
+    ...brand,
+  }), [brand])
 }
 
 export interface DesignSystemProviderProps {
   children: ReactNode
   /** Overrides de tokens (camelCase) aplicados solo a este subárbol. */
   theme?: DesignTokens
+  /** Configuración global de marca (appName, logo, showCreator, etc.) para todos los componentes hijos */
+  brand?: BrandConfig
   /** 'dark' activa el tema oscuro vía data-theme; default hereda. */
   colorMode?: 'light' | 'dark'
   /** Componente de enlace del router host (ej. react-router <Link>). */
@@ -37,13 +87,17 @@ export interface DesignSystemProviderProps {
 export function DesignSystemProvider({
   children,
   theme,
+  brand,
   colorMode,
   linkComponent,
   className,
   style,
 }: DesignSystemProviderProps) {
   const tokenStyle = useMemo(() => tokensToStyle(theme ?? {}), [theme])
-  const ctx = useMemo(() => ({ LinkComponent: linkComponent }), [linkComponent])
+  const ctx = useMemo(() => ({
+    LinkComponent: linkComponent,
+    brand,
+  }), [linkComponent, brand])
 
   return (
     <DesignSystemContext.Provider value={ctx}>

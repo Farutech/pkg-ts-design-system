@@ -16,6 +16,7 @@ import { DesignSystemProvider } from '@/providers/DesignSystemProvider'
 const withDesignSystem: Decorator = (Story, context) => {
   const colorMode = context.globals.theme === 'dark' ? 'dark' : 'light'
   const isFullscreen = context.parameters.layout === 'fullscreen'
+  const isDocs = context.viewMode === 'docs'
 
   useEffect(() => {
     document.documentElement.style.colorScheme = colorMode
@@ -25,11 +26,16 @@ const withDesignSystem: Decorator = (Story, context) => {
     <DesignSystemProvider colorMode={colorMode}>
       <div
         style={{
-          minHeight: '100vh',
-          padding: isFullscreen ? 0 : '2rem',
+          minHeight: !isDocs && isFullscreen ? '100vh' : 'auto',
+          padding: isFullscreen ? 0 : isDocs ? '1rem' : '1.5rem',
           background: 'var(--ft-color-background)',
           color: 'var(--ft-color-foreground)',
           fontFamily: 'var(--ft-font-sans)',
+          boxSizing: 'border-box',
+          width: '100%',
+          display: isFullscreen ? 'block' : 'flex',
+          justifyContent: isFullscreen ? 'normal' : 'center',
+          alignItems: isFullscreen ? 'normal' : 'center',
           transition: 'background-color .2s ease, color .2s ease',
         }}
       >
@@ -51,6 +57,12 @@ const withDataTheme = withThemeByDataAttribute({
 
 const preview: Preview = {
   parameters: {
+    docs: {
+      story: {
+        inline: true,
+        height: 'auto',
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

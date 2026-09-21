@@ -44,8 +44,11 @@ function HeroSection() {
 }
 
 const meta = {
-  title: 'Templates/LandingApp',
+  title: '11-Templates/Landing App SaaS',
   component: HeroSection,
+  parameters: {
+    layout: 'fullscreen',
+  },
 } satisfies Meta<typeof HeroSection>
 
 export default meta

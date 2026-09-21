@@ -20,7 +20,7 @@ function FABDemo() {
   ]
 
   return (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden', background: 'var(--ft-color-background)' }}>
+    <div style={{ position: 'relative', height: '320px', overflow: 'hidden', background: 'var(--ft-color-background)', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
       <FloatingActionButton
         icon={<PlusIcon className="h-6 w-6" />}
         label="Acciones principales"
@@ -57,7 +57,6 @@ function FABDemo() {
 const meta = {
   title: '7-Overlays/FloatingActionButton',
   parameters: {
-    layout: 'fullscreen',
     docs: {
       description: {
         component: 'FAB (Floating Action Button) con acciones expandibles. Se expande al hacer clic para mostrar acciones secundarias flotantes.',
@@ -76,7 +75,7 @@ export const ConAccionesExpandibles: Story = {
 export const SimpleFAB: Story = {
   name: 'FAB simple (sin acciones)',
   render: () => (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ position: 'relative', height: '320px', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
       <FloatingActionButton
         icon={<PlusIcon className="h-6 w-6" />}
         label="Nuevo registro"
@@ -93,7 +92,7 @@ export const SimpleFAB: Story = {
 export const VariosColores: Story = {
   name: 'Variantes de color',
   render: () => (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', gap: '1.5rem', padding: '2rem' }}>
+    <div style={{ position: 'relative', height: '320px', overflow: 'hidden', background: 'var(--ft-color-background)', display: 'flex', gap: '1.5rem', padding: '2rem', borderRadius: '8px', border: '1px solid var(--ft-color-border)' }}>
       <FloatingActionButton
         icon={<PlusIcon className="h-5 w-5" />}
         label="Primary"

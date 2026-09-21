@@ -65,8 +65,11 @@ function LandingMarketing() {
 }
 
 const meta = {
-  title: 'Templates/LandingMarketing',
+  title: '11-Templates/Landing Marketing',
   component: LandingMarketing,
+  parameters: {
+    layout: 'fullscreen',
+  },
 } satisfies Meta<typeof LandingMarketing>
 
 export default meta

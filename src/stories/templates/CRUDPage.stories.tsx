@@ -16,7 +16,10 @@ type CrudUser = {
 }
 
 const meta = {
-  title: 'Templates/CRUDPage',
+  title: '11-Templates/CRUD Page',
+  parameters: {
+    layout: 'fullscreen',
+  },
 } satisfies Meta
 
 export default meta

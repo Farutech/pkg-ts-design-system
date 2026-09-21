@@ -1,16 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Alert } from '@/components/ui/Alert'
 
-/**
- * ForgotPasswordScreen (TASK-203 / REQ-DS-03) — migrado de
- * dashboard/pages/auth/ForgotPasswordPage.tsx.
- *
- * Dos flujos segun `method` (misma logica de estados que el original:
- * input -> sent -> error), pero sin ConfigContext: el metodo y el correo de
- * contacto se reciben por props.
- */
 export interface ForgotPasswordValues {
   email: string
 }
@@ -21,8 +13,20 @@ export interface ForgotPasswordScreenProps<TPayload = unknown> {
   onBack?: () => void
   method?: 'email' | 'admin_request'
   adminEmail?: string
+  appName?: string
   brandName?: string
   title?: string
+  subtitle?: string
+  logoUrl?: string
+  logoNode?: ReactNode
+  emailLabel?: string
+  submitButtonText?: string
+  backButtonText?: string
+  showCreator?: boolean
+  creatorName?: string
+  creatorUrl?: string
+  creatorPrefix?: string
+  footerContent?: ReactNode
   className?: string
 }
 
@@ -32,10 +36,23 @@ export function ForgotPasswordScreen<TPayload = unknown>({
   onBack,
   method = 'email',
   adminEmail = 'soporte@farutech.com',
-  brandName = 'FaruTech',
+  appName,
+  brandName,
   title = 'Recuperar contraseña',
+  subtitle,
+  logoUrl,
+  logoNode,
+  emailLabel = 'Correo electrónico',
+  submitButtonText = 'Enviar solicitud',
+  backButtonText = '← Volver al inicio de sesión',
+  showCreator = true,
+  creatorName = 'FaruTech',
+  creatorUrl = 'https://farutech.com',
+  creatorPrefix = 'Desarrollado por',
+  footerContent,
   className,
 }: ForgotPasswordScreenProps<TPayload>) {
+  const effectiveAppName = appName || brandName || 'Mi Aplicación'
   const [email, setEmail] = useState('')
   const [step, setStep] = useState<'input' | 'sent' | 'error'>('input')
   const [loading, setLoading] = useState(false)
@@ -69,13 +86,19 @@ export function ForgotPasswordScreen<TPayload = unknown>({
       <div className="ft-auth__card">
         <div className="ft-auth__header">
           <div className="ft-auth__logo" aria-hidden="true">
-            {brandName.slice(0, 1).toUpperCase()}
+            {logoNode ? (
+              logoNode
+            ) : logoUrl ? (
+              <img src={logoUrl} alt={`${effectiveAppName} logo`} className="w-8 h-8 object-contain inline-block" />
+            ) : (
+              effectiveAppName.slice(0, 1).toUpperCase()
+            )}
           </div>
           <h1 className="ft-auth__title">{title}</h1>
           <p className="ft-auth__subtitle">
-            {method === 'email'
+            {subtitle ?? (method === 'email'
               ? 'Te enviaremos un enlace para restablecer tu contraseña'
-              : 'Tu solicitud será revisada por un administrador'}
+              : 'Tu solicitud será revisada por un administrador')}
           </p>
         </div>
 
@@ -85,7 +108,7 @@ export function ForgotPasswordScreen<TPayload = unknown>({
 
             <Input
               id="forgot-email"
-              label="Correo electrónico"
+              label={emailLabel}
               type="email"
               autoComplete="email"
               value={email}
@@ -94,14 +117,34 @@ export function ForgotPasswordScreen<TPayload = unknown>({
             />
 
             <Button type="submit" fullWidth loading={loading} disabled={loading}>
-              Enviar solicitud
+              {submitButtonText}
             </Button>
 
             {onBack && (
               <button type="button" className="ft-auth__link" onClick={onBack}>
-                ← Volver al inicio de sesión
+                {backButtonText}
               </button>
             )}
+
+            {showCreator && creatorName && (
+              <div className="mt-6 pt-3 border-t border-gray-100 dark:border-gray-800 text-center text-xs text-gray-400 dark:text-gray-500">
+                {creatorPrefix}{' '}
+                {creatorUrl ? (
+                  <a
+                    href={creatorUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium hover:underline text-gray-600 dark:text-gray-400"
+                  >
+                    {creatorName}
+                  </a>
+                ) : (
+                  <span className="font-medium text-gray-600 dark:text-gray-400">{creatorName}</span>
+                )}
+              </div>
+            )}
+
+            {footerContent && <div className="mt-4">{footerContent}</div>}
           </form>
         )}
 

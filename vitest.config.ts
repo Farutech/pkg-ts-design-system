@@ -1,33 +1,55 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 
 /**
- * Configuración de pruebas unitarias / integración (jsdom).
- * - `npm run test`           -> ejecución única
+ * Configuración de pruebas unitarias / integración (jsdom) + Storybook Component Tests.
+ * - `npm run test`           -> pruebas de componentes con Storybook
+ * - `npm run test:unit`      -> pruebas unitarias de stores y hooks
  * - `npm run test:coverage`  -> con reporte y umbrales de cobertura
  */
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      'use-sync-external-store/shim/with-selector.js': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
-      'use-sync-external-store/shim/with-selector': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
-      'use-sync-external-store/with-selector.js': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
-      'use-sync-external-store/with-selector': path.resolve(__dirname, './src/shims/use-sync-external-store-with-selector.ts'),
-      'use-sync-external-store/shim/index.js': path.resolve(__dirname, './src/shims/use-sync-external-store.ts'),
-      'use-sync-external-store/shim': path.resolve(__dirname, './src/shims/use-sync-external-store.ts'),
-      'use-sync-external-store': path.resolve(__dirname, './src/shims/use-sync-external-store.ts'),
+      '@': path.resolve(import.meta.dirname, './src'),
+      'use-sync-external-store/shim/with-selector.js': path.resolve(import.meta.dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/shim/with-selector': path.resolve(import.meta.dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/with-selector.js': path.resolve(import.meta.dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/with-selector': path.resolve(import.meta.dirname, './src/shims/use-sync-external-store-with-selector.ts'),
+      'use-sync-external-store/shim/index.js': path.resolve(import.meta.dirname, './src/shims/use-sync-external-store.ts'),
+      'use-sync-external-store/shim': path.resolve(import.meta.dirname, './src/shims/use-sync-external-store.ts'),
+      'use-sync-external-store': path.resolve(import.meta.dirname, './src/shims/use-sync-external-store.ts'),
     },
   },
   test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test-setup.ts'],
-    css: false,
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    restoreMocks: true,
+    projects: [
+      {
+        test: {
+          name: 'unit',
+          globals: true,
+          environment: 'jsdom',
+          setupFiles: ['./src/test-setup.ts'],
+          css: false,
+          include: ['src/**/*.{test,spec}.{ts,tsx}'],
+          restoreMocks: true,
+        },
+      },
+      {
+        extends: true,
+        plugins: [
+          storybookTest({ configDir: path.join(import.meta.dirname, '.storybook') }),
+        ],
+        test: {
+          name: 'storybook',
+          globals: true,
+          environment: 'jsdom',
+          setupFiles: ['./src/test-setup.ts'],
+          isolate: false,
+        },
+      },
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],

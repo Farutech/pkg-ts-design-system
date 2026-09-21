@@ -4,90 +4,158 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # 👋 FaruTech Design System
 
-Sistema de diseño oficial de **FaruTech** — componentes UI accesibles, tokens tematizables y documentación viva para todas las aplicaciones del ecosistema.
+> **ES**: Sistema de diseño corporativo y framework de componentes de **FaruTech** — componentes UI accesibles, tokens tematizables, suite de pruebas automatizada con Storybook + Vitest y documentación viva para aplicaciones web, dashboards e intranets.  
+> **EN**: Official **FaruTech** design system & component library — accessible UI components, themeable tokens, automated testing suite with Storybook + Vitest, and living documentation for web applications, dashboards, and enterprise intranets.
 
 ---
 
-## ¿Qué es este Design System?
+## 🚀 Pila Tecnológica / Tech Stack
 
-`@farutech/design-system` es una librería de componentes React construida sobre:
-
-| Capa | Tecnología |
-|---|---|
-| UI Components | React 18/19 + TypeScript |
-| Estilos | Tailwind CSS v3 + CSS Custom Properties |
-| Animaciones | Framer Motion |
-| Accesibilidad | Headless UI + ARIA |
-| Estado global | Zustand |
-| Tablas | TanStack Table v8 |
-| Gráficos | Recharts (opcional) |
-| Documentación | Storybook 10 |
+| Capa / Layer | Tecnología / Technology | Propósito / Purpose |
+|---|---|---|
+| **UI Components** | React 18 / 19 + TypeScript (Strict) | Componentes tipados, accesibles y modulares |
+| **Styling** | Tailwind CSS v3 + CSS Custom Properties (`--ft-*`) | Estilos utilitarios con theming de marca sin fork |
+| **Animations** | Framer Motion | Transiciones fluidas, modales y micro-interacciones |
+| **Accessibility** | Headless UI + WAI-ARIA | Menús, diálogos y popovers 100% accesibles por teclado |
+| **State Management** | Zustand (v5) | Estado reactivo para theme, locale, sidebar y auth |
+| **Data Tables** | TanStack Table (v8) | Tablas ordenables, paginables y con selección múltiple |
+| **Testing Engine** | Vitest (v5) + `@storybook/addon-vitest` | Ejecución de historias como tests unitarios y de interacción |
+| **A11y & Docs** | Storybook 10 + `@storybook/addon-a11y` | Documentación interactiva y auditorías Axe en tiempo real |
 
 ---
 
-## 📦 Instalación rápida
+## 📦 Instalación y Configuración / Installation & Setup
 
 ```bash
+# Instalación del paquete
 npm install @farutech/design-system
-# peerDependencies requeridas:
+
+# Peer dependencies necesarias
 npm install react react-dom
 ```
 
-## 🔧 Setup mínimo
+### Configuración en la aplicación / Application Setup
 
 ```tsx
-// main.tsx de tu app
+// main.tsx o App.tsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 import '@farutech/design-system/styles.css'
 import { DesignSystemProvider } from '@farutech/design-system'
+import { MiApp } from './MiApp'
 
-function App() {
-  return (
-    <DesignSystemProvider>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    {/* Puedes personalizar colores, fuentes y radios mediante el prop theme */}
+    <DesignSystemProvider theme={{ colorPrimary: '#7c3aed' }}>
       <MiApp />
     </DesignSystemProvider>
-  )
-}
+  </React.StrictMode>
+)
 ```
 
 ---
 
-## 🗂️ Estructura de este Storybook
+## 🧪 Estrategia de Testing / Testing Strategy
 
-| Sección | Contenido |
-|---|---|
-| **1-Foundations** | Colores, tipografía, espaciado, íconos |
-| **2-Layout** | MainLayout, Sidebar, Navbar |
-| **3-Navigation** | TopNav, Breadcrumb, Tabs |
-| **4-Inputs** | Todos los controles de formulario |
-| **5-Data Display** | Tablas, gráficos, badges, listas |
-| **6-Feedback** | Alerts, toasts, loaders, steppers |
-| **7-Overlays** | Modales, drawers, popovers, tooltips |
-| **8-Auth** | Pantallas de login, registro, recuperación |
-| **9-Hooks & Stores** | useToast, useTheme, useSidebar |
-| **10-Helpers** | Utilidades y primitivas |
-| **11-Templates** | Dashboards y landings completos |
+El Design System implementa la suite completa de pruebas recomendada por **Storybook** y potenciada por **Vitest**:
+
+### 1. Test your components (Pruebas de Componentes)
+Cada historia (`.stories.tsx`) es automáticamente un test ejecutable por Vitest sin necesidad de duplicar código en archivos `.test.tsx`:
+```bash
+# Ejecutar todas las historias de Storybook como tests
+npm run test:storybook
+
+# O ejecutar toda la suite (historias + unit tests)
+npm test
+```
+
+### 2. Test functionality with interactions (Pruebas de Interacción)
+Utilizamos la función `play` con `userEvent` y `expect` para simular interacciones reales de usuario (clicks, typing, navegación por teclado):
+```tsx
+export const Interactive: Story = {
+  play: async ({ canvas, userEvent }) => {
+    const button = canvas.getByRole('button', { name: /guardar/i })
+    await userEvent.click(button)
+    await expect(button).toHaveAttribute('aria-disabled', 'true')
+  },
+}
+```
+
+### 3. Run accessibility tests (Auditorías de Accesibilidad - a11y)
+Cada componente se valida automáticamente contra las directrices **WCAG 2.1 AA** mediante `@storybook/addon-a11y` (Axe-core), garantizando contraste, roles ARIA y accesibilidad para lectores de pantalla.
+
+### 4. Visual tests (Pruebas Visuales con Chromatic)
+Para detectar regresiones visuales y variaciones de pixel entre versiones:
+```bash
+npx chromatic --project-token=<TU_CHROMATIC_TOKEN>
+```
+
+### 5. Coverage report (Reporte de Cobertura de Código)
+Monitorea qué porcentaje de líneas, ramas y funciones están cubiertas por los tests:
+```bash
+npm run test:coverage
+```
+
+### 6. Automate tests in CI (Automatización en Integración Continua)
+Los tests se ejecutan automáticamente en cada Push o Pull Request mediante GitHub Actions (`.github/workflows/test.yml`) usando:
+```bash
+vitest run --project storybook --project unit
+```
 
 ---
 
-## 🎨 Theming sin fork
+## 🎨 Theming y Personalización / Theming & White-label
 
-Personaliza cualquier color, radio o fuente desde el `:root` de tu app:
+El sistema está diseñado para admitir cualquier marca blanca o aplicación cliente sin necesidad de bifurcar el código (*fork*).
 
+### Vía CSS Custom Properties (`:root`)
 ```css
 :root {
-  --ft-color-primary: #7c3aed;
-  --ft-color-primary-hover: #6d28d9;
-  --ft-font-sans: 'Outfit', sans-serif;
-  --ft-radius-lg: 1rem;
+  --ft-color-primary: #0284c7;        /* Color primario corporativo */
+  --ft-color-primary-hover: #0369a1;  /* Estado hover */
+  --ft-color-accent: #10b981;         /* Color de acento */
+  --ft-font-sans: 'Inter', sans-serif;/* Tipografía principal */
+  --ft-radius-md: 0.5rem;             /* Radio de bordes estándar */
 }
 ```
 
-O dinámicamente con `DesignSystemProvider`:
-
+### Vía Props de `DesignSystemProvider`
 ```tsx
-<DesignSystemProvider theme={{ colorPrimary: '#7c3aed' }}>
-  <MiApp />
+<DesignSystemProvider
+  theme={{
+    colorPrimary: '#2563eb',
+    fontSans: 'Roboto, sans-serif',
+    radiusMd: '8px',
+  }}
+>
+  <App />
 </DesignSystemProvider>
 ```
 
-> Prueba el theming en vivo en **Guía → Theming**.
+---
+
+## 🗂️ Arquitectura de Componentes / Component Taxonomy
+
+| Categoría / Category | Descripción / Description | Ejemplos / Examples |
+|---|---|---|
+| **1-Foundations** | Primitivas de diseño y tokens base | Colors, Typography, Spacing, Shadows, Icons |
+| **2-Layout** | Estructuras principales de página y contenedores | MainLayout, Sidebar, Navbar, PageTransition |
+| **3-Navigation** | Elementos de navegación y localización | TopNav, Breadcrumb, Tabs, Pagination |
+| **4-Inputs** | Controles de entrada de datos y formularios | Button, Input, Select, Checkbox, Slider, DatePicker |
+| **5-Data Display** | Visualización estructurada de datos | Table, Card, Badge, Avatar, Timeline, Skeleton |
+| **6-Feedback** | Notificaciones, estados y retroalimentación | Alert, Toast, Loading, LogoSpinner, EmptyState |
+| **7-Overlays** | Elementos flotantes y modales interactivos | Modal, Drawer, Popover, Dropdown, Tooltip |
+| **8-Auth** | Pantallas completas de autenticación configurables | LoginScreen, RegisterScreen, ForgotPassword |
+| **9-Hooks & Stores** | Estado global reactivo y utilidades | useTheme, useLocale, useToast, useSidebar |
+| **10-Helpers** | Componentes utilitarios de composición | FormField, Divider, IconButton, ThemeToggle |
+| **11-Templates** | Páginas y dashboards listos para producción | DashboardAnalytics, CRUDPage, LandingApp |
+
+---
+
+## 💡 Soporte y Contribución / Support & Contribution
+
+Para reportar problemas o sugerir nuevas características:
+- **Repositorio**: [GitHub Farutech/pkg-ts-design-system](https://github.com/Farutech/pkg-ts-design-system)
+- **Autor**: Farid Maloof Suarez — FaruTech
+- **Licencia**: MIT

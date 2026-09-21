@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, within } from 'storybook/test'
 import { Badge, StatusBadge } from '@/components/ui/Badge'
 
 /**
@@ -95,3 +96,39 @@ export const StatusBadges: Story = {
     </div>
   ),
 }
+
+/**
+ * 2. Test de Funcionalidad e Interacción:
+ * Valida la renderización dinámica con dot indicator y clases semánticas.
+ */
+export const TestInteraccion: Story = {
+  name: 'Test: Renderizado e Indicador Dinámico',
+  args: {
+    variant: 'success',
+    dot: true,
+    children: 'Servicio Activo',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const badge = canvas.getByText(/servicio activo/i)
+    await expect(badge).toBeInTheDocument()
+  },
+}
+
+/**
+ * 3. Test de Accesibilidad:
+ * Verifica legibilidad de texto para tecnologías asistivas.
+ */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad de Contenido',
+  args: {
+    variant: 'danger',
+    children: 'Fallo crítico del sistema',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const badge = canvas.getByText(/fallo crítico del sistema/i)
+    await expect(badge).toBeInTheDocument()
+  },
+}
+

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Input } from '@/components/ui/Input'
 import { MagnifyingGlassIcon, EnvelopeIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline'
 
@@ -79,3 +80,43 @@ export const Deshabilitado: Story = {
     </div>
   ),
 }
+
+/**
+ * 2. Test de Funcionalidad e Interacción:
+ * Simula escritura de texto con userEvent y valida el valor resultante.
+ */
+export const TestInteraccion: Story = {
+  name: 'Test: Escritura e Interacción',
+  args: {
+    label: 'Nombre de usuario',
+    placeholder: 'Escribe tu usuario',
+    onChange: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const input = canvas.getByRole('textbox', { name: /nombre de usuario/i })
+    await userEvent.type(input, 'farutech_admin')
+    await expect(input).toHaveValue('farutech_admin')
+    await expect(args.onChange).toHaveBeenCalled()
+  },
+}
+
+/**
+ * 3. Test de Accesibilidad y Atributos ARIA:
+ * Verifica accesibilidad de etiqueta, estado de error y mensaje aria-describedby.
+ */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad y Validación ARIA',
+  args: {
+    label: 'Correo corporativo',
+    placeholder: 'admin@farutech.com',
+    error: 'El formato del correo es inválido',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const input = canvas.getByRole('textbox', { name: /correo corporativo/i })
+    await expect(input).toBeInTheDocument()
+    await expect(canvas.getByText(/el formato del correo es inválido/i)).toBeInTheDocument()
+  },
+}
+

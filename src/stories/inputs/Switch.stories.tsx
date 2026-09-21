@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Switch } from '@/components/ui/Switch'
-import { within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { expect } from 'vitest'
+import { expect, fn, userEvent, within } from 'storybook/test'
 
 const meta = {
   title: '4-Inputs/Switch',
@@ -35,16 +33,8 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  name: 'Interactivo (Clic para alternar)',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const switchButton = canvas.getByRole('switch')
-    expect(switchButton.getAttribute('aria-checked')).toBe('false')
-    await userEvent.click(switchButton)
-    expect(switchButton.getAttribute('aria-checked')).toBe('true')
-  },
-}
+/** 1. Test de Renderizado Visual Básico */
+export const Default: Story = {}
 
 export const Grupo: Story = {
   name: 'Grupo de switches interactivos',
@@ -61,3 +51,38 @@ export const Grupo: Story = {
     </div>
   ),
 }
+
+/** 2. Test de Funcionalidad e Interacción */
+export const TestInteraccion: Story = {
+  name: 'Test: Alternancia de Estado e Interacción',
+  args: {
+    label: 'Modo oscuro automático',
+    defaultChecked: false,
+    onChange: fn(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const switchButton = canvas.getByRole('switch', { name: /modo oscuro automático/i })
+    await expect(switchButton).toHaveAttribute('aria-checked', 'false')
+    await userEvent.click(switchButton)
+    await expect(switchButton).toHaveAttribute('aria-checked', 'true')
+  },
+}
+
+/** 3. Test de Accesibilidad y Atributos ARIA */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad y Estado Deshabilitado',
+  args: {
+    label: 'Sincronización en la nube',
+    disabled: true,
+    defaultChecked: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const switchButton = canvas.getByRole('switch', { name: /sincronización en la nube/i })
+    await expect(switchButton).toBeInTheDocument()
+    await expect(switchButton).toBeDisabled()
+    await expect(switchButton).toHaveAttribute('aria-checked', 'true')
+  },
+}
+

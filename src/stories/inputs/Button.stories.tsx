@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Button } from '@/components/ui/Button'
 import {
   PlusIcon,
@@ -135,4 +136,43 @@ export const AnchoCompleto: Story = {
       <Button fullWidth variant="ghost">¿Olvidaste tu contraseña?</Button>
     </div>
   ),
+}
+
+/**
+ * 2. Test de Funcionalidad e Interacción:
+ * Simula interacción real con userEvent y verifica ejecución de callbacks.
+ */
+export const TestInteraccion: Story = {
+  name: 'Test: Interacción de Usuario',
+  args: {
+    children: 'Hacer clic aquí',
+    onClick: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /hacer clic aquí/i })
+    await userEvent.click(button)
+    await expect(args.onClick).toHaveBeenCalledTimes(1)
+  },
+}
+
+/**
+ * 3. Test de Accesibilidad y Roles ARIA:
+ * Verifica roles accesibles de botón, estado disabled y prevención de clics.
+ */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad y ARIA',
+  args: {
+    children: 'Botón Bloqueado',
+    disabled: true,
+    onClick: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /botón bloqueado/i })
+    await expect(button).toBeInTheDocument()
+    await expect(button).toBeDisabled()
+    await userEvent.click(button)
+    await expect(args.onClick).not.toHaveBeenCalled()
+  },
 }

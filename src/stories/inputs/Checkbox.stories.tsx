@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Checkbox, CheckboxGroup } from '@/components/ui/Checkbox'
 
 /**
@@ -73,3 +74,46 @@ export const GrupoDeCheckboxes: Story = {
     )
   },
 }
+
+/**
+ * 2. Test de Funcionalidad e Interacción:
+ * Simula clic sobre la casilla de verificación y valida el evento onChange.
+ */
+export const TestInteraccion: Story = {
+  name: 'Test: Clic e Interacción',
+  args: {
+    label: 'Acepto recibir comunicaciones',
+    checked: false,
+    onChange: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const checkbox = canvas.getByRole('checkbox', { name: /acepto recibir comunicaciones/i })
+    await userEvent.click(checkbox)
+    await expect(args.onChange).toHaveBeenCalled()
+  },
+}
+
+/**
+ * 3. Test de Accesibilidad y Roles ARIA:
+ * Verifica roles, estado de deshabilitado y prevención de eventos.
+ */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad y ARIA',
+  args: {
+    label: 'Términos obligatorios bloqueados',
+    disabled: true,
+    checked: true,
+    onChange: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const checkbox = canvas.getByRole('checkbox', { name: /términos obligatorios bloqueados/i })
+    await expect(checkbox).toBeInTheDocument()
+    await expect(checkbox).toBeDisabled()
+    await expect(checkbox).toBeChecked()
+    await userEvent.click(checkbox)
+    await expect(args.onChange).not.toHaveBeenCalled()
+  },
+}
+

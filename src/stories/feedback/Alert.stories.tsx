@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Alert } from '@/components/ui/Alert'
 
 /**
@@ -97,3 +98,44 @@ export const ConContenidoRich: Story = {
     </div>
   ),
 }
+
+/**
+ * 2. Test de Funcionalidad e Interacción:
+ * Simula clic en el botón de cerrar y valida la invocación de onClose.
+ */
+export const TestInteraccion: Story = {
+  name: 'Test: Botón de Cierre e Interacción',
+  args: {
+    variant: 'warning',
+    title: 'Aviso importante',
+    children: 'Puedes cerrar este aviso en cualquier momento.',
+    onClose: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const closeBtn = canvas.getByRole('button')
+    await userEvent.click(closeBtn)
+    await expect(args.onClose).toHaveBeenCalled()
+  },
+}
+
+/**
+ * 3. Test de Accesibilidad y Roles ARIA:
+ * Valida la existencia del rol alert y la visibilidad de su título y contenido.
+ */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad y Rol Alert',
+  args: {
+    variant: 'error',
+    title: 'Error de conexión',
+    children: 'No se pudo sincronizar la información con el servidor.',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const alertElement = canvas.getByRole('alert')
+    await expect(alertElement).toBeInTheDocument()
+    await expect(canvas.getByText(/error de conexión/i)).toBeInTheDocument()
+    await expect(canvas.getByText(/no se pudo sincronizar/i)).toBeInTheDocument()
+  },
+}
+

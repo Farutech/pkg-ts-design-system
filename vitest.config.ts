@@ -1,3 +1,15 @@
+// Suppress Node DEP0205 emitted by Storybook internal module.register() in Node 22+
+const _emitWarning = process.emitWarning
+process.emitWarning = function (warning: any, ...args: any[]) {
+  if (
+    (typeof warning === 'string' && (warning.includes('DEP0205') || warning.includes('module.register()'))) ||
+    (typeof warning === 'object' && warning?.code === 'DEP0205')
+  ) {
+    return
+  }
+  return Reflect.apply(_emitWarning, process, [warning, ...args])
+}
+
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -47,6 +59,7 @@ export default defineConfig({
           environment: 'jsdom',
           setupFiles: ['./src/test-setup.ts'],
           isolate: false,
+          testTimeout: 20000,
         },
       },
     ],

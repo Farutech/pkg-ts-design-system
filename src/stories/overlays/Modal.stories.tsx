@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { useState } from 'react'
@@ -147,3 +148,45 @@ export const ConFormulario: Story = {
   name: 'Modal con formulario (C-19)',
   render: () => <FormModalDemo />,
 }
+
+/**
+ * 2. Test de Funcionalidad e Interacción:
+ * Simula clic para abrir el diálogo modal y verifica que el contenido se visualice.
+ */
+export const TestInteraccion: Story = {
+  name: 'Test: Apertura de Modal e Interacción',
+  render: () => <ModalDemo title="Diálogo Interactivo" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const openBtn = canvas.getByRole('button', { name: /abrir modal/i })
+    await userEvent.click(openBtn)
+    
+    // El modal se renderiza en un portal en document.body
+    const dialog = await within(document.body).findByRole('dialog')
+    await expect(dialog).toBeInTheDocument()
+    await expect(within(dialog).getByText(/diálogo interactivo/i)).toBeInTheDocument()
+    
+    const cancelBtn = within(dialog).getByRole('button', { name: /cancelar/i })
+    await userEvent.click(cancelBtn)
+  },
+}
+
+/**
+ * 3. Test de Accesibilidad y Roles ARIA:
+ * Verifica el rol dialog, aria-modal="true" y el botón accesible de cierre.
+ */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad y Atributos ARIA',
+  render: () => (
+    <Modal isOpen={true} onClose={fn()} title="Accesibilidad WAI-ARIA">
+      <p>Contenido accesible para lectores de pantalla.</p>
+    </Modal>
+  ),
+  play: async () => {
+    const dialog = await within(document.body).findByRole('dialog')
+    await expect(dialog).toBeInTheDocument()
+    await expect(dialog).toHaveAttribute('aria-modal', 'true')
+    await expect(within(dialog).getByRole('button', { name: /cerrar modal/i })).toBeInTheDocument()
+  },
+}
+

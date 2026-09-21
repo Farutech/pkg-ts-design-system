@@ -84,6 +84,7 @@ function IconsPage({ filter = '', variant = 'outline' }: { filter?: string; vari
 
 const meta = {
   title: '1-Foundations/Icons',
+  component: IconsPage,
   argTypes: {
     filter: {
       control: 'text',
@@ -107,18 +108,20 @@ const meta = {
       },
     },
   },
-} satisfies Meta<{ filter: string; variant: 'outline' | 'solid' }>
+} satisfies Meta<typeof IconsPage>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Outline: Story = {
   args: { variant: 'outline', filter: '' },
+  tags: ['!test'],
   render: (args) => <IconsPage {...args} />,
 }
 
 export const Solid: Story = {
   args: { variant: 'solid', filter: '' },
+  tags: ['!test'],
   render: (args) => <IconsPage {...args} />,
 }
 

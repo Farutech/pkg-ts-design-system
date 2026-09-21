@@ -57,6 +57,7 @@ function TokensTable() {
 
 const meta = {
   title: 'Guía/Tokens',
+  component: TokensTable,
   parameters: {
     layout: 'centered',
     docs: {
@@ -66,7 +67,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof TokensTable>
 
 export default meta
 type Story = StoryObj<typeof meta>

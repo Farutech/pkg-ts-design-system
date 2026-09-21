@@ -16,7 +16,7 @@
  */
 
 /* 1. Tokens canónicos */
-@import '@/components/tokens/tokens.css';
+@import '../tokens/tokens.css';
 
 /* 2. Componentes con clases semánticas ft-* */
 @import './components/button.css';

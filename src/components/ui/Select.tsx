@@ -8,13 +8,13 @@ import type { SelectHTMLAttributes } from 'react'
 import { cn } from '@/utils/cn'
 import { Spinner } from './Spinner'
 
-interface SelectOption {
+export interface SelectOption {
   label: string
   value: string | number
   disabled?: boolean
 }
 
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string
   error?: string
   helperText?: string

@@ -1,18 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Select } from '@/components/ui/Select'
-import { Checkbox } from '@/components/ui/Checkbox'
-import { Switch } from '@/components/ui/Switch'
-import { RadioGroup } from '@/components/ui/RadioGroup'
-import { Textarea } from '@/components/ui/Textarea'
-import { Slider } from '@/components/ui/Slider'
-import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { Rating } from '@/components/ui/Rating'
-import { useState } from 'react'
 
-// ═══════════════════════════════════════════════════════════════════
-// Select
-// ═══════════════════════════════════════════════════════════════════
-export default {
+const meta = {
   title: '4-Inputs/Select',
   component: Select,
   argTypes: {
@@ -35,6 +24,8 @@ export default {
     docs: { description: { component: 'Select nativo accesible con label, error y helper text.' } },
   },
 } satisfies Meta<typeof Select>
+
+export default meta
 
 type Story = StoryObj<typeof Select>
 

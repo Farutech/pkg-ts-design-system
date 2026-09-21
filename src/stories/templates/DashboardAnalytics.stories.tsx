@@ -3,8 +3,14 @@ import { StatsCard } from '@/components/ui/StatsCard'
 import { ChartArea, ChartPie } from '@/components/ui/Charts'
 import { Badge } from '@/components/ui/Badge'
 import { Avatar } from '@/components/ui/Avatar'
-import { Table } from '@/components/ui/Table'
+import Table from '@/components/ui/Table'
 import { Card } from '@/components/ui/Card'
+import {
+  UsersIcon,
+  ChartBarIcon,
+  ArrowTrendingDownIcon,
+  EyeIcon,
+} from '@heroicons/react/24/outline'
 
 /**
  * DashboardAnalytics — dashboard de analítica con StatsCards, gráficos y tabla top pages.
@@ -29,10 +35,10 @@ const PIE_DATA = [
 ]
 
 const TOP_PAGES_COLUMNS = [
-  { key: 'page', header: 'Página', align: 'left' },
-  { key: 'visitors', header: 'Visitas', align: 'right' },
-  { key: 'avgTime', header: 'Tiempo prom.', align: 'center' },
-  { key: 'bounce', header: 'Bounce', align: 'center' },
+  { key: 'page', header: 'Página', align: 'left' as const },
+  { key: 'visitors', header: 'Visitas', align: 'right' as const },
+  { key: 'avgTime', header: 'Tiempo prom.', align: 'center' as const },
+  { key: 'bounce', header: 'Bounce', align: 'center' as const },
 ]
 
 const TOP_PAGES_ROWS = [
@@ -70,10 +76,10 @@ export const DashboardDeAnalitica: Story = {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
-        <StatsCard title="Visitantes totales" value="14,923" change="+18.4%" changeType="positive" icon="users" />
-        <StatsCard title="Sesiones únicas" value="8,741" change={{ value: 12.1, trend: 'up', label: '%' }} icon="chart" />
-        <StatsCard title="Tasa de rebote" value="31.2%" change="-4.3%" changeType="positive" icon="arrow" />
-        <StatsCard title="Páginas vistas" value="42,350" change="+8.7%" changeType="positive" icon="eye" />
+        <StatsCard title="Visitantes totales" value="14,923" change={{ value: 18.4, trend: 'up' }} icon={<UsersIcon className="w-6 h-6" />} variant="primary" />
+        <StatsCard title="Sesiones únicas" value="8,741" change={{ value: 12.1, trend: 'up', label: '%' }} icon={<ChartBarIcon className="w-6 h-6" />} variant="info" />
+        <StatsCard title="Tasa de rebote" value="31.2%" change={{ value: 4.3, trend: 'down' }} icon={<ArrowTrendingDownIcon className="w-6 h-6" />} variant="success" />
+        <StatsCard title="Páginas vistas" value="42,350" change={{ value: 8.7, trend: 'up' }} icon={<EyeIcon className="w-6 h-6" />} variant="warning" />
       </div>
 
       <Card style={{ padding: '1.5rem', background: 'var(--ft-color-surface)', border: '1px solid var(--ft-color-border)', borderRadius: '0.75rem' }}>

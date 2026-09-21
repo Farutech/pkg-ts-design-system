@@ -1,10 +1,12 @@
 import type { StorybookConfig } from '@storybook/react-vite'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const config: StorybookConfig = {
   stories: [
     '../src/**/*.mdx',
-    '../src/**/*.stories.ts',
     '../src/**/*.stories.tsx',
   ],
 
@@ -13,7 +15,6 @@ const config: StorybookConfig = {
     '@storybook/addon-a11y',
     '@storybook/addon-themes',
     '@storybook/addon-links',
-    '@storybook/addon-interactions',
   ],
 
   framework: {
@@ -33,6 +34,12 @@ const config: StorybookConfig = {
     config.resolve.alias = {
       ...(config.resolve.alias ?? {}),
       '@': path.resolve(__dirname, '../src'),
+      '@storybook/blocks': '@storybook/addon-docs/blocks',
+    }
+    config.server = config.server ?? {}
+    config.server.watch = {
+      ...(config.server.watch ?? {}),
+      ignored: ['**/storybook-static/**', '**/dist/**'],
     }
     return config
   },

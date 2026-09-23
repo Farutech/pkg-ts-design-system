@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ListGroup } from '@/components/ui/ListGroup'
-import { HomeIcon, UserGroupIcon, CogIcon, BellIcon, DocumentTextIcon, EnvelopeIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
+import { HomeIcon, UserGroupIcon, CogIcon, BellIcon, DocumentTextIcon, EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
 
 /**
  * ListGroup — lista de elementos con iconos, badges y estado activo.

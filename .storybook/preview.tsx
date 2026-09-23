@@ -10,7 +10,7 @@ import { DesignSystemProvider } from '@/providers/DesignSystemProvider'
  * Decorador raíz: MemoryRouter + DesignSystemProvider + fondo del canvas acorde al tema.
  * Así cada story se ve exactamente como se verá en las apps consumidoras sin fallar por hooks de router.
  */
-const withDesignSystem: Decorator = (Story, context) => {
+const WithDesignSystem: Decorator = (Story, context) => {
   const colorMode = context.globals.theme === 'dark' ? 'dark' : 'light'
   const isFullscreen = context.parameters.layout === 'fullscreen'
   const isDocs = context.viewMode === 'docs'
@@ -152,7 +152,7 @@ const preview: Preview = {
       },
     },
   },
-  decorators: [withDataTheme, withDesignSystem],
+  decorators: [withDataTheme, WithDesignSystem],
   tags: ['autodocs'],
   initialGlobals: {
     theme: 'light',

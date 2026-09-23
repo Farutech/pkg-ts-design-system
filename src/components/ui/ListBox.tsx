@@ -116,7 +116,6 @@ export function ListBox({
   // Reset search when closing
   useEffect(() => {
     if (!searchable) return undefined
-    setSearchQuery((prev) => (prev === '' ? prev : ''))
     return () => {
       setSearchQuery('')
       if (debounceTimer.current) clearTimeout(debounceTimer.current)

@@ -51,7 +51,6 @@ export const Variantes: Story = {
 }
 
 export const Tamaños: Story = {
-  name: 'Tamaños',
   render: () => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
       <Badge size="sm">Small</Badge>

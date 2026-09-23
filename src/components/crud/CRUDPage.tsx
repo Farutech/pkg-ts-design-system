@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react'
+import React, { useState, useMemo, useCallback, useRef } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/ui/DataTable'
 import { Button } from '@/components/ui/Button'
@@ -166,14 +166,25 @@ export function CRUDPage<T extends { id: string | number } = any>({
   renderForm,
   className,
 }: CRUDPageProps<T>) {
-  const effectivePermissions = {
-    canCreate: canCreateProp ?? permissions?.canCreate ?? true,
-    canEdit: canEditProp ?? permissions?.canEdit ?? true,
-    canDelete: canDeleteProp ?? permissions?.canDelete ?? true,
-    canView: canViewProp ?? permissions?.canView ?? true,
-    canPrint: canPrintProp ?? permissions?.canPrint ?? true,
-    canExport: canExportProp ?? permissions?.canExport ?? true,
-  }
+  const effectivePermissions = useMemo(
+    () => ({
+      canCreate: canCreateProp ?? permissions?.canCreate ?? true,
+      canEdit: canEditProp ?? permissions?.canEdit ?? true,
+      canDelete: canDeleteProp ?? permissions?.canDelete ?? true,
+      canView: canViewProp ?? permissions?.canView ?? true,
+      canPrint: canPrintProp ?? permissions?.canPrint ?? true,
+      canExport: canExportProp ?? permissions?.canExport ?? true,
+    }),
+    [
+      canCreateProp,
+      permissions,
+      canEditProp,
+      canDeleteProp,
+      canViewProp,
+      canPrintProp,
+      canExportProp,
+    ]
+  )
 
   const effectiveApiFilter = onSearchApi || onApiFilter
   const isApiMode = Boolean(onSearchApi || onApiFilter || filterMode === 'api')
@@ -279,15 +290,18 @@ export function CRUDPage<T extends { id: string | number } = any>({
   }
 
   // Apertura de Editar
-  const handleOpenEdit = (item: T) => {
-    if (editMode === 'page') {
-      onEditPage?.(item)
-      return
-    }
-    setEditingItem(item)
-    setModalFormData({ ...item })
-    setIsModalOpen(true)
-  }
+  const handleOpenEdit = useCallback(
+    (item: T) => {
+      if (editMode === 'page') {
+        onEditPage?.(item)
+        return
+      }
+      setEditingItem(item)
+      setModalFormData({ ...item })
+      setIsModalOpen(true)
+    },
+    [editMode, onEditPage]
+  )
 
   // Confirmar Guardado en modal
   const handleModalSave = async (savedData?: Partial<T>) => {
@@ -403,7 +417,7 @@ export function CRUDPage<T extends { id: string | number } = any>({
     }
 
     return [...baseColumns, actionCol]
-  }, [baseColumns, effectivePermissions, customRowActions])
+  }, [baseColumns, effectivePermissions, customRowActions, handleOpenEdit, onView])
 
   const modalWidthClass = {
     sm: 'max-w-md',

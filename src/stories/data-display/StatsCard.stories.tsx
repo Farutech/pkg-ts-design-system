@@ -5,7 +5,6 @@ import {
   ShoppingCartIcon,
   CurrencyDollarIcon,
   ChartBarIcon,
-  ArrowUpIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
 
@@ -94,7 +93,6 @@ export const DashboardKPIs: Story = {
 }
 
 export const Tamaños: Story = {
-  name: 'Tamaños',
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px' }}>
       <StatsCard title="Small" value="1,234" size="sm" icon={<UsersIcon className="h-5 w-5" />} variant="primary" change={{ value: 5, trend: 'up' }} />

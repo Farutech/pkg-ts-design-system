@@ -2,7 +2,7 @@
  * Pagination — paginación autónoma (números, elipsis, prev/next).
  * Bootstrap-style; también la usa CrudPagination internamente.
  */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { cn } from '@/utils/cn'
 
@@ -67,12 +67,11 @@ export function Pagination({
   // El anillo de foco sigue a la página activa (navegación por teclado).
   const [focusedPage, setFocusedPage] = useState<number | null>(null)
 
-  useEffect(() => {
-    setFocusedPage(null)
-  }, [safePage])
-
   const goTo = (target: number) => {
     if (disabled) return
+    // El anillo de foco se limpia al navegar (antes vivía en un effect que
+    // el lint prohíbe: setState síncrono dentro de effect).
+    setFocusedPage(null)
     const next = Math.min(Math.max(1, target), totalPages)
     if (next !== safePage) onChange(next)
   }

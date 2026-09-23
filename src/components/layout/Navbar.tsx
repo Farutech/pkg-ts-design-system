@@ -266,7 +266,6 @@ const defaultNotifications: NavbarNotification[] = [
 ]
 
 export function Navbar({
-  appName,
   breadcrumbs: customBreadcrumbs,
   breadcrumbMap: customBreadcrumbMap,
   user: customUser,

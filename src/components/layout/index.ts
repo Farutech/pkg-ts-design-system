@@ -13,4 +13,7 @@ export { SearchBar } from './SearchBar'
 export { SearchModal } from './SearchModal'
 export { Sidebar } from './Sidebar'
 export type { SidebarProps } from './Sidebar'
+export { SideNavItem } from './SideNavItem'
+export type { SideNavItemProps } from './SideNavItem'
+
 

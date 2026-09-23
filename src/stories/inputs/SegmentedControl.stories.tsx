@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
-import { within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { expect } from 'vitest'
+import { expect, userEvent, within } from 'storybook/test'
 
 const meta = {
   title: '4-Inputs/SegmentedControl',

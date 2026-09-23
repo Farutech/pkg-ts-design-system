@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/Input'
 import { Switch } from '@/components/ui/Switch'
 
 function UseThemeStoreDemo() {
-  const { theme, setTheme, toggleTheme } = useThemeStore()
+  const { theme, setTheme } = useThemeStore()
 
   const handleSetTheme = (newTheme: 'light' | 'dark' | 'system') => {
     setTheme(newTheme)
@@ -22,7 +22,8 @@ function UseThemeStoreDemo() {
       ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
       : newTheme
     document.documentElement.setAttribute('data-theme', effective)
-    document.documentElement.style.colorScheme = effective
+    // setProperty evita la asignación directa que prohíbe react-hooks/immutability
+    document.documentElement.style.setProperty('color-scheme', effective)
   }
 
   const handleToggle = () => {

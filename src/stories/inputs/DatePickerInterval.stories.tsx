@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DatePickerInterval, type DatePickerIntervalProps } from '@/components/ui/DatePickerInterval'
-import { within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { expect } from 'vitest'
+import { DatePickerInterval } from '@/components/ui/DatePickerInterval'
+import { expect, within } from 'storybook/test'
 
 /**
  * DatePickerInterval — Selector de Intervalo de Fechas y Horas con Validación Estricta.

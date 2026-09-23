@@ -1,8 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Carousel } from '@/components/ui/Carousel'
-import { Button } from '@/components/ui/Button'
-import { useState } from 'react'
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 
 /**
  * Carousel — slider de slides con controles, indicadores y autoplay.
@@ -33,8 +30,6 @@ const SLIDES = [
 ]
 
 function CarouselDemo({ autoPlay = false }: { autoPlay?: boolean }) {
-  const [slideIndex, setSlideIndex] = useState(0)
-
   return (
     <Carousel
       className="w-[500px]"
@@ -44,7 +39,6 @@ function CarouselDemo({ autoPlay = false }: { autoPlay?: boolean }) {
       showControls
       showIndicators
       controlsVariant="arrows"
-      onSlideChange={setSlideIndex}
     >
       {SLIDES.map((slide, index) => (
         <div

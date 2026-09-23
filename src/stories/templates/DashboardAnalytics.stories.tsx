@@ -1,8 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StatsCard } from '@/components/ui/StatsCard'
 import { ChartArea, ChartPie } from '@/components/ui/Charts'
 import { Badge } from '@/components/ui/Badge'
-import { Avatar } from '@/components/ui/Avatar'
 import Table from '@/components/ui/Table'
 import { Card } from '@/components/ui/Card'
 import {

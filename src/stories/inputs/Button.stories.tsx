@@ -77,7 +77,6 @@ export const Variantes: Story = {
 
 /** Tres tamaños disponibles */
 export const Tamaños: Story = {
-  name: 'Tamaños',
   render: () => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
       <Button size="sm">Pequeño</Button>

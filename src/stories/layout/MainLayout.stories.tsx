@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MainLayout } from '@/components/layout/MainLayout'
-import type { MainLayoutProps } from '@/components/layout/MainLayout'
 import { Button } from '@/components/ui/Button'
 import { StatsCard } from '@/components/ui/StatsCard'
 import { Badge } from '@/components/ui/Badge'

@@ -120,7 +120,8 @@
     "prepublishOnly": "npm run build",
     "pack:check": "npm pack --dry-run",
     "release:gh": "npm run check && npm publish --registry=https://npm.pkg.github.com",
-    "release:npm": "npm run check && npm publish --access public --registry=https://registry.npmjs.org/"
+    "release:npm": "npm run check && npm publish --access public --registry=https://registry.npmjs.org/",
+    "postinstall": "node scripts/patch-storybook-timeout.mjs"
   },
   "peerDependencies": {
     "react": "^18.3.1 || ^19.0.0",

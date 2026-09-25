@@ -7,7 +7,7 @@ subdomain: ts
 display_name: "FaruTech Design System"
 type: library
 status: active
-version: 1.1.0
+version: 1.0.0
 
 owner:
   team: team-ux

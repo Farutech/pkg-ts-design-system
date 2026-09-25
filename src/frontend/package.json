@@ -1,6 +1,6 @@
 {
   "name": "@farutech/design-system",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "Sistema de diseño oficial de Farutech — Componentes UI accesibles, tokens tematizables y documentación viva (Storybook) para website, admin, intranet y futuras aplicaciones",
   "author": {
     "name": "Farid Maloof Suarez",

@@ -12,6 +12,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    defaults:
+      run:
+        working-directory: src/frontend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,6 +25,8 @@ jobs:
           node-version: 20
           registry-url: 'https://npm.pkg.github.com'
           scope: '@farutech'
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci

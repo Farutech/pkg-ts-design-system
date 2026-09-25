@@ -1,0 +1,9 @@
+# Frontend project artifacts
+node_modules/
+dist/
+coverage/
+storybook-static/
+*.tgz
+*.log
+.vite/
+.vite-temp/

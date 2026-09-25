@@ -1,20 +1,37 @@
+schema_version: "1.0.0"
+
 id: pkg-ts-design-system
 name: "@farutech/design-system"
 domain: packages
 subdomain: ts
+display_name: "FaruTech Design System"
 type: library
 status: active
-version: 1.0.3
+version: 1.1.0
+
 owner:
   team: team-ux
   tech_lead: faridmaloof
-description: "Sistema de diseño oficial de Farutech — Componentes UI, tokens, layouts y hooks reutilizables."
+  slack_channel: "#design-system"
+
+description: "Sistema de diseño oficial de FaruTech — Componentes UI, tokens, layouts y hooks reutilizables."
+
 registry:
   npm: "https://npm.pkg.github.com/@farutech/design-system"
+
 technologies:
   - react
   - typescript
   - tailwindcss
   - vite
+
 ci:
   workflow: .github/workflows/publish.yml
+
+orchestration:
+  registry_artifact: "registry.farutech.io/@farutech/design-system"
+  dispatch_events:
+    - branch: main
+      target_hub_workflow: update-prod-manifest
+      payload_type: stable-release
+      requires_tag: true

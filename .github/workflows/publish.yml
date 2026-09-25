@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: src/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,6 +21,8 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
           scope: '@farutech'
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
       - run: npm ci
       - run: npm run prepublishOnly
       - run: npm publish --access public

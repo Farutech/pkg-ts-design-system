@@ -1,0 +1,183 @@
+{
+  "name": "@farutech/design-system",
+  "version": "1.1.0",
+  "description": "Sistema de diseño oficial de Farutech — Componentes UI accesibles, tokens tematizables y documentación viva (Storybook) para website, admin, intranet y futuras aplicaciones",
+  "author": {
+    "name": "Farid Maloof Suarez",
+    "company": "FaruTech"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./components/ui": {
+      "import": "./dist/components/ui.js",
+      "types": "./dist/components/ui/index.d.ts"
+    },
+    "./components/crud": {
+      "import": "./dist/components/crud.js",
+      "types": "./dist/components/crud/index.d.ts"
+    },
+    "./components/layout": {
+      "import": "./dist/components/layout.js",
+      "types": "./dist/components/layout/index.d.ts"
+    },
+    "./components/basic": {
+      "import": "./dist/components/basic.js",
+      "types": "./dist/components/basic/index.d.ts"
+    },
+    "./components/navigation": {
+      "import": "./dist/components/navigation.js",
+      "types": "./dist/components/navigation/index.d.ts"
+    },
+    "./auth-screens": {
+      "import": "./dist/auth-screens.js",
+      "types": "./dist/auth-screens/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./store": {
+      "import": "./dist/store.js",
+      "types": "./dist/store/index.d.ts"
+    },
+    "./providers": {
+      "import": "./dist/providers.js",
+      "types": "./dist/providers/index.d.ts"
+    },
+    "./tokens": {
+      "import": "./dist/tokens.js",
+      "types": "./dist/tokens/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils.js",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "PUBLISHING.md",
+    "MIGRATION.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Farutech/pkg-ts-design-system.git"
+  },
+  "keywords": [
+    "react",
+    "design-system",
+    "ui-components",
+    "storybook",
+    "farutech",
+    "tailwindcss",
+    "typescript",
+    "accessibility"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "browserslist": [
+    "> 0.3%",
+    "last 2 versions",
+    "not dead",
+    "not op_mini all"
+  ],
+  "scripts": {
+    "dev": "vite build --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "build:js": "vite build",
+    "build:styles": "cross-env BROWSERSLIST_IGNORE_OLD_DATA=true tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
+    "build": "npm run typecheck && npm run build:js && npm run build:styles",
+    "test": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest run",
+    "test:watch": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest",
+    "test:storybook": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest run --project storybook",
+    "test:unit": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest run --project unit",
+    "test:coverage": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest run --coverage",
+    "storybook": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning storybook dev -p 6006",
+    "build-storybook": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning storybook build",
+    "check": "npm run typecheck && npm run lint -- --max-warnings 0 && npm run build && npm run build-storybook",
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build",
+    "pack:check": "npm pack --dry-run",
+    "release:gh": "npm run check && npm publish --registry=https://npm.pkg.github.com",
+    "release:npm": "npm run check && npm publish --access public --registry=https://registry.npmjs.org/",
+    "prepare": "node scripts/patch-storybook-vitest-store.mjs"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "@heroicons/react": "^2.2.0",
+    "@tanstack/react-table": "^8.21.3",
+    "clsx": "^2.1.1",
+    "framer-motion": "^13.4.0",
+    "react-router-dom": "^7.18.4",
+    "tailwind-merge": "^3.7.0",
+    "zustand": "^5.0.15"
+  },
+  "optionalDependencies": {
+    "recharts": "^3.10.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@storybook/addon-a11y": "10.6.0",
+    "@storybook/addon-docs": "10.6.0",
+    "@storybook/addon-links": "10.6.0",
+    "@storybook/addon-themes": "10.6.0",
+    "@storybook/addon-vitest": "10.6.0",
+    "@storybook/react-vite": "10.6.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.0",
+    "@vitest/coverage-v8": "4.1.11",
+    "autoprefixer": "^10.6.1",
+    "axe-core": "^4.13.0",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "eslint-plugin-storybook": "^10.6.0",
+    "globals": "^17.12.0",
+    "jsdom": "^30.1.0",
+    "postcss": "^8.5.26",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-is": "^19.3.0",
+    "storybook": "10.6.0",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0",
+    "vite": "^8.2.2",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "4.1.11"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

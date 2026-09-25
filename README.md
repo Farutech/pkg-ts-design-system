@@ -1,117 +1,30 @@
 # FaruTech — Design System
 
-[![npm](https://img.shields.io/badge/npm-v1.0.3-CB3837?logo=npm)](https://github.com/orgs/Farutech/packages)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?logo=tailwindcss)](https://tailwindcss.com/)
+Este repositorio contiene el Design System oficial de FaruTech como paquete npm `@farutech/design-system`. El código ejecutable, Storybook, pruebas y configuración frontend viven bajo [`src/frontend/`](./src/frontend/).
 
-Componentes UI, tokens configurables y temas oficiales para todos los frontends de **FaruTech** (`website`, `intranet`, `kronix`, `cli-*`).
-Fuente única de verdad de componentes, tokens, estilos y patrones de interfaz de usuario de FaruTech.
+## Desarrollo
 
----
-
-## 📦 Instalación vía GitHub Packages
-
-Este paquete se publica exclusivamente en el registro corporativo de **GitHub Packages**:
-
-### 1. Configurar `.npmrc` en tu proyecto
-Crea o edita un archivo `.npmrc` en el frontend consumidor:
-
-```ini
-@farutech:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
-```
-
-> **Nota para desarrollo local:** Puedes definir `GITHUB_TOKEN` en tu archivo `.env` o en tu archivo global `~/.npmrc` con un Personal Access Token (PAT) de GitHub con alcance `read:packages`.
-
-### 2. Instalar el paquete
+Desde la raíz del repositorio:
 
 ```bash
-npm install @farutech/design-system@1.0.3
-```
-
----
-
-## 🎨 Uso de Componentes y Estilos
-
-### Importación global
-Importa componentes y estilos CSS semánticos:
-
-```tsx
-import { Button, Alert, Badge } from '@farutech/design-system'
-import '@farutech/design-system/styles.css'
-
-export function HeroBanner() {
-  return (
-    <div className="p-6">
-      <Alert variant="info" title="Bienvenido a FaruTech">
-        Plataforma empresarial de ingeniería.
-      </Alert>
-      <Button variant="primary" size="lg" className="mt-4">
-        Comenzar
-      </Button>
-    </div>
-  )
-}
-```
-
-### Pantallas Ricas de Autenticación (Auth Screens)
-Incluye las pantallas completas de inicio de sesión y registro corporativo con diseño dual (split de dos columnas), medidor interactivo de fortaleza de contraseñas y panel de marca:
-
-```tsx
-import { LoginScreen, RegisterScreen, ForgotPasswordScreen } from '@farutech/design-system/auth-screens'
-
-export function LoginPage() {
-  return (
-    <LoginScreen 
-      onLogin={async (credentials) => {
-        await authService.login(credentials)
-      }}
-      logoUrl="/assets/Logo_Full.png"
-    />
-  )
-}
-```
-
----
-
-## 🌈 Tokens y Sistema de Temas HSL
-
-Los componentes consumen variables CSS (`--ft-*`) basadas en el espacio HSL:
-- Paleta semántica: Primary (`--ft-primary-h`, `--ft-primary-s`, `--ft-primary-l`), Secondary, Accent, Dark, Light.
-- Modo claro y modo oscuro nativos (`<html data-theme="dark">`).
-- Tipografía corporativa (Inter / Outfit) y radios de curvatura consistentes.
-
----
-
-## 🛠️ Desarrollo y Contribución
-
-```bash
-# 1. Instalar dependencias
-npm install
-
-# 2. Type-checking
+cd src/frontend
+npm ci
 npm run typecheck
-
-# 3. Pruebas unitarias
+npm run lint -- --max-warnings 0
 npm test
-
-# 4. Compilar paquete (dist/ con declaraciones .d.ts y styles.css)
 npm run build
+npm run build-storybook
+npm run storybook
 ```
 
----
+El paquete se publica únicamente con los artefactos generados en `src/frontend/dist/`. La API pública y los ejemplos de consumo se documentan en [`src/frontend/README.md`](./src/frontend/README.md).
 
-## 🚀 Pipeline de Publicación Automatizada (CI/CD)
+## Consumidores
 
-El paquete se compila y publica automáticamente a GitHub Packages mediante GitHub Actions en `.github/workflows/publish-npm.yml` al crear un tag de versión:
+Los frontends FaruTech consumen la dependencia publicada mediante npm; no deben enlazar rutas locales en configuración de producción. Consulte `engineering-hub/docs/02_standards/cloud-platform/06-packages-library.md` para la política de paquetes.
 
-```bash
-git tag v1.0.3
-git push origin v1.0.3
-```
+## Contrato del repositorio
 
----
-
-## 📄 Licencia
-
-PROPRIETARY © 2026 FaruTech. Todos los derechos reservados.
+- [`repository.yaml`](./repository.yaml) define el contrato de orquestación.
+- `.github/` contiene los pipelines del repositorio.
+- `.kilo/` no forma parte del paquete y no debe versionarse.

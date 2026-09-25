@@ -1,5 +1,8 @@
+# Local AI/tooling workspace state (not part of the repository)
 # Dependencies
 node_modules/
+
+.kilo/
 .pnp
 .pnp.js
 

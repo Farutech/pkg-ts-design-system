@@ -31,14 +31,30 @@ export const AllAddonsAndAdornments: StoryObj = {
 
     return (
       <div className="flex flex-col gap-6 max-w-xl p-4">
-        <h3 className="font-bold text-lg">Input con Addons Exteriores y Secciones Internas</h3>
+        <div>
+          <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
+            Input con Addons Exteriores y Secciones Internas
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Los botones y acciones integrados en <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">addonBefore</code> o <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">addonAfter</code> se acoplan armónicamente al 100% de altura, eliminando cajas dobles y desalineaciones visuales, con retroalimentación hover interactiva.
+          </p>
+        </div>
 
         <Input
           label="Precio del Producto"
           description="Precio unitario con moneda e impuestos"
           required
           addonBefore={<span className="font-mono text-xs">COP</span>}
-          addonAfter={<Button size="sm" variant="secondary">Aplicar Tasa</Button>}
+          addonAfter={
+            <Button
+              size="sm"
+              variant="addon"
+              onClick={() => alert('Tasa de cambio recalculada exitosamente')}
+              title="Recalcular tasa de cambio"
+            >
+              Aplicar Tasa
+            </Button>
+          }
           prefix={<Icon.Search size="sm" />}
           suffix={<span className="text-xs text-gray-400">IVA incl.</span>}
           value={price}
@@ -51,8 +67,30 @@ export const AllAddonsAndAdornments: StoryObj = {
         <Input
           label="URL del Repositorio"
           addonBefore="https://github.com/"
-          addonAfter={<Icon.ExternalLink size="sm" />}
+          addonAfter={
+            <Button
+              size="sm"
+              variant="addon"
+              icon={<Icon.ExternalLink size="sm" />}
+              title="Abrir repositorio en nueva pestaña"
+              onClick={() => window.open('https://github.com/Farutech/pkg-ts-design-system', '_blank')}
+            />
+          }
           placeholder="Farutech/pkg-ts-design-system"
+        />
+
+        <Input
+          label="Búsqueda Rápida (Botón Primario Acoplado)"
+          placeholder="Nombre, NIT o documento..."
+          addonAfter={
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => alert('Búsqueda ejecutada')}
+            >
+              Buscar
+            </Button>
+          }
         />
       </div>
     )

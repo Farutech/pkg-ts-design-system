@@ -9,6 +9,7 @@ import {
   SearchInput,
   NumberInput,
   Textarea,
+  Button,
 } from './index'
 
 describe('Fase 1 — Sistema de Inputs y Formularios', () => {
@@ -60,6 +61,43 @@ describe('Fase 1 — Sistema de Inputs y Formularios', () => {
 
       expect(screen.getByTestId('addon-before')).toBeInTheDocument()
       expect(screen.getByTestId('addon-after')).toBeInTheDocument()
+    })
+
+    it('debe integrar botones armónicamente en addons exteriores con soporte para variant addon y callbacks de click', async () => {
+      const user = userEvent.setup()
+      const onActionClick = vi.fn()
+      const onAddonBeforeClick = vi.fn()
+
+      render(
+        <Input
+          addonBefore={<span data-testid="addon-prefix">COP</span>}
+          onAddonBeforeClick={onAddonBeforeClick}
+          addonAfter={
+            <Button
+              variant="addon"
+              size="sm"
+              onClick={onActionClick}
+              data-testid="addon-action-btn"
+            >
+              Aplicar Tasa
+            </Button>
+          }
+          placeholder="100000"
+        />
+      )
+
+      const prefix = screen.getByTestId('addon-prefix')
+      expect(prefix).toBeInTheDocument()
+
+      const btn = screen.getByTestId('addon-action-btn')
+      expect(btn).toBeInTheDocument()
+      expect(btn).toHaveClass('ft-button--addon')
+
+      await user.click(btn)
+      expect(onActionClick).toHaveBeenCalledTimes(1)
+
+      await user.click(prefix.parentElement!)
+      expect(onAddonBeforeClick).toHaveBeenCalledTimes(1)
     })
 
     it('debe soportar prefix, suffix, leftSection y rightSection dentro del input', () => {

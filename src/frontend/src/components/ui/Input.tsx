@@ -3,6 +3,7 @@ import {
   useState,
   useId,
   useRef,
+  isValidElement,
   type ReactNode,
   type ChangeEvent,
   type MouseEvent,
@@ -46,6 +47,10 @@ export interface InputProps extends Omit<InputBaseProps, 'onChange' | 'prefix' |
   addonBefore?: ReactNode
   /** Addon exterior derecho (acoplado por fuera del borde del input) */
   addonAfter?: ReactNode
+  /** Callback al hacer clic en addonBefore (habilita cursor interactivo y hover) */
+  onAddonBeforeClick?: (e: MouseEvent<HTMLDivElement | HTMLButtonElement>) => void
+  /** Callback al hacer clic en addonAfter (habilita cursor interactivo y hover) */
+  onAddonAfterClick?: (e: MouseEvent<HTMLDivElement | HTMLButtonElement>) => void
 
   /** Muestra botón para limpiar rápidamente el valor */
   allowClear?: boolean
@@ -68,6 +73,21 @@ export interface InputProps extends Omit<InputBaseProps, 'onChange' | 'prefix' |
   icon?: ReactNode
   /** Posición de icono legacy */
   iconPosition?: 'left' | 'right'
+}
+
+function isButtonLike(node: ReactNode): boolean {
+  if (!isValidElement(node)) return false
+  if (node.type === 'button') return true
+  if (typeof (node.props as any)?.onClick === 'function') return true
+  const typeName =
+    typeof node.type === 'function'
+      ? node.type.name
+      : typeof node.type === 'object' && node.type !== null
+      ? (node.type as any).displayName || (node.type as any).name || ''
+      : ''
+  if (/button/i.test(typeName)) return true
+  if (typeof (node.props as any)?.className === 'string' && (node.props as any).className.includes('button')) return true
+  return false
 }
 
 /**
@@ -95,6 +115,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       endAdornment,
       addonBefore,
       addonAfter,
+      onAddonBeforeClick,
+      onAddonAfterClick,
       allowClear = false,
       showCount = false,
       pattern,
@@ -209,6 +231,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const activeStatus: InputStatus = displayError ? 'error' : status
     const displayDesc = description || helperText
 
+    const hasButtonBefore = isButtonLike(addonBefore) || Boolean(onAddonBeforeClick)
+    const hasButtonAfter = isButtonLike(addonAfter) || Boolean(onAddonAfterClick)
+
     return (
       <div className={cn('flex flex-col text-left', fullWidth && 'w-full')}>
         {/* Label */}
@@ -225,7 +250,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {/* Contenedor con soporte de addonBefore / addonAfter externos */}
         <div className="flex w-full items-stretch">
           {addonBefore && (
-            <div className="inline-flex items-center px-3 border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-sm rounded-l-md select-none shrink-0">
+            <div
+              onClick={onAddonBeforeClick}
+              role={onAddonBeforeClick ? 'button' : undefined}
+              tabIndex={onAddonBeforeClick ? 0 : undefined}
+              className={cn(
+                'inline-flex items-stretch select-none shrink-0 transition-colors text-sm rounded-l-md overflow-hidden',
+                hasButtonBefore
+                  ? 'p-0 border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 has-[button]:p-0'
+                  : 'px-3 items-center border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 has-[button]:p-0 has-[button]:items-stretch',
+                onAddonBeforeClick &&
+                  'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white active:bg-gray-200',
+                '[&>button]:h-full [&>button]:self-stretch [&>button]:rounded-none [&>button]:border-0 [&>button]:shadow-none [&>button]:px-3.5 [&>button]:py-0 [&>button]:text-sm [&>button]:font-medium [&>button]:cursor-pointer [&>button]:transition-colors',
+                '[&>button.ft-button--addon]:bg-transparent [&>button.ft-button--ghost]:bg-transparent',
+                '[&>button.ft-button--secondary]:bg-transparent [&>button.ft-button--secondary]:text-gray-700 dark:[&>button.ft-button--secondary]:text-gray-200 [&>button.ft-button--secondary]:hover:bg-gray-100 dark:[&>button.ft-button--secondary]:hover:bg-gray-700 [&>button.ft-button--secondary]:active:bg-gray-200'
+              )}
+            >
               {addonBefore}
             </div>
           )}
@@ -330,7 +370,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </div>
 
           {addonAfter && (
-            <div className="inline-flex items-center px-3 border border-l-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-sm rounded-r-md select-none shrink-0">
+            <div
+              onClick={onAddonAfterClick}
+              role={onAddonAfterClick ? 'button' : undefined}
+              tabIndex={onAddonAfterClick ? 0 : undefined}
+              className={cn(
+                'inline-flex items-stretch select-none shrink-0 transition-colors text-sm rounded-r-md overflow-hidden',
+                hasButtonAfter
+                  ? 'p-0 border border-l-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 has-[button]:p-0'
+                  : 'px-3 items-center border border-l-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 has-[button]:p-0 has-[button]:items-stretch',
+                onAddonAfterClick &&
+                  'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white active:bg-gray-200',
+                '[&>button]:h-full [&>button]:self-stretch [&>button]:rounded-none [&>button]:border-0 [&>button]:shadow-none [&>button]:px-3.5 [&>button]:py-0 [&>button]:text-sm [&>button]:font-medium [&>button]:cursor-pointer [&>button]:transition-colors',
+                '[&>button.ft-button--addon]:bg-transparent [&>button.ft-button--ghost]:bg-transparent',
+                '[&>button.ft-button--secondary]:bg-transparent [&>button.ft-button--secondary]:text-gray-700 dark:[&>button.ft-button--secondary]:text-gray-200 [&>button.ft-button--secondary]:hover:bg-gray-100 dark:[&>button.ft-button--secondary]:hover:bg-gray-700 [&>button.ft-button--secondary]:active:bg-gray-200'
+              )}
+            >
               {addonAfter}
             </div>
           )}

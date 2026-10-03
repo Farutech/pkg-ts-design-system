@@ -75,11 +75,17 @@ jobs:
 
       - name: Publish to GitHub Packages
         if: ${{ github.event.inputs.dry_run != 'true' }}
-        run: npm publish --access public
+        run: |
+          npm publish --access public 2>&1 | tee publish.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          if grep -q "409 Conflict" publish.log || grep -q "Cannot publish over existing version" publish.log; then
+            echo "::notice::Version already published — skipping (idempotent). OK."
+            exit 0
+          fi
+          exit $EXIT_CODE
         env:
-          # Usa el PAT almacenado como secret GH_PACKAGES_TOKEN
-          # (requiere scope write:packages — ver README para configuración)
           NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+
 
       - name: Dry run info
         if: ${{ github.event.inputs.dry_run == 'true' }}

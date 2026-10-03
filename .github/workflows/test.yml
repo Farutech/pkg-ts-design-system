@@ -34,7 +34,9 @@ jobs:
         run: npm run lint -- --max-warnings 0
 
       - name: Run Component & Unit Tests
-        run: npx vitest run --project storybook --project unit
+        run: npx vitest run --reporter=verbose --pool=forks --poolOptions.forks.singleFork=true
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096 --disable-warning=DEP0205 --disable-warning=ExperimentalWarning
 
       - name: Build Storybook
         run: npm run build-storybook

@@ -77,7 +77,7 @@ function FormDemo() {
             <Select
               label="País de residencia"
               value={values.country}
-              onChange={handleChange}
+              onChange={(val: any) => handleChange({ target: { name: 'country', value: typeof val === 'string' ? val : val?.target?.value } } as any)}
               options={[
                 { value: '', label: 'Selecciona un país' },
                 { value: 'co', label: 'Colombia' },

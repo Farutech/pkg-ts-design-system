@@ -1,30 +1,19 @@
 /**
- * DataTable - Componente de tabla de datos completo y profesional
+ * DataTable - Componente de tabla de datos empresarial de alto rendimiento.
  * 
- * Características:
- * - ✅ Búsqueda integrada (sin duplicados)
- * - ✅ Acciones globales (crear, eliminar seleccionados, custom)
- * - ✅ Acciones por fila parametrizables
- * - ✅ Selección múltiple
- * - ✅ Paginación con header/footer opcionales
- * - ✅ Estados vacíos profesionales
- * - ✅ Responsive (cards en mobile)
- * - ✅ Ordenamiento por columnas
- * 
- * @example Con acciones globales
- * ```tsx
- * <DataTable
- *   data={users}
- *   columns={columns}
- *   globalActions={[
- *     { label: 'Crear Usuario', onClick: () => create(), icon: <PlusIcon />, variant: 'primary' },
- *     { label: 'Eliminar', onClick: (ids) => deleteMany(ids), icon: <TrashIcon />, variant: 'danger', requiresSelection: true }
- *   ]}
- * />
- * ```
+ * Características Best-of-Breed:
+ * - ✅ Virtualización automática transparente (> umbral ConfigProvider) + escape hatch (`virtualized={true | false}`).
+ * - ✅ Sistema de densidad configurable (`comfortable`, `compact`, `dense`) con switcher opcional.
+ * - ✅ Control dinámico de visibilidad de columnas (Column Visibility popover).
+ * - ✅ Barra flotante de acciones masivas integrada (`BulkActionsBar`).
+ * - ✅ Búsqueda integrada y debounce.
+ * - ✅ Filtros tipados (texto, select, multiselect, date, daterange, number, color, location).
+ * - ✅ Selección simple y múltiple reactiva.
+ * - ✅ Responsive (cards mobile adaptativas).
+ * - ✅ Ordenamiento por columnas y paginación enterprise.
  */
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import {
   flexRender,
@@ -32,7 +21,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import type { ColumnDef, SortingState } from '@tanstack/react-table'
+import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table'
 import { 
   ChevronUpIcon, 
   ChevronDownIcon, 
@@ -40,8 +29,15 @@ import {
   InboxIcon,
   FunnelIcon,
   XMarkIcon,
+  EyeIcon,
+  ArrowsUpDownIcon,
 } from '@heroicons/react/24/outline'
 import { cn } from '@/utils/cn'
+import type { Density } from '@/tokens/tokens'
+import { useDensity, useVirtualizationConfig } from '@/providers/DesignSystemProvider'
+import { ClickOutside } from '@/primitives/ClickOutside'
+import { BulkActionsBar } from './BulkActionsBar'
+import type { BulkActionItem } from './BulkActionsBar'
 import { Card } from './Card'
 import { Input } from './Input'
 import { Select } from './Select'
@@ -138,6 +134,7 @@ export interface DataTableProps<T extends { id: string | number }> {
   isLoading?: boolean
   emptyMessage?: string
   emptyIcon?: ReactNode
+  emptySlot?: ReactNode
   
   // Paginación
   pagination?: DataTablePagination
@@ -154,18 +151,46 @@ export interface DataTableProps<T extends { id: string | number }> {
   filters?: DataTableFilter[]
   filterValues?: FilterState
   onFilterChange?: (filters: FilterState) => void
+
+  // Control Remoto / Server-Side Ready
+  /** Estado de ordenamiento controlado (permite delegar el orden al servidor) */
+  sorting?: SortingState
+  /** Callback cuando cambia el ordenamiento (emite el nuevo SortingState al backend) */
+  onSortingChange?: (sorting: SortingState) => void
+  /** Forzar modo manual de ordenamiento (evita reordenar en cliente cuando data ya viene ordenada) */
+  manualSorting?: boolean
+  /** Forzar modo manual de paginación (evita paginar en cliente cuando data ya es la página actual) */
+  manualPagination?: boolean
+  /** Forzar modo manual de filtros (evita filtrar en cliente cuando el backend aplica los filtros) */
+  manualFiltering?: boolean
   
   // Selección
   selectable?: boolean
   selectedRows?: Set<string | number>
   onSelectionChange?: (selected: Set<string | number>) => void
   
+  // Acciones masivas
+  bulkActions?: BulkActionItem[]
+  onClearSelection?: () => void
+
   // Acciones
-  /** Acciones por fila */
   actions?: DataTableActions<T>
-  /** Acciones globales (botones arriba de la tabla) */
   globalActions?: DataTableGlobalAction[]
   onRowClick?: (row: T) => void
+
+  // Virtualización (Modelo de 3 estados: auto si > threshold, true para forzar, false para desactivar)
+  virtualized?: boolean
+  virtualScrollHeight?: number | string
+
+  // Densidad
+  density?: Density
+  showDensitySwitcher?: boolean
+
+  // Visibilidad de columnas
+  showColumnVisibility?: boolean
+
+  // Slots
+  toolbarSlot?: ReactNode
   
   // Responsive
   responsiveCards?: boolean
@@ -184,6 +209,7 @@ export function DataTable<T extends { id: string | number }>({
   isLoading = false,
   emptyMessage = 'No hay registros disponibles',
   emptyIcon,
+  emptySlot,
   pagination,
   showFooter = false,
   searchable = false,
@@ -193,26 +219,80 @@ export function DataTable<T extends { id: string | number }>({
   filters = [],
   filterValues = {},
   onFilterChange,
+  sorting: propSorting,
+  onSortingChange,
+  manualSorting,
+  manualPagination,
+  manualFiltering,
   selectable = false,
   selectedRows = new Set(),
   onSelectionChange,
+  bulkActions,
+  onClearSelection,
   actions,
   globalActions = [],
   onRowClick,
+  virtualized,
+  virtualScrollHeight = 520,
+  density: propDensity,
+  showDensitySwitcher = false,
+  showColumnVisibility = false,
+  toolbarSlot,
   responsiveCards = true,
   className,
   wrapped = true,
 }: DataTableProps<T>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [showFilters, setShowFilters] = useState(false)
+  const contextDensity = useDensity()
+  const virtConfig = useVirtualizationConfig()
 
-  // Agregar columna de acciones si está definido
+  // Control local de densidad si el switcher está activo
+  const [currentDensity, setCurrentDensity] = useState<Density>(propDensity || contextDensity)
+
+  useEffect(() => {
+    if (propDensity) setCurrentDensity(propDensity)
+  }, [propDensity])
+
+  const effectiveDensity = propDensity || currentDensity
+
+  // Modelo de 3 estados de virtualización:
+  // - virtualized === true: fuerza virtualización
+  // - virtualized === false: desactiva virtualización (escape hatch)
+  // - virtualized === undefined: auto si data.length > virtConfig.tableThreshold (default: 100)
+  const isVirtualized = virtualized === true || (virtualized !== false && data.length > (virtConfig?.tableThreshold ?? 100))
+
+  const [internalSorting, setInternalSorting] = useState<SortingState>([])
+  const effectiveSorting = propSorting !== undefined ? propSorting : internalSorting
+
+  const handleSortingChange = useCallback((updaterOrValue: any) => {
+    const nextSorting = typeof updaterOrValue === 'function' ? updaterOrValue(effectiveSorting) : updaterOrValue
+    setInternalSorting(nextSorting)
+    onSortingChange?.(nextSorting)
+  }, [effectiveSorting, onSortingChange])
+
+  const isManualSorting = manualSorting ?? Boolean(onSortingChange)
+  const isManualPagination = manualPagination ?? Boolean(pagination)
+  const isManualFiltering = manualFiltering ?? Boolean(onFilterChange)
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [showFilters, setShowFilters] = useState(false)
+  const [showColumnDropdown, setShowColumnDropdown] = useState(false)
+
+  // Scroll virtual
+  const [scrollTop, setScrollTop] = useState(0)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    setScrollTop(e.currentTarget.scrollTop)
+  }, [])
+
+  // Agregar columna de acciones si está definida
   const enhancedColumns = useMemo(() => {
     if (!actions) return columns
 
     const actionsColumn: ColumnDef<T, any> = {
       id: 'actions',
       header: 'Acciones',
+      enableHiding: false,
       cell: ({ row }) => (
         <CrudActions
           onView={actions.onView ? () => actions.onView?.(row.original) : undefined}
@@ -236,10 +316,17 @@ export function DataTable<T extends { id: string | number }>({
   const table = useReactTable({
     data,
     columns: enhancedColumns,
-    state: { sorting },
-    onSortingChange: setSorting,
+    state: {
+      sorting: effectiveSorting,
+      columnVisibility,
+    },
+    onSortingChange: handleSortingChange,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getSortedRowModel: isManualSorting ? undefined : getSortedRowModel(),
+    manualSorting: isManualSorting,
+    manualPagination: isManualPagination,
+    manualFiltering: isManualFiltering,
   })
 
   const handleSelectAll = () => {
@@ -264,6 +351,14 @@ export function DataTable<T extends { id: string | number }>({
     onSelectionChange(newSelection)
   }
 
+  const handleClearSelectionInternal = () => {
+    if (onClearSelection) {
+      onClearSelection()
+    } else if (onSelectionChange) {
+      onSelectionChange(new Set())
+    }
+  }
+
   const hasSelection = selectedRows.size > 0
   const visibleGlobalActions = globalActions.filter(
     (action) => !action.showOnlyWhenSelected || hasSelection
@@ -275,7 +370,6 @@ export function DataTable<T extends { id: string | number }>({
     
     const newFilters = { ...filterValues, [filterId]: value }
     
-    // Eliminar filtros vacíos
     if (value === '' || value === null || value === undefined || (Array.isArray(value) && value.length === 0)) {
       delete newFilters[filterId]
     }
@@ -291,74 +385,181 @@ export function DataTable<T extends { id: string | number }>({
   const activeFiltersCount = Object.keys(filterValues).length
   const hasFilters = filters.length > 0
 
-  // Renderizar barra de acciones globales y búsqueda
+  // Cálculo de filas virtuales
+  const rowHeightMap: Record<Density, number> = {
+    dense: 36,
+    compact: 44,
+    comfortable: 54,
+  }
+  const estimatedRowHeight = rowHeightMap[effectiveDensity]
+  const allRows = table.getRowModel().rows
+  const totalRowsCount = allRows.length
+
+  const virtualScrollContainerHeight = typeof virtualScrollHeight === 'number' ? virtualScrollHeight : 520
+  const startIndex = isVirtualized ? Math.max(0, Math.floor(scrollTop / estimatedRowHeight) - 4) : 0
+  const endIndex = isVirtualized ? Math.min(totalRowsCount, Math.ceil((scrollTop + Number(virtualScrollContainerHeight)) / estimatedRowHeight) + 4) : totalRowsCount
+  const visibleRows = isVirtualized ? allRows.slice(startIndex, endIndex) : allRows
+
+  const topSpacerHeight = isVirtualized ? startIndex * estimatedRowHeight : 0
+  const bottomSpacerHeight = isVirtualized ? Math.max(0, (totalRowsCount - endIndex) * estimatedRowHeight) : 0
+
+  // Clases según densidad
+  const thPaddingClass = {
+    comfortable: 'px-4 py-3.5 text-xs',
+    compact: 'px-3 py-2.5 text-xs',
+    dense: 'px-2 py-1.5 text-[11px]',
+  }[effectiveDensity]
+
+  const tdPaddingClass = {
+    comfortable: 'px-4 py-3.5 text-sm',
+    compact: 'px-3 py-2 text-sm',
+    dense: 'px-2 py-1 text-xs',
+  }[effectiveDensity]
+
+  // Renderizar barra de acciones globales, búsqueda y controles de vista
   const renderToolbar = () => {
-    const hasToolbar = searchable || visibleGlobalActions.length > 0 || hasFilters
+    const hasToolbar =
+      searchable ||
+      visibleGlobalActions.length > 0 ||
+      hasFilters ||
+      showColumnVisibility ||
+      showDensitySwitcher ||
+      Boolean(toolbarSlot)
 
     if (!hasToolbar) return null
 
     return (
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 items-stretch sm:items-center justify-between">
         {/* Búsqueda */}
         {searchable && (
-          <div className="flex-1">
+          <div className="flex-1 max-w-md">
             <Input
               type="text"
               placeholder={searchPlaceholder}
               value={searchValue}
               onChange={(e) => onSearch?.(e.target.value)}
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              prefix={<MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />}
               className="w-full"
+              allowClear
+              density={effectiveDensity}
             />
           </div>
         )}
 
-        {/* Acciones globales + Botón de filtros */}
-        {(visibleGlobalActions.length > 0 || hasFilters) && (
-          <div className="flex gap-2 flex-wrap">
-            {/* Botón de filtros */}
-            {hasFilters && (
+        {/* Slot personalizado de Toolbar */}
+        {toolbarSlot}
+
+        {/* Acciones globales + Herramientas de visualización */}
+        <div className="flex gap-2 flex-wrap items-center justify-end">
+          {/* Botón de filtros */}
+          {hasFilters && (
+            <Button
+              variant={showFilters ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="whitespace-nowrap"
+            >
+              <FunnelIcon className="h-4 w-4 mr-1.5" />
+              Filtros
+              {activeFiltersCount > 0 && (
+                <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-white/20 rounded">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </Button>
+          )}
+
+          {/* Selector de columnas */}
+          {showColumnVisibility && (
+            <ClickOutside onClickOutside={() => setShowColumnDropdown(false)}>
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowColumnDropdown(!showColumnDropdown)}
+                  className="whitespace-nowrap"
+                  title="Visibilidad de columnas"
+                >
+                  <EyeIcon className="h-4 w-4 mr-1.5" />
+                  Columnas
+                </Button>
+
+                {showColumnDropdown && (
+                  <div className="absolute right-0 mt-1.5 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-30 animate-in fade-in">
+                    <div className="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700 mb-1">
+                      Mostrar columnas
+                    </div>
+                    <div className="max-h-60 overflow-y-auto px-2 space-y-1">
+                      {table.getAllLeafColumns().map((col) => {
+                        if (col.id === 'actions' || col.id === '__select__') return null
+                        const headerText = typeof col.columnDef.header === 'string' ? col.columnDef.header : col.id
+                        return (
+                          <label
+                            key={col.id}
+                            className="flex items-center gap-2 px-2 py-1 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={col.getIsVisible()}
+                              onChange={col.getToggleVisibilityHandler()}
+                              className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
+                            />
+                            <span className="truncate">{headerText}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </ClickOutside>
+          )}
+
+          {/* Switcher de Densidad */}
+          {showDensitySwitcher && (
+            <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 p-0.5 bg-gray-50 dark:bg-gray-800 text-xs">
+              {(['comfortable', 'compact', 'dense'] as const).map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setCurrentDensity(d)}
+                  className={cn(
+                    'px-2 py-1 rounded capitalize font-medium transition-colors',
+                    effectiveDensity === d
+                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-xs'
+                      : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                  )}
+                >
+                  {d === 'comfortable' ? 'Cómoda' : d === 'compact' ? 'Compacta' : 'Densa'}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Acciones globales */}
+          {visibleGlobalActions.map((action, index) => {
+            const isDisabled = action.requiresSelection && !hasSelection
+
+            return (
               <Button
-                variant={showFilters ? 'primary' : 'secondary'}
+                key={index}
+                variant={action.variant || 'secondary'}
                 size="sm"
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={() => action.onClick(selectedRows)}
+                disabled={isDisabled}
                 className="whitespace-nowrap"
               >
-                <FunnelIcon className="h-4 w-4 mr-1.5" />
-                Filtros
-                {activeFiltersCount > 0 && (
+                {action.icon && <span className="mr-1.5">{action.icon}</span>}
+                {action.label}
+                {action.requiresSelection && hasSelection && (
                   <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-white/20 rounded">
-                    {activeFiltersCount}
+                    {selectedRows.size}
                   </span>
                 )}
               </Button>
-            )}
-
-            {/* Acciones globales */}
-            {visibleGlobalActions.map((action, index) => {
-              const isDisabled = action.requiresSelection && !hasSelection
-
-              return (
-                <Button
-                  key={index}
-                  variant={action.variant || 'secondary'}
-                  size="sm"
-                  onClick={() => action.onClick(selectedRows)}
-                  disabled={isDisabled}
-                  className="whitespace-nowrap"
-                >
-                  {action.icon && <span className="mr-1.5">{action.icon}</span>}
-                  {action.label}
-                  {action.requiresSelection && hasSelection && (
-                    <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-white/20 rounded">
-                      {selectedRows.size}
-                    </span>
-                  )}
-                </Button>
-              )
-            })}
-          </div>
-        )}
+            )
+          })}
+        </div>
       </div>
     )
   }
@@ -410,6 +611,7 @@ export function DataTable<T extends { id: string | number }>({
             placeholder={filter.placeholder || `Buscar por ${filter.label.toLowerCase()}...`}
             value={value || ''}
             onChange={(e) => handleFilterChange(filter.id, e.target.value)}
+            density={effectiveDensity}
           />
         )
 
@@ -418,7 +620,7 @@ export function DataTable<T extends { id: string | number }>({
           <Select
             label={filter.label}
             value={value || ''}
-            onChange={(e) => handleFilterChange(filter.id, e.target.value)}
+            onChange={(val: any) => handleFilterChange(filter.id, typeof val === 'string' ? val : val?.target?.value)}
             options={[
               { label: `Todos los ${filter.label.toLowerCase()}`, value: '' },
               ...(filter.options || []),
@@ -494,6 +696,7 @@ export function DataTable<T extends { id: string | number }>({
             placeholder={filter.placeholder || `Filtrar por ${filter.label.toLowerCase()}...`}
             value={value || ''}
             onChange={(e) => handleFilterChange(filter.id, e.target.value ? Number(e.target.value) : '')}
+            density={effectiveDensity}
           />
         )
 
@@ -512,6 +715,7 @@ export function DataTable<T extends { id: string | number }>({
                   const newValue = { ...(value || {}), min: e.target.value ? Number(e.target.value) : undefined }
                   handleFilterChange(filter.id, newValue.min || newValue.max ? newValue : null)
                 }}
+                density={effectiveDensity}
               />
               <Input
                 type="number"
@@ -521,6 +725,7 @@ export function DataTable<T extends { id: string | number }>({
                   const newValue = { ...(value || {}), max: e.target.value ? Number(e.target.value) : undefined }
                   handleFilterChange(filter.id, newValue.min || newValue.max ? newValue : null)
                 }}
+                density={effectiveDensity}
               />
             </div>
           </div>
@@ -532,23 +737,13 @@ export function DataTable<T extends { id: string | number }>({
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {filter.label}
             </label>
-            <div className="relative">
-              <Input
-                placeholder={filter.placeholder || `Buscar ${filter.label.toLowerCase()}...`}
-                value={value || ''}
-                onChange={(e) => handleFilterChange(filter.id, e.target.value)}
-                className="pl-10"
-              />
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
+            <Input
+              placeholder={filter.placeholder || `Buscar ${filter.label.toLowerCase()}...`}
+              value={value || ''}
+              onChange={(e) => handleFilterChange(filter.id, e.target.value)}
+              prefix={<span className="text-gray-400">📍</span>}
+              density={effectiveDensity}
+            />
             {filter.options && filter.options.length > 0 && (
               <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 Ubicaciones disponibles: {filter.options.map(o => o.label).join(', ')}
@@ -564,7 +759,6 @@ export function DataTable<T extends { id: string | number }>({
               {filter.label}
             </label>
             {filter.options && filter.options.length > 0 ? (
-              // Color picker con opciones predefinidas
               <div className="flex flex-wrap gap-2">
                 {filter.options.map((option) => (
                   <button
@@ -609,7 +803,6 @@ export function DataTable<T extends { id: string | number }>({
                 )}
               </div>
             ) : (
-              // Color picker nativo
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -622,6 +815,7 @@ export function DataTable<T extends { id: string | number }>({
                   value={value || ''}
                   onChange={(e) => handleFilterChange(filter.id, e.target.value)}
                   className="flex-1"
+                  density={effectiveDensity}
                 />
                 {value && (
                   <button
@@ -642,43 +836,55 @@ export function DataTable<T extends { id: string | number }>({
     }
   }
 
-  // Empty state mejorado
-  const renderEmptyState = () => (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className="text-gray-400 dark:text-gray-500 mb-4">
-        {emptyIcon || <InboxIcon className="h-16 w-16" />}
+  // Empty state mejorado con soporte de emptySlot
+  const renderEmptyState = () => {
+    if (emptySlot) return emptySlot
+
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4">
+        <div className="text-gray-400 dark:text-gray-500 mb-4">
+          {emptyIcon || <InboxIcon className="h-16 w-16" />}
+        </div>
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          {emptyMessage}
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
+          {searchValue
+            ? 'Intenta ajustar tu búsqueda o filtros para encontrar lo que buscas.'
+            : 'Comienza agregando nuevos registros usando el botón de arriba.'}
+        </p>
       </div>
-      <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-        {emptyMessage}
-      </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
-        {searchValue
-          ? 'Intenta ajustar tu búsqueda o filtros para encontrar lo que buscas.'
-          : 'Comienza agregando nuevos registros usando el botón de arriba.'}
-      </p>
-    </div>
-  )
+    )
+  }
 
   // Loading skeleton
   const renderLoadingState = () => (
-    <div className="animate-pulse space-y-3">
+    <div className="animate-pulse space-y-3 p-4">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded" />
       ))}
     </div>
   )
 
-  // Renderizar tabla desktop
+  // Renderizar tabla desktop con virtualización matemática
   const renderDesktopTable = () => (
-    <div className="hidden md:block overflow-x-auto">
+    <div
+      ref={scrollContainerRef}
+      onScroll={isVirtualized ? handleScroll : undefined}
+      style={isVirtualized ? { maxHeight: virtualScrollContainerHeight, overflowY: 'auto' } : undefined}
+      className="hidden md:block overflow-x-auto relative"
+      data-virtualized={isVirtualized}
+      data-density={effectiveDensity}
+    >
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        {/* Header */}
-        <thead className="bg-gray-50 dark:bg-gray-800">
+        {/* Header con sticky cuando está virtualizada */}
+        <thead className={cn('bg-gray-50 dark:bg-gray-800', isVirtualized && 'sticky top-0 z-10 shadow-xs')}>
           <tr>
             {selectable && (
-              <th className="w-12 px-3 py-3">
+              <th className={cn('w-12 text-center', thPaddingClass)}>
                 <input
                   type="checkbox"
+                  aria-label="Seleccionar todas las filas"
                   checked={data.length > 0 && selectedRows.size === data.length}
                   onChange={handleSelectAll}
                   className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
@@ -688,12 +894,12 @@ export function DataTable<T extends { id: string | number }>({
             {table.getHeaderGroups()[0]?.headers.map((header) => (
               <th
                 key={header.id}
-                className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                className={cn('text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider', thPaddingClass)}
               >
                 {header.isPlaceholder ? null : (
                   <div
                     className={cn(
-                      'flex items-center gap-2',
+                      'flex items-center gap-1.5',
                       header.column.getCanSort() && 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200'
                     )}
                     onClick={header.column.getToggleSortingHandler()}
@@ -724,7 +930,14 @@ export function DataTable<T extends { id: string | number }>({
 
         {/* Body */}
         <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-          {table.getRowModel().rows.map((row) => (
+          {/* Top spacer row para virtualización */}
+          {topSpacerHeight > 0 && (
+            <tr aria-hidden="true" style={{ height: topSpacerHeight, border: 'none' }}>
+              <td colSpan={100} style={{ padding: 0, height: topSpacerHeight, border: 'none' }} />
+            </tr>
+          )}
+
+          {visibleRows.map((row) => (
             <tr
               key={row.id}
               className={cn(
@@ -735,9 +948,10 @@ export function DataTable<T extends { id: string | number }>({
               onClick={() => onRowClick?.(row.original)}
             >
               {selectable && (
-                <td className="w-12 px-3 py-4">
+                <td className={cn('w-12 text-center', tdPaddingClass)}>
                   <input
                     type="checkbox"
+                    aria-label={`Seleccionar fila ${row.original.id}`}
                     checked={selectedRows.has(row.original.id)}
                     onChange={(e) => {
                       e.stopPropagation()
@@ -748,12 +962,19 @@ export function DataTable<T extends { id: string | number }>({
                 </td>
               )}
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
+                <td key={cell.id} className={cn('text-gray-700 dark:text-gray-300', tdPaddingClass)}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
           ))}
+
+          {/* Bottom spacer row para virtualización */}
+          {bottomSpacerHeight > 0 && (
+            <tr aria-hidden="true" style={{ height: bottomSpacerHeight, border: 'none' }}>
+              <td colSpan={100} style={{ padding: 0, height: bottomSpacerHeight, border: 'none' }} />
+            </tr>
+          )}
         </tbody>
 
         {/* Footer (opcional) */}
@@ -764,7 +985,7 @@ export function DataTable<T extends { id: string | number }>({
               {table.getHeaderGroups()[0]?.headers.map((header) => (
                 <th
                   key={`footer-${header.id}`}
-                  className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  className={cn('text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider', thPaddingClass)}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
@@ -782,7 +1003,7 @@ export function DataTable<T extends { id: string | number }>({
 
     return (
       <div className="md:hidden space-y-3">
-        {table.getRowModel().rows.map((row) => (
+        {allRows.map((row) => (
           <Card
             key={row.id}
             className={cn(
@@ -813,7 +1034,6 @@ export function DataTable<T extends { id: string | number }>({
 
             <div className="space-y-2">
               {row.getVisibleCells().map((cell) => {
-                // Saltar columna de acciones en mobile (se muestra al final)
                 if (cell.column.id === 'actions') return null
 
                 const header = cell.column.columnDef.header
@@ -832,7 +1052,6 @@ export function DataTable<T extends { id: string | number }>({
               })}
             </div>
 
-            {/* Acciones al final del card */}
             {actions && (
               <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 flex justify-end">
                 <CrudActions
@@ -884,6 +1103,15 @@ export function DataTable<T extends { id: string | number }>({
             onPerPageChange={pagination.onPerPageChange}
           />
         </div>
+      )}
+
+      {/* BulkActionsBar integrado al seleccionar filas */}
+      {selectable && hasSelection && (
+        <BulkActionsBar
+          selectedCount={selectedRows.size}
+          onClearSelection={handleClearSelectionInternal}
+          actions={bulkActions}
+        />
       )}
     </div>
   )

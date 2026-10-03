@@ -198,3 +198,62 @@
   --ft-color-on-primary: var(--ft-dark-color-on-primary);
   color-scheme: dark;
 }
+
+/* ==========================================================================
+   Densidad — controlable vía [data-density="comfortable|compact|dense"]
+   o por variables CSS. Default: compact (44px table / 36px input).
+   ========================================================================== */
+
+:root,
+[data-density='compact'] {
+  --ft-density: compact;
+  --ft-density-row-height: 2.75rem; /* 44px */
+  --ft-density-input-height: 2.25rem; /* 36px */
+  --ft-density-padding-x: 0.75rem; /* 12px */
+  --ft-density-padding-y: 0.375rem; /* 6px */
+  --ft-density-font-size: var(--ft-text-sm); /* 14px */
+  --ft-density-gap: 0.5rem; /* 8px */
+}
+
+[data-density='comfortable'] {
+  --ft-density: comfortable;
+  --ft-density-row-height: 3.5rem; /* 56px */
+  --ft-density-input-height: 2.75rem; /* 44px */
+  --ft-density-padding-x: 1rem; /* 16px */
+  --ft-density-padding-y: 0.625rem; /* 10px */
+  --ft-density-font-size: var(--ft-text-base); /* 16px */
+  --ft-density-gap: 0.75rem; /* 12px */
+}
+
+[data-density='dense'] {
+  --ft-density: dense;
+  --ft-density-row-height: 2rem; /* 32px */
+  --ft-density-input-height: 1.75rem; /* 28px */
+  --ft-density-padding-x: 0.5rem; /* 8px */
+  --ft-density-padding-y: 0.25rem; /* 4px */
+  --ft-density-font-size: var(--ft-text-xs); /* 12px */
+  --ft-density-gap: 0.375rem; /* 6px */
+}
+
+/* ==========================================================================
+   Alto Contraste (High Contrast) — WCAG 2.2 AAA
+   ========================================================================== */
+
+[data-theme='high-contrast'] {
+  --ft-color-background: #000000;
+  --ft-color-surface: #0a0a0a;
+  --ft-color-surface-hover: #171717;
+  --ft-color-surface-raised: #121212;
+  --ft-color-border: #ffffff;
+  --ft-color-border-strong: #ffffff;
+  --ft-color-foreground: #ffffff;
+  --ft-color-muted-foreground: #e5e5e5;
+  --ft-color-overlay: rgb(0 0 0 / 0.85);
+  --ft-color-primary: #93c5fd;
+  --ft-color-primary-hover: #bfdbfe;
+  --ft-color-primary-soft: rgb(147 197 253 / 0.25);
+  --ft-color-on-primary: #000000;
+  --ft-ring: 0 0 0 3px #ffffff;
+  color-scheme: dark;
+}
+

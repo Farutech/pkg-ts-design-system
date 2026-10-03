@@ -13,8 +13,29 @@ export * from './components/ui/index'
 export { Eyebrow, SectionHeading, type EyebrowProps, type SectionHeadingProps } from './components/Content/index'
 export { Reveal, type RevealProps } from './components/Reveal/index'
 
-// Provider y temas
-export { DesignSystemProvider, useDesignSystem, type DesignSystemProviderProps, type LinkComponent } from './providers/DesignSystemProvider'
+// Primitivas Headless y Sistema de Iconos
+export * from './primitives/index'
+
+// Provider, configuración y temas
+export {
+  ConfigProvider,
+  DesignSystemProvider,
+  useConfig,
+  useDesignSystem,
+  useDensity,
+  useVirtualizationConfig,
+  useLocale,
+  useDirection,
+  useBrandConfig,
+  type ConfigProviderProps,
+  type DesignSystemProviderProps,
+  type LinkComponent,
+  type BrandConfig,
+  type BrandUserConfig,
+  type VirtualizationConfig,
+  type ColorMode,
+  type Direction,
+} from './providers/DesignSystemProvider'
 
 // Componentes CRUD
 export * from './components/crud/index'
@@ -30,6 +51,18 @@ export * from './components/basic/index'
 
 // Pantallas y flujos de autenticación
 export * from './auth-screens/index'
+
+// Formularios estructurados y compuestos
+export * from './components/forms/index'
+
+// Seguridad y almacenamiento de credenciales
+export * from './security/index'
+
+// Internacionalización y localización dinámica
+export * from './i18n/index'
+
+// Estados de aplicación y páginas de sistema
+export * from './components/pages/index'
 
 // Hooks personalizados
 export * from './hooks/index'

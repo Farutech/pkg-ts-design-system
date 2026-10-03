@@ -1,6 +1,6 @@
 {
   "name": "@farutech/design-system",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Sistema de diseño oficial de Farutech — Componentes UI accesibles, tokens tematizables y documentación viva (Storybook) para website, admin, intranet y futuras aplicaciones",
   "author": {
     "name": "Farid Maloof Suarez",
@@ -15,6 +15,10 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./primitives": {
+      "import": "./dist/primitives.js",
+      "types": "./dist/primitives/index.d.ts"
     },
     "./components/ui": {
       "import": "./dist/components/ui.js",
@@ -43,6 +47,22 @@
     "./hooks": {
       "import": "./dist/hooks.js",
       "types": "./dist/hooks/index.d.ts"
+    },
+    "./forms": {
+      "import": "./dist/forms.js",
+      "types": "./dist/components/forms/index.d.ts"
+    },
+    "./security": {
+      "import": "./dist/security.js",
+      "types": "./dist/security/index.d.ts"
+    },
+    "./i18n": {
+      "import": "./dist/i18n.js",
+      "types": "./dist/i18n/index.d.ts"
+    },
+    "./pages": {
+      "import": "./dist/pages.js",
+      "types": "./dist/components/pages/index.d.ts"
     },
     "./store": {
       "import": "./dist/store.js",

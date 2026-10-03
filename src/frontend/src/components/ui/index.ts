@@ -23,11 +23,25 @@
 // 1. FORM & INPUT
 // ============================================================================
 
-export { Input, type InputProps } from './Input'
+export { InputBase, type InputBaseProps, type InputSize, type InputVariant, type InputStatus } from './InputBase'
+export { Input, type InputProps, type ValidationMode } from './Input'
+export { InputGroup, type InputGroupProps } from './InputGroup'
+export { PasswordInput, type PasswordInputProps } from './PasswordInput'
+export { SearchInput, type SearchInputProps } from './SearchInput'
+export { NumberInput, type NumberInputProps } from './NumberInput'
 export { MaskedInput } from './MaskedInput'
 export type { MaskedInputProps, PredefinedMask } from './MaskedInput'
-export { Textarea } from './Textarea'
-export { Select } from './Select'
+export { Textarea, type TextareaProps } from './Textarea'
+export {
+  type DataMappingProps,
+  resolveOptionValue,
+  resolveOptionLabel,
+} from './DataMapping'
+export { ListboxCore, type ListboxCoreProps } from './ListboxCore'
+export { Select, type SelectProps, type SelectOption } from './Select'
+export { Combobox, type ComboboxProps, type ComboboxOption } from './Combobox'
+export { RemoteSelect, type RemoteSelectProps } from './RemoteSelect'
+export { MultiSelect, type MultiSelectProps, type MultiSelectOption } from './MultiSelect'
 export { Checkbox, CheckboxGroup } from './Checkbox'
 export { RadioGroup } from './RadioGroup'
 export type { RadioOption } from './RadioGroup'
@@ -42,8 +56,6 @@ export type { SliderProps } from './Slider'
 export { Rating } from './Rating'
 export type { RatingProps } from './Rating'
 export { Form, FormRow, FormGroup, FormSection, FormActions } from './Form'
-export { FormField } from './FormField'
-export type { FormFieldProps } from './FormField'
 
 // ============================================================================
 // 2. BUTTONS & ACTIONS
@@ -57,6 +69,7 @@ export {
 } from './Button'
 
 export { ButtonGroup } from './ButtonGroup'
+export { BulkActionsBar, type BulkActionsBarProps, type BulkActionItem } from './BulkActionsBar'
 
 export {
   IconButton,
@@ -350,14 +363,11 @@ export { ThemeToggle } from './ThemeToggle'
 export type { ThemeToggleProps } from './ThemeToggle'
 
 // ============================================================================
-// 13. AUTH SCREENS
+// 13. SELECTION & UPLOAD SUITE
 // ============================================================================
 
-// Export from main index to avoid circular dependencies.
-//
-// export { LoginScreen } from '@/auth-screens/LoginScreen'
-// export { RegisterScreen } from '@/auth-screens/RegisterScreen'
-// export type {
-//   LoginScreenProps,
-//   RegisterScreenProps,
-// } from '@/auth-screens'
+export { EntityPicker, type EntityPickerProps } from './EntityPicker'
+export { UserPicker, type UserPickerProps, type UserEntity } from './UserPicker'
+export { Dropzone, type DropzoneProps } from './Upload/Dropzone'
+export { FileList, type FileListProps, type UploadFileItem } from './Upload/FileList'
+export { UploadProgress, type UploadProgressProps } from './Upload/UploadProgress'

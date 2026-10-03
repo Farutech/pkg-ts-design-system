@@ -46,8 +46,9 @@ export const TestInteraccion: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
     const select = canvas.getByRole('combobox', { name: /país de residencia/i })
-    await userEvent.selectOptions(select, 'mx')
-    await expect(select).toHaveValue('mx')
+    await userEvent.click(select)
+    const option = await within(document.body).findByText('México')
+    await userEvent.click(option)
     await expect(args.onChange).toHaveBeenCalled()
   },
 }
@@ -67,7 +68,7 @@ export const TestAccesibilidad: Story = {
     const canvas = within(canvasElement)
     const select = canvas.getByRole('combobox', { name: /país bloqueado/i })
     await expect(select).toBeInTheDocument()
-    await expect(select).toBeDisabled()
+    await expect(select).toHaveAttribute('aria-disabled', 'true')
     await expect(canvas.getByText(/selección requerida/i)).toBeInTheDocument()
   },
 }

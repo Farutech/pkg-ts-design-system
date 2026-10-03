@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react'
+import type { ReactNode } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/ui/DataTable'
 import { Button } from '@/components/ui/Button'
@@ -6,6 +7,9 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Modal } from '@/components/ui/Modal'
 import { Badge } from '@/components/ui/Badge'
+import { BulkActionsBar } from '@/components/ui/BulkActionsBar'
+import type { BulkActionItem } from '@/components/ui/BulkActionsBar'
+import type { Density } from '@/tokens/tokens'
 import {
   PlusIcon,
   PrinterIcon,
@@ -39,7 +43,7 @@ export interface CRUDPermissions {
 
 export interface CustomAction<T> {
   label: string
-  icon?: React.ReactNode
+  icon?: ReactNode
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
   onClick: (data: T) => void
 }
@@ -81,8 +85,10 @@ export interface CRUDPageProps<T extends { id: string | number } = any> {
   onEdit?: (item: T) => Promise<void> | void
   /** Callback unificado de guardar (crear o editar) */
   onSave?: (item: Partial<T>) => Promise<void> | void
-  /** Callback al eliminar un registro */
+  /** Callback al eliminar un registro individual */
   onDelete?: (item: T) => Promise<void> | void
+  /** Callback al eliminar registros en lote */
+  onBulkDelete?: (selectedIds: Set<string | number>) => Promise<void> | void
   /** Callback al ver detalles de un registro */
   onView?: (item: T) => void
   /** Callback de impresión personalizada */
@@ -100,7 +106,7 @@ export interface CRUDPageProps<T extends { id: string | number } = any> {
   /** Acciones adicionales globales en el toolbar */
   customGlobalActions?: Array<{
     label: string
-    icon?: React.ReactNode
+    icon?: ReactNode
     variant?: 'primary' | 'secondary' | 'outline'
     onClick: (filteredItems: T[]) => void
   }>
@@ -122,13 +128,51 @@ export interface CRUDPageProps<T extends { id: string | number } = any> {
     isEditing: boolean
     onSave: (data: Partial<T>) => void
     onCancel: () => void
-  }) => React.ReactNode
+  }) => ReactNode
+
+  // -------------------------------------------------------------
+  // ARQUITECTURA DE SLOTS NOMBRADOS (Phase 3 Enterprise)
+  // -------------------------------------------------------------
+  /** Slot superior de cabecera (reemplaza o personaliza title/description) */
+  headerSlot?: ReactNode
+  /** Slot de acciones de barra de herramientas */
+  toolbarSlot?: ReactNode
+  /** Slot para filtros personalizados */
+  filtersSlot?: ReactNode
+  /** Slot para reemplazar completamente la tabla */
+  tableSlot?: ReactNode
+  /** Slot para acciones masivas (nodo directo o render prop con selectedRows y clearSelection) */
+  bulkActionsSlot?: ReactNode | ((props: { selectedRows: Set<string | number>; clearSelection: () => void }) => ReactNode)
+  /** Slot para estado vacío personalizado */
+  emptyStateSlot?: ReactNode
+
+  // -------------------------------------------------------------
+  // CONTROLES DE TABLA Y RENDIMIENTO
+  // -------------------------------------------------------------
+  /** Si la tabla permite selección de filas (default: true) */
+  selectable?: boolean
+  /** Selección controlada externamente */
+  selectedRows?: Set<string | number>
+  /** Callback al cambiar la selección */
+  onSelectionChange?: (selected: Set<string | number>) => void
+  /** Acciones masivas adicionales configurables */
+  bulkActions?: BulkActionItem[]
+  /** Nivel de densidad de la tabla (comfortable, compact, dense) */
+  density?: Density
+  /** Mostrar selector de densidad en la tabla */
+  showDensitySwitcher?: boolean
+  /** Mostrar selector de visibilidad de columnas */
+  showColumnVisibility?: boolean
+  /** Control de virtualización (auto si > 100, true para forzar, false para desactivar) */
+  virtualized?: boolean
 
   className?: string
 }
 
 /**
- * Super Componente CRUDPage — Solución Integral Compuesta para Vistas de Gestión.
+ * Super Componente CRUDPage — Solución Integral Compuesta para Vistas de Gestión Empresariales.
+ * Soporta arquitectura de slots nombrados (header, toolbar, filters, table, bulkActions, emptyState)
+ * con total retrocompatibilidad declarativa.
  */
 export function CRUDPage<T extends { id: string | number } = any>({
   title,
@@ -151,6 +195,7 @@ export function CRUDPage<T extends { id: string | number } = any>({
   onEdit,
   onSave,
   onDelete,
+  onBulkDelete,
   onView,
   onPrint,
   onExport,
@@ -164,6 +209,20 @@ export function CRUDPage<T extends { id: string | number } = any>({
   searchPlaceholder = 'Buscar registros...',
   debounceMs = 300,
   renderForm,
+  headerSlot,
+  toolbarSlot,
+  filtersSlot,
+  tableSlot,
+  bulkActionsSlot,
+  emptyStateSlot,
+  selectable = true,
+  selectedRows: controlledSelectedRows,
+  onSelectionChange: controlledOnSelectionChange,
+  bulkActions = [],
+  density,
+  showDensitySwitcher = true,
+  showColumnVisibility = true,
+  virtualized,
   className,
 }: CRUDPageProps<T>) {
   const effectivePermissions = useMemo(
@@ -195,11 +254,31 @@ export function CRUDPage<T extends { id: string | number } = any>({
   const debounceTimer = useRef<any>(null)
   const latestReqId = useRef(0)
 
+  // Selección de filas (controlada o interna)
+  const [internalSelectedRows, setInternalSelectedRows] = useState<Set<string | number>>(new Set())
+  const activeSelectedRows = controlledSelectedRows !== undefined ? controlledSelectedRows : internalSelectedRows
+
+  const handleSelectionChange = useCallback(
+    (newSet: Set<string | number>) => {
+      if (controlledOnSelectionChange) {
+        controlledOnSelectionChange(newSet)
+      } else {
+        setInternalSelectedRows(newSet)
+      }
+    },
+    [controlledOnSelectionChange]
+  )
+
+  const clearSelection = useCallback(() => {
+    handleSelectionChange(new Set())
+  }, [handleSelectionChange])
+
   // Estados del modal de Crear / Editar
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<T | null>(null)
   const [modalFormData, setModalFormData] = useState<Record<string, any>>({})
   const [deleteConfirmItem, setDeleteConfirmItem] = useState<T | null>(null)
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false)
 
   // Manejo de búsqueda y debounce
   const handleSearchChange = (q: string) => {
@@ -318,12 +397,21 @@ export function CRUDPage<T extends { id: string | number } = any>({
     setModalFormData({})
   }
 
-  // Confirmar Borrado
+  // Confirmar Borrado Individual
   const handleConfirmDelete = async () => {
     if (deleteConfirmItem) {
       await onDelete?.(deleteConfirmItem)
       setDeleteConfirmItem(null)
     }
+  }
+
+  // Confirmar Borrado Masivo
+  const handleConfirmBulkDelete = async () => {
+    if (onBulkDelete) {
+      await onBulkDelete(activeSelectedRows)
+    }
+    setIsBulkDeleteModalOpen(false)
+    clearSelection()
   }
 
   // Columnas base (a partir de columns o fields)
@@ -426,104 +514,150 @@ export function CRUDPage<T extends { id: string | number } = any>({
     xl: 'max-w-4xl',
   }[modalSize]
 
+  // Configuración de acciones masivas predeterminadas
+  const effectiveBulkActions = useMemo<BulkActionItem[]>(() => {
+    const list: BulkActionItem[] = [...bulkActions]
+
+    if (effectivePermissions.canDelete && (onBulkDelete || onDelete)) {
+      list.push({
+        id: 'bulk-delete',
+        label: 'Eliminar seleccionados',
+        variant: 'danger',
+        icon: <TrashIcon className="h-4 w-4" />,
+        onClick: () => setIsBulkDeleteModalOpen(true),
+      })
+    }
+
+    return list
+  }, [bulkActions, effectivePermissions.canDelete, onBulkDelete, onDelete])
+
   return (
     <div className={cn('space-y-6 w-full', className)}>
-      {/* Header & Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-5">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {title}
-          </h1>
-          {description && (
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {description}
-            </p>
-          )}
+      {/* Header Slot o Header Predeterminado */}
+      {headerSlot ? (
+        headerSlot
+      ) : (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-5">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {title}
+            </h1>
+            {description && (
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {description}
+              </p>
+            )}
+          </div>
+
+          {/* Toolbar Slot o Global Actions */}
+          <div className="flex flex-wrap items-center gap-2">
+            {toolbarSlot}
+
+            {effectivePermissions.canPrint && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+                className="gap-1.5"
+              >
+                <PrinterIcon className="h-4 w-4" />
+                <span>Imprimir</span>
+              </Button>
+            )}
+
+            {effectivePermissions.canExport && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="gap-1.5"
+              >
+                <ArrowDownTrayIcon className="h-4 w-4" />
+                <span>Exportar</span>
+              </Button>
+            )}
+
+            {customGlobalActions.map((action, idx) => (
+              <Button
+                key={idx}
+                variant={action.variant || 'outline'}
+                size="sm"
+                onClick={() => action.onClick(effectiveData)}
+                className="gap-1.5"
+              >
+                {action.icon}
+                <span>{action.label}</span>
+              </Button>
+            ))}
+
+            {effectivePermissions.canCreate && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleOpenCreate}
+                className="gap-1.5"
+              >
+                <PlusIcon className="h-4 w-4" />
+                <span>Crear nuevo</span>
+              </Button>
+            )}
+          </div>
         </div>
+      )}
 
-        {/* Global actions */}
-        <div className="flex flex-wrap items-center gap-2">
-          {effectivePermissions.canPrint && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePrint}
-              className="gap-1.5"
-            >
-              <PrinterIcon className="h-4 w-4" />
-              <span>Imprimir</span>
-            </Button>
-          )}
+      {/* Filters Slot o Barra de Búsqueda y Filtros Predeterminada */}
+      {filtersSlot ? (
+        filtersSlot
+      ) : (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="relative w-full sm:w-80">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder={isApiMode ? 'Buscar en API con debounce...' : searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full pl-9 pr-8 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+            {isSearching && (
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin h-3.5 w-3.5 border-2 border-primary-500 border-t-transparent rounded-full" />
+            )}
+          </div>
 
-          {effectivePermissions.canExport && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExport}
-              className="gap-1.5"
-            >
-              <ArrowDownTrayIcon className="h-4 w-4" />
-              <span>Exportar</span>
-            </Button>
-          )}
-
-          {customGlobalActions.map((action, idx) => (
-            <Button
-              key={idx}
-              variant={action.variant || 'outline'}
-              size="sm"
-              onClick={() => action.onClick(effectiveData)}
-              className="gap-1.5"
-            >
-              {action.icon}
-              <span>{action.label}</span>
-            </Button>
-          ))}
-
-          {effectivePermissions.canCreate && (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleOpenCreate}
-              className="gap-1.5"
-            >
-              <PlusIcon className="h-4 w-4" />
-              <span>Crear nuevo</span>
-            </Button>
-          )}
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 w-full sm:w-auto justify-between sm:justify-end">
+            <span>Modo de filtro: <Badge variant="default">{isApiMode ? 'API Debounce' : 'Memoria Local'}</Badge></span>
+            <span>Total: <strong className="text-gray-900 dark:text-white">{effectiveData.length}</strong></span>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Barra de Búsqueda y Filtros */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-          <input
-            type="text"
-            placeholder={isApiMode ? 'Buscar en API con debounce...' : searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+      {/* Table Slot o Tabla de Datos Predeterminada */}
+      {tableSlot ? (
+        tableSlot
+      ) : (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xs border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <DataTable
+            data={effectiveData}
+            columns={tableColumns}
+            selectable={selectable}
+            selectedRows={activeSelectedRows}
+            onSelectionChange={handleSelectionChange}
+            bulkActions={effectiveBulkActions}
+            density={density}
+            showDensitySwitcher={showDensitySwitcher}
+            showColumnVisibility={showColumnVisibility}
+            virtualized={virtualized}
+            emptySlot={emptyStateSlot}
           />
-          {isSearching && (
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin h-3.5 w-3.5 border-2 border-primary-500 border-t-transparent rounded-full" />
-          )}
         </div>
+      )}
 
-        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 w-full sm:w-auto justify-between sm:justify-end">
-          <span>Modo de filtro: <Badge variant="default">{isApiMode ? 'API Debounce' : 'Memoria Local'}</Badge></span>
-          <span>Total: <strong className="text-gray-900 dark:text-white">{effectiveData.length}</strong></span>
-        </div>
-      </div>
-
-      {/* Tabla de Datos con Paginación Anexo A */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <DataTable
-          data={effectiveData}
-          columns={tableColumns}
-          selectable
-        />
-      </div>
+      {/* Renderizado de BulkActionsSlot si se proporciona como slot explícito */}
+      {activeSelectedRows.size > 0 && bulkActionsSlot && (
+        typeof bulkActionsSlot === 'function'
+          ? bulkActionsSlot({ selectedRows: activeSelectedRows, clearSelection })
+          : bulkActionsSlot
+      )}
 
       {/* Modal de Creación / Edición */}
       <Modal
@@ -550,8 +684,8 @@ export function CRUDPage<T extends { id: string | number } = any>({
                       label={field.label}
                       value={String(currentVal)}
                       options={field.options}
-                      onChange={(e) =>
-                        setModalFormData((prev) => ({ ...prev, [field.key]: e.target.value }))
+                      onChange={(val: any) =>
+                        setModalFormData((prev) => ({ ...prev, [field.key]: typeof val === 'string' ? val : val?.target?.value }))
                       }
                       fullWidth
                     />
@@ -586,7 +720,7 @@ export function CRUDPage<T extends { id: string | number } = any>({
         </div>
       </Modal>
 
-      {/* Modal de Confirmación de Borrado */}
+      {/* Modal de Confirmación de Borrado Individual */}
       <Modal
         isOpen={Boolean(deleteConfirmItem)}
         onClose={() => setDeleteConfirmItem(null)}
@@ -606,6 +740,31 @@ export function CRUDPage<T extends { id: string | number } = any>({
             </Button>
             <Button variant="danger" onClick={handleConfirmDelete}>
               Eliminar definitivamente
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal de Confirmación de Borrado Masivo */}
+      <Modal
+        isOpen={isBulkDeleteModalOpen}
+        onClose={() => setIsBulkDeleteModalOpen(false)}
+        title="Confirmar eliminación masiva"
+      >
+        <div className="space-y-4 py-2 max-w-md">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            ¿Estás seguro de que deseas eliminar los{' '}
+            <strong className="text-gray-900 dark:text-white">
+              {activeSelectedRows.size} registros seleccionados
+            </strong>
+            ? Esta acción es irreversible.
+          </p>
+          <div className="flex justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <Button variant="outline" onClick={() => setIsBulkDeleteModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="danger" onClick={handleConfirmBulkDelete}>
+              Eliminar {activeSelectedRows.size} registros
             </Button>
           </div>
         </div>

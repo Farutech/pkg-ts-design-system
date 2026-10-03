@@ -30,6 +30,9 @@ import {
 } from '@heroicons/react/24/outline'
 import { cn } from '@/utils/cn'
 import { Button } from './Button'
+import { useDensity } from '@/providers/DesignSystemProvider'
+import type { Density } from '@/tokens/tokens'
+import type { InputSize } from './InputBase'
 import { useLocaleStore, formatDateWithLocale, type DateFormat, type TimeFormat } from '@/store/localeStore'
 
 // ============================================================================
@@ -48,11 +51,17 @@ export interface BaseDatePickerProps {
   dateFormat?: DateFormat
   /** Formato de hora personalizado (sobrescribe el del store) */
   timeFormat?: TimeFormat
+  /** Nivel de densidad visual (comfortable, compact, dense) */
+  density?: Density
+  /** Tamaño del control de entrada */
+  size?: InputSize
 }
 
 export interface SingleDatePickerProps extends BaseDatePickerProps {
   value?: Date | string | null
   onChange?: (date: Date | null) => void
+  /** Contrato canónico de cambio de valor */
+  onValueChange?: (date: Date | null) => void
   minDate?: Date
   maxDate?: Date
   showTime?: boolean
@@ -62,6 +71,8 @@ export interface SingleDatePickerProps extends BaseDatePickerProps {
 export interface DateRangePickerProps extends BaseDatePickerProps {
   value?: [Date | null, Date | null]
   onChange?: (range: [Date | null, Date | null]) => void
+  /** Contrato canónico de cambio de rango */
+  onValueChange?: (range: [Date | null, Date | null]) => void
   showTime?: boolean
   presets?: Array<'today' | 'yesterday' | 'thisWeek' | 'lastWeek' | 'thisMonth' | 'lastMonth' | 'last7days' | 'last30days' | 'thisYear'>
 }
@@ -483,6 +494,7 @@ function TimePicker({ value, onChange }: TimePickerProps) {
 export function DatePicker({
   value,
   onChange,
+  onValueChange,
   label,
   placeholder = 'Seleccionar fecha',
   minDate,
@@ -495,7 +507,18 @@ export function DatePicker({
   placement = 'auto', // Por defecto 'auto' detecta espacio disponible
   dateFormat,
   timeFormat,
+  density: propDensity,
+  size = 'md',
 }: SingleDatePickerProps) {
+  const contextDensity = useDensity()
+  const activeDensity = propDensity || contextDensity
+
+  const heightClass = {
+    sm: { comfortable: 'h-9 text-sm px-2.5', compact: 'h-8 text-xs px-2', dense: 'h-6 text-xs px-1.5' },
+    md: { comfortable: 'h-11 text-base px-3.5', compact: 'h-9 text-sm px-3', dense: 'h-7 text-xs px-2' },
+    lg: { comfortable: 'h-14 text-lg px-4', compact: 'h-11 text-base px-3.5', dense: 'h-9 text-sm px-2.5' },
+  }[size][activeDensity]
+
   const dateValue = value ? (typeof value === 'string' ? new Date(value) : value) : null
   const [viewDate, setViewDate] = useState(dateValue || new Date())
   const [timeValue, setTimeValue] = useState(dateValue || new Date())
@@ -513,8 +536,10 @@ export function DatePicker({
         timeValue.getMinutes()
       )
       onChange?.(combined)
+      onValueChange?.(combined)
     } else {
       onChange?.(date)
+      onValueChange?.(date)
       close()
     }
   }
@@ -530,12 +555,14 @@ export function DatePicker({
         date.getMinutes()
       )
       onChange?.(combined)
+      onValueChange?.(combined)
     }
   }
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation()
     onChange?.(null)
+    onValueChange?.(null)
   }
 
   // Calcular posición del panel al abrir
@@ -583,7 +610,8 @@ export function DatePicker({
                 ref={buttonRef}
                 disabled={disabled}
                 className={cn(
-                  'w-full flex items-center justify-between px-3 py-2 text-left rounded-lg border transition-colors',
+                  'w-full flex items-center justify-between text-left rounded-lg border transition-colors',
+                  heightClass,
                   disabled
                     ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
                     : error
@@ -689,6 +717,7 @@ export function DatePicker({
 export function DateRangePicker({
   value = [null, null],
   onChange,
+  onValueChange,
   label,
   placeholder = 'Seleccionar rango',
   showTime = false,
@@ -700,7 +729,18 @@ export function DateRangePicker({
   placement = 'auto', // Por defecto 'auto' detecta espacio disponible
   dateFormat,
   timeFormat,
+  density: propDensity,
+  size = 'md',
 }: DateRangePickerProps) {
+  const contextDensity = useDensity()
+  const activeDensity = propDensity || contextDensity
+
+  const heightClass = {
+    sm: { comfortable: 'h-9 text-sm px-2.5', compact: 'h-8 text-xs px-2', dense: 'h-6 text-xs px-1.5' },
+    md: { comfortable: 'h-11 text-base px-3.5', compact: 'h-9 text-sm px-3', dense: 'h-7 text-xs px-2' },
+    lg: { comfortable: 'h-14 text-lg px-4', compact: 'h-11 text-base px-3.5', dense: 'h-9 text-sm px-2.5' },
+  }[size][activeDensity]
+
   const [start, end] = value
   const [viewDate, setViewDate] = useState(start || new Date())
   const [selectingStart, setSelectingStart] = useState(true)
@@ -708,6 +748,11 @@ export function DateRangePicker({
   const [tempEnd, setTempEnd] = useState<Date | null>(end)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [panelPlacement, setPanelPlacement] = useState<'top' | 'bottom'>('bottom')
+
+  const emitRange = (range: [Date | null, Date | null]) => {
+    onChange?.(range)
+    onValueChange?.(range)
+  }
 
   const getPresetRange = (preset: string): [Date, Date] => {
     const today = new Date()
@@ -789,7 +834,7 @@ export function DateRangePicker({
       
       // No cerrar inmediatamente si showTime está activado
       if (!showTime) {
-        onChange?.([tempStart, date < tempStart ? tempStart : date])
+        emitRange([tempStart, date < tempStart ? tempStart : date])
         setSelectingStart(true)
       }
     }
@@ -799,12 +844,12 @@ export function DateRangePicker({
     if (tempStart && tempEnd) {
       // Validar que start < end
       if (tempEnd < tempStart) {
-        onChange?.([tempEnd, tempStart])
+        emitRange([tempEnd, tempStart])
       } else {
-        onChange?.([tempStart, tempEnd])
+        emitRange([tempStart, tempEnd])
       }
     } else if (tempStart) {
-      onChange?.([tempStart, null])
+      emitRange([tempStart, null])
     }
     setSelectingStart(true)
     close()
@@ -812,7 +857,7 @@ export function DateRangePicker({
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation()
-    onChange?.([null, null])
+    emitRange([null, null])
     setTempStart(null)
     setTempEnd(null)
     setSelectingStart(true)
@@ -869,7 +914,8 @@ export function DateRangePicker({
                 ref={buttonRef}
                 disabled={disabled}
                 className={cn(
-                  'w-full flex items-center justify-between px-3 py-2 text-left rounded-lg border transition-colors',
+                  'w-full flex items-center justify-between text-left rounded-lg border transition-colors',
+                  heightClass,
                   disabled
                     ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
                     : error

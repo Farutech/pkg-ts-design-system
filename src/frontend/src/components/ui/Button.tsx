@@ -11,6 +11,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode
   iconPosition?: 'left' | 'right'
   loading?: boolean
+  isLoading?: boolean
   fullWidth?: boolean
   /** Ruta interna — renderiza el LinkComponent del provider si existe */
   to?: string
@@ -27,6 +28,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     icon,
     iconPosition = 'left',
     loading = false,
+    isLoading = false,
     fullWidth = false,
     to,
     href,
@@ -38,6 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   },
   ref
 ) {
+  const isButtonLoading = loading || isLoading
   const { LinkComponent } = useDesignSystem()
 
   const baseStyles =
@@ -73,7 +76,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 
   const content = (
     <>
-      {loading && (
+      {isButtonLoading && (
         <svg
           className="animate-spin -ml-1 mr-2 h-4 w-4"
           xmlns="http://www.w3.org/2000/svg"
@@ -90,9 +93,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         </svg>
       )}
 
-      {!loading && icon && iconPosition === 'left' && <span className="mr-2">{icon}</span>}
+      {!isButtonLoading && icon && iconPosition === 'left' && <span className="mr-2">{icon}</span>}
       <span>{children}</span>
-      {!loading && icon && iconPosition === 'right' && <span className="ml-2">{icon}</span>}
+      {!isButtonLoading && icon && iconPosition === 'right' && <span className="ml-2">{icon}</span>}
     </>
   )
 
@@ -111,7 +114,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         href={url}
         className={classes}
         {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        aria-busy={loading || undefined}
+        aria-busy={isButtonLoading || undefined}
       >
         {content}
       </a>
@@ -123,8 +126,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       className={classes}
-      disabled={disabled || loading}
-      aria-busy={loading || undefined}
+      disabled={disabled || isButtonLoading}
+      aria-busy={isButtonLoading || undefined}
       {...props}
     >
       {content}

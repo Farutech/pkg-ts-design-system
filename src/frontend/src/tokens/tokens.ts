@@ -84,6 +84,66 @@ export type DesignTokens = {
   shadowMd?: string
   shadowLg?: string
   shadowXl?: string
+
+  /* ---------------------------------------------------------------- densidad */
+  densityRowHeight?: string
+  densityInputHeight?: string
+  densityPaddingX?: string
+  densityPaddingY?: string
+  densityFontSize?: string
+  densityGap?: string
+}
+
+export type Density = 'comfortable' | 'compact' | 'dense'
+
+export interface DensityTokens {
+  rowHeight: string
+  inputHeight: string
+  paddingX: string
+  paddingY: string
+  fontSize: string
+  gap: string
+}
+
+export const DENSITY_PRESETS: Record<Density, DensityTokens> = {
+  comfortable: {
+    rowHeight: '3.5rem',
+    inputHeight: '2.75rem',
+    paddingX: '1rem',
+    paddingY: '0.625rem',
+    fontSize: '1rem',
+    gap: '0.75rem',
+  },
+  compact: {
+    rowHeight: '2.75rem',
+    inputHeight: '2.25rem',
+    paddingX: '0.75rem',
+    paddingY: '0.375rem',
+    fontSize: '0.875rem',
+    gap: '0.5rem',
+  },
+  dense: {
+    rowHeight: '2rem',
+    inputHeight: '1.75rem',
+    paddingX: '0.5rem',
+    paddingY: '0.25rem',
+    fontSize: '0.75rem',
+    gap: '0.375rem',
+  },
+}
+
+/** Convierte una densidad en custom properties CSS */
+export function densityToStyle(density: Density = 'compact'): Record<string, string> {
+  const preset = DENSITY_PRESETS[density] ?? DENSITY_PRESETS.compact
+  return {
+    '--ft-density': density,
+    '--ft-density-row-height': preset.rowHeight,
+    '--ft-density-input-height': preset.inputHeight,
+    '--ft-density-padding-x': preset.paddingX,
+    '--ft-density-padding-y': preset.paddingY,
+    '--ft-density-font-size': preset.fontSize,
+    '--ft-density-gap': preset.gap,
+  }
 }
 
 /** Claves de la paleta primitiva que Tailwind consume como canales RGB. */

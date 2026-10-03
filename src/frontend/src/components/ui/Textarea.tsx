@@ -1,115 +1,207 @@
-/**
- * Componente Textarea - Input de texto multilínea con validación regex
- */
-
+import {
+  forwardRef,
+  useState,
+  useId,
+  type ChangeEvent,
+  type ReactNode,
+  type TextareaHTMLAttributes,
+} from 'react'
 import { cn } from '@/utils/cn'
-import { forwardRef, useState } from 'react'
-import type { ChangeEvent } from 'react'
+import { useDensity } from '@/providers/DesignSystemProvider'
+import type { Density } from '@/tokens/tokens'
+import type { InputSize, InputStatus, InputVariant } from './InputBase'
+import { Icon } from '@/primitives/Icon/Icon'
 
-type ValidationMode = 'block' | 'error'
+export type ValidationMode = 'block' | 'error'
 
-interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
-  label?: string
-  error?: string
-  helperText?: string
-  variant?: 'default' | 'filled' | 'outlined'
+export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size' | 'onChange'> {
+  label?: ReactNode
+  description?: ReactNode
+  error?: ReactNode
+  helperText?: ReactNode
+  required?: boolean
+  size?: InputSize
+  density?: Density
+  variant?: InputVariant | 'default' | 'outlined'
+  status?: InputStatus
   resize?: 'none' | 'vertical' | 'horizontal' | 'both'
+  showCount?: boolean
+  fullWidth?: boolean
   /** Regex pattern para validación de entrada */
   pattern?: RegExp
   /** Modo de validación: 'block' bloquea caracteres inválidos, 'error' muestra error */
   validationMode?: ValidationMode
   /** Callback cuando el valor cambia */
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void
+  /** Callback simplificado de valor */
+  onValueChange?: (value: string) => void
 }
 
+/**
+ * Textarea (Componente de Texto Multilínea):
+ * Soporta densidad automática, contador de caracteres, estados de validación y accesibilidad.
+ */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ 
-    label, 
-    error, 
-    helperText,
-    variant = 'default',
-    resize = 'vertical',
-    className,
-    pattern,
-    validationMode = 'block',
-    onChange,
-    ...props 
-  }, ref) => {
+  (
+    {
+      label,
+      description,
+      error,
+      helperText,
+      required,
+      size = 'md',
+      density: propDensity,
+      variant = 'outline',
+      status = 'default',
+      resize = 'vertical',
+      showCount = false,
+      fullWidth = true,
+      className,
+      pattern,
+      validationMode = 'block',
+      onChange,
+      onValueChange,
+      value,
+      defaultValue,
+      maxLength,
+      disabled,
+      id,
+      ...props
+    },
+    ref
+  ) => {
+    const contextDensity = useDensity()
+    const activeDensity = propDensity ?? contextDensity
+
+    const generatedId = useId()
+    const textareaId = id || `ft-textarea-${generatedId}`
+    const errorId = `${textareaId}-error`
+    const descId = `${textareaId}-description`
+
+    const [internalValue, setInternalValue] = useState<string>(
+      String(value ?? defaultValue ?? '')
+    )
     const [validationError, setValidationError] = useState<string>('')
 
+    const currentValue = value !== undefined ? String(value) : internalValue
+
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-      const value = e.target.value
+      const val = e.target.value
 
       if (pattern) {
         if (validationMode === 'block') {
-          // Modo block: solo permitir caracteres válidos
-          if (value === '' || pattern.test(value)) {
+          if (val === '' || pattern.test(val)) {
             setValidationError('')
+            setInternalValue(val)
             onChange?.(e)
+            onValueChange?.(val)
           } else {
-            // No actualizar el valor si no cumple el patrón
             e.preventDefault()
           }
         } else {
-          // Modo error: permitir entrada pero mostrar error
-          if (value === '' || pattern.test(value)) {
+          setInternalValue(val)
+          if (val === '' || pattern.test(val)) {
             setValidationError('')
-            onChange?.(e)
           } else {
             setValidationError('El formato ingresado no es válido')
-            onChange?.(e)
           }
+          onChange?.(e)
+          onValueChange?.(val)
         }
       } else {
-        // Sin patrón: comportamiento normal
+        setInternalValue(val)
         onChange?.(e)
+        onValueChange?.(val)
       }
     }
 
     const displayError = error || validationError
+    const activeStatus: InputStatus = displayError ? 'error' : status
+    const displayDesc = description || helperText
+
+    // Clases por tamaño y densidad
+    const paddingClasses = {
+      sm: { comfortable: 'p-2.5 text-sm', compact: 'p-2 text-xs', dense: 'p-1.5 text-xs' },
+      md: { comfortable: 'p-3.5 text-base', compact: 'p-3 text-sm', dense: 'p-2 text-xs' },
+      lg: { comfortable: 'p-4 text-lg', compact: 'p-3.5 text-base', dense: 'p-2.5 text-sm' },
+    }[size][activeDensity]
+
     const variantStyles = {
-      default: 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600',
-      filled: 'bg-gray-100 dark:bg-gray-700 border-transparent focus:bg-white dark:focus:bg-gray-800',
-      outlined: 'bg-transparent border-2 border-gray-300 dark:border-gray-600',
-    }
+      outline: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700',
+      default: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700',
+      outlined: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700',
+      filled: 'bg-gray-100 dark:bg-gray-800 border border-transparent focus:bg-white dark:focus:bg-gray-900',
+      borderless: 'border-none bg-transparent shadow-none px-0',
+      underline: 'border-0 border-b-2 border-gray-300 dark:border-gray-700 bg-transparent rounded-none px-0',
+    }[variant]
+
+    const statusStyles = {
+      default: 'focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20',
+      error: 'border-red-500 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20',
+      warning: 'border-amber-500 dark:border-amber-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20',
+      success: 'border-emerald-500 dark:border-emerald-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20',
+    }[activeStatus]
 
     const resizeStyles = {
       none: 'resize-none',
       vertical: 'resize-y',
       horizontal: 'resize-x',
       both: 'resize',
-    }
+    }[resize]
 
     return (
-      <div className={className}>
+      <div className={cn('flex flex-col text-left', fullWidth && 'w-full')}>
         {label && (
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor={textareaId}
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             {label}
+            {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
           </label>
         )}
-        <textarea
-          ref={ref}
-          onChange={handleChange}
-          className={cn(
-            'w-full px-4 py-3 rounded-xl border transition-all duration-200 min-h-[100px]',
-            'focus:ring-2 focus:ring-primary-500 focus:border-transparent',
-            'text-gray-900 dark:text-white',
-            'placeholder:text-gray-400 dark:placeholder:text-gray-500',
-            displayError
-              ? 'border-red-300 dark:border-red-700 focus:ring-red-500'
-              : variantStyles[variant],
-            resizeStyles[resize]
+
+        <div className="relative w-full">
+          <textarea
+            ref={ref}
+            id={textareaId}
+            value={currentValue}
+            onChange={handleChange}
+            disabled={disabled}
+            maxLength={maxLength}
+            aria-invalid={activeStatus === 'error' ? 'true' : undefined}
+            aria-required={required ? 'true' : undefined}
+            aria-describedby={cn(displayError && errorId, displayDesc && descId) || undefined}
+            className={cn(
+              'w-full rounded-md transition-colors outline-none min-h-[80px]',
+              'text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500',
+              paddingClasses,
+              variantStyles,
+              statusStyles,
+              resizeStyles,
+              disabled && 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-800',
+              className
+            )}
+            {...props}
+          />
+
+          {showCount && maxLength && (
+            <div className="absolute right-2 bottom-2 text-xs text-gray-400 select-none font-mono bg-white/80 dark:bg-gray-900/80 px-1 rounded pointer-events-none">
+              {currentValue.length}/{maxLength}
+            </div>
           )}
-          {...props}
-        />
-        {(displayError || helperText) && (
-          <p className={cn(
-            'mt-1 text-sm',
-            displayError 
-              ? 'text-red-600 dark:text-red-400' 
-              : 'text-gray-500 dark:text-gray-400'
-          )}>
-            {displayError || helperText}
+        </div>
+
+        {displayError && (
+          <p id={errorId} role="alert" className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+            <Icon.Error size="xs" className="shrink-0" />
+            <span>{displayError}</span>
+          </p>
+        )}
+
+        {displayDesc && !displayError && (
+          <p id={descId} className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {displayDesc}
           </p>
         )}
       </div>

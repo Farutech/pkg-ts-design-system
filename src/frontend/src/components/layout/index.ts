@@ -15,5 +15,6 @@ export { Sidebar } from './Sidebar'
 export type { SidebarProps } from './Sidebar'
 export { SideNavItem } from './SideNavItem'
 export type { SideNavItemProps } from './SideNavItem'
+export { AppShell, type AppShellProps } from './AppShell'
 
 

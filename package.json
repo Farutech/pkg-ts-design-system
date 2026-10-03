@@ -1,0 +1,51 @@
+{
+  "name": "@farutech/design-system",
+  "version": "1.1.0",
+  "description": "FaruTech Enterprise Design System",
+  "main": "./src/frontend/dist/index.js",
+  "module": "./src/frontend/dist/index.js",
+  "types": "./src/frontend/dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/frontend/dist/index.d.ts",
+      "import": "./src/frontend/dist/index.js",
+      "default": "./src/frontend/dist/index.js"
+    },
+    "./primitives": {
+      "types": "./src/frontend/dist/primitives/index.d.ts",
+      "import": "./src/frontend/dist/primitives.js",
+      "default": "./src/frontend/dist/primitives.js"
+    },
+    "./ui": {
+      "types": "./src/frontend/dist/components/ui/index.d.ts",
+      "import": "./src/frontend/dist/components/ui.js",
+      "default": "./src/frontend/dist/components/ui.js"
+    },
+    "./forms": {
+      "types": "./src/frontend/dist/components/forms/index.d.ts",
+      "import": "./src/frontend/dist/forms.js",
+      "default": "./src/frontend/dist/forms.js"
+    },
+    "./security": {
+      "types": "./src/frontend/dist/security/index.d.ts",
+      "import": "./src/frontend/dist/security.js",
+      "default": "./src/frontend/dist/security.js"
+    },
+    "./i18n": {
+      "types": "./src/frontend/dist/i18n/index.d.ts",
+      "import": "./src/frontend/dist/i18n.js",
+      "default": "./src/frontend/dist/i18n.js"
+    },
+    "./pages": {
+      "types": "./src/frontend/dist/components/pages/index.d.ts",
+      "import": "./src/frontend/dist/pages.js",
+      "default": "./src/frontend/dist/pages.js"
+    },
+    "./hooks": {
+      "types": "./src/frontend/dist/hooks/index.d.ts",
+      "import": "./src/frontend/dist/hooks.js",
+      "default": "./src/frontend/dist/hooks.js"
+    },
+    "./styles.css": "./src/frontend/dist/styles.css"
+  }
+}

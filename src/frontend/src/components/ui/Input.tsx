@@ -1,159 +1,358 @@
-/**
- * Componente Input reutilizable con soporte para formularios y validación regex
- */
-
-import { forwardRef, useState } from 'react'
-import type { InputHTMLAttributes, ReactNode, ChangeEvent } from 'react'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import {
+  forwardRef,
+  useState,
+  useId,
+  useRef,
+  type ReactNode,
+  type ChangeEvent,
+  type MouseEvent,
+} from 'react'
 import { cn } from '@/utils/cn'
+import { InputBase, type InputBaseProps, type InputSize, type InputVariant, type InputStatus } from './InputBase'
+import { Icon } from '@/primitives/Icon/Icon'
 
 export type ValidationMode = 'block' | 'error'
 
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'pattern'> {
-  label?: string
-  error?: string
-  helperText?: string
-  icon?: ReactNode
-  iconPosition?: 'left' | 'right'
-  fullWidth?: boolean
+export interface InputProps extends Omit<InputBaseProps, 'onChange' | 'prefix' | 'pattern'> {
+  /** Label accesible vinculado automáticamente con htmlFor */
+  label?: ReactNode
+  /** Descripción o mensaje de ayuda */
+  description?: ReactNode
+  /** Mensaje de error (fuerza status='error' y aria-invalid='true') */
+  error?: ReactNode
+  /** Helper text alternativo (compatibilidad) */
+  helperText?: ReactNode
+  /** Marca el campo como requerido con asterisco y aria-required */
+  required?: boolean
+
+  /** Prefijo textual o icono dentro del contenedor del input (lado izquierdo) */
+  prefix?: ReactNode
+  /** Sufijo textual o icono dentro del contenedor del input (lado derecho) */
+  suffix?: ReactNode
+  /** Alias Mantine para contenido izquierdo */
+  leftSection?: ReactNode
+  /** Alias Mantine para contenido derecho */
+  rightSection?: ReactNode
+  leftSectionWidth?: number | string
+  rightSectionWidth?: number | string
+  leftSectionPointerEvents?: 'auto' | 'none'
+  rightSectionPointerEvents?: 'auto' | 'none'
+  /** Alias MUI para contenido izquierdo */
+  startAdornment?: ReactNode
+  /** Alias MUI para contenido derecho */
+  endAdornment?: ReactNode
+
+  /** Addon exterior izquierdo (acoplado por fuera del borde del input) */
+  addonBefore?: ReactNode
+  /** Addon exterior derecho (acoplado por fuera del borde del input) */
+  addonAfter?: ReactNode
+
+  /** Muestra botón para limpiar rápidamente el valor */
+  allowClear?: boolean
+  /** Muestra contador de caracteres actuales y límite (requiere maxLength) */
+  showCount?: boolean
+
   /** Regex pattern para validación de entrada */
   pattern?: RegExp
   /** Modo de validación: 'block' bloquea caracteres inválidos, 'error' muestra error */
   validationMode?: ValidationMode
-  /** Callback cuando el valor cambia (solo se llama con valores válidos si pattern está definido) */
+  /** Callback nativo de cambio */
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
-  /** Show password toggle for password inputs (default: true) */
+  /** Callback simplificado con solo el valor string */
+  onValueChange?: (value: string) => void
+
+  /** Toggle de visibilidad de contraseña para inputs de tipo password */
   showPasswordToggle?: boolean
+
+  /** Prop de icono legacy (retrocompatibilidad) */
+  icon?: ReactNode
+  /** Posición de icono legacy */
+  iconPosition?: 'left' | 'right'
 }
 
+/**
+ * Input (Componente Best-of-Breed de Entrada de Texto):
+ * Sintetiza los mejores patrones de Bootstrap (addons), Ant Design (prefix/suffix/allowClear/showCount),
+ * Mantine (left/rightSection), MUI (adornments) y React Aria (accesibilidad estricta).
+ */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       label,
+      description,
       error,
       helperText,
-      icon,
-      iconPosition = 'left',
-      fullWidth = true,
-      className,
-      id,
+      required,
+      prefix,
+      suffix,
+      leftSection,
+      rightSection,
+      leftSectionWidth,
+      rightSectionWidth,
+      leftSectionPointerEvents = 'auto',
+      rightSectionPointerEvents = 'auto',
+      startAdornment,
+      endAdornment,
+      addonBefore,
+      addonAfter,
+      allowClear = false,
+      showCount = false,
       pattern,
       validationMode = 'block',
       onChange,
-      type,
+      onValueChange,
       showPasswordToggle = true,
+      icon,
+      iconPosition = 'left',
+      status = 'default',
+      size = 'md',
+      density,
+      variant = 'outline',
+      fullWidth = true,
+      id,
+      type,
+      value,
+      defaultValue,
+      maxLength,
+      className,
+      disabled,
       ...props
     },
     ref
   ) => {
-    const inputId = id || `input-${Math.random().toString(36).substring(7)}`
+    const generatedId = useId()
+    const inputId = id || `ft-input-${generatedId}`
+    const errorId = `${inputId}-error`
+    const descId = `${inputId}-description`
+
+    const internalInputRef = useRef<HTMLInputElement>(null)
+    const combinedRef = (node: HTMLInputElement | null) => {
+      ;(internalInputRef as React.MutableRefObject<HTMLInputElement | null>).current = node
+      if (typeof ref === 'function') {
+        ref(node)
+      } else if (ref) {
+        ;(ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+      }
+    }
+
+    const [internalValue, setInternalValue] = useState<string>(
+      String(value ?? defaultValue ?? '')
+    )
     const [validationError, setValidationError] = useState<string>('')
     const [showPassword, setShowPassword] = useState(false)
-    
-    // Determine if this is a password input
+
+    // Sincronizar internalValue si es controlado
+    const currentValue = value !== undefined ? String(value) : internalValue
+
     const isPassword = type === 'password'
     const effectiveType = isPassword && showPassword ? 'text' : type
 
+    const effectiveLeft =
+      leftSection ??
+      prefix ??
+      startAdornment ??
+      (icon && iconPosition === 'left' ? icon : null)
+
+    const effectiveRight =
+      rightSection ??
+      suffix ??
+      endAdornment ??
+      (icon && iconPosition === 'right' ? icon : null)
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value
+      const val = e.target.value
 
       if (pattern) {
         if (validationMode === 'block') {
-          // Modo block: solo permitir caracteres válidos
-          if (value === '' || pattern.test(value)) {
+          if (val === '' || pattern.test(val)) {
             setValidationError('')
+            setInternalValue(val)
             onChange?.(e)
+            onValueChange?.(val)
           } else {
-            // No actualizar el valor si no cumple el patrón
             e.preventDefault()
           }
         } else {
-          // Modo error: permitir entrada pero mostrar error
-          if (value === '' || pattern.test(value)) {
+          setInternalValue(val)
+          if (val === '' || pattern.test(val)) {
             setValidationError('')
-            onChange?.(e)
           } else {
             setValidationError('El formato ingresado no es válido')
-            onChange?.(e)
           }
+          onChange?.(e)
+          onValueChange?.(val)
         }
       } else {
-        // Sin patrón: comportamiento normal
+        setInternalValue(val)
         onChange?.(e)
+        onValueChange?.(val)
+      }
+    }
+
+    const handleClear = (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setInternalValue('')
+      setValidationError('')
+      onValueChange?.('')
+
+      if (internalInputRef.current) {
+        internalInputRef.current.value = ''
+        // Disparar evento de input sintético para formularios reactivos
+        const event = new Event('input', { bubbles: true })
+        internalInputRef.current.dispatchEvent(event)
+        internalInputRef.current.focus()
       }
     }
 
     const displayError = error || validationError
+    const activeStatus: InputStatus = displayError ? 'error' : status
+    const displayDesc = description || helperText
 
     return (
-      <div className={cn('flex flex-col', fullWidth && 'w-full')}>
+      <div className={cn('flex flex-col text-left', fullWidth && 'w-full')}>
+        {/* Label */}
         {label && (
           <label
             htmlFor={inputId}
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
             {label}
+            {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
           </label>
         )}
 
-        <div className="relative">
-          {icon && iconPosition === 'left' && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-              {icon}
+        {/* Contenedor con soporte de addonBefore / addonAfter externos */}
+        <div className="flex w-full items-stretch">
+          {addonBefore && (
+            <div className="inline-flex items-center px-3 border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-sm rounded-l-md select-none shrink-0">
+              {addonBefore}
             </div>
           )}
 
-          <input
-            ref={ref}
-            id={inputId}
-            type={effectiveType}
-            aria-invalid={displayError ? 'true' : undefined}
-            onChange={handleChange}
-            className={cn(
-              'input',
-              icon && iconPosition === 'left' && 'pl-10',
-              (icon && iconPosition === 'right') || (isPassword && showPasswordToggle) ? 'pr-10' : '',
-              displayError && 'border-red-500 focus:ring-red-500',
-              className
+          {/* Caja principal del input con slots internos */}
+          <div className="relative flex-1 flex items-center">
+            {/* Contenido Izquierdo */}
+            {effectiveLeft && (
+              <div
+                className={cn(
+                  'absolute left-0 inset-y-0 pl-3 flex items-center text-gray-400 dark:text-gray-500 z-10 text-sm',
+                  leftSectionPointerEvents === 'none' && 'pointer-events-none'
+                )}
+                style={leftSectionWidth ? { width: leftSectionWidth } : undefined}
+              >
+                {effectiveLeft}
+              </div>
             )}
-            style={isPassword && showPasswordToggle ? {
-              // Desactivar el icono nativo de mostrar contraseña del navegador
-              WebkitTextSecurity: showPassword ? 'none' : 'disc',
-            } as React.CSSProperties : undefined}
-            {...props}
-          />
 
-          {/* Password visibility toggle */}
-          {isPassword && showPasswordToggle && (
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 z-10"
-              tabIndex={-1}
-            >
-              {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
+            <InputBase
+              ref={combinedRef}
+              id={inputId}
+              type={effectiveType}
+              value={currentValue}
+              onChange={handleChange}
+              disabled={disabled}
+              maxLength={maxLength}
+              size={size}
+              density={density}
+              variant={variant}
+              status={activeStatus}
+              fullWidth={fullWidth}
+              hasLeftContent={Boolean(effectiveLeft)}
+              hasRightContent={Boolean(
+                effectiveRight ||
+                (allowClear && currentValue) ||
+                (isPassword && showPasswordToggle) ||
+                (showCount && maxLength)
               )}
-            </button>
-          )}
+              aria-invalid={activeStatus === 'error' ? 'true' : undefined}
+              aria-required={required ? 'true' : undefined}
+              aria-describedby={cn(
+                displayError && errorId,
+                displayDesc && descId
+              ) || undefined}
+              className={cn(
+                addonBefore && 'rounded-l-none',
+                addonAfter && 'rounded-r-none',
+                className
+              )}
+              {...props}
+            />
 
-          {/* Right icon (only if not password or password toggle is disabled) */}
-          {icon && iconPosition === 'right' && !(isPassword && showPasswordToggle) && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
-              {icon}
+            {/* Controles y Contenido Derecho */}
+            <div className="absolute right-0 inset-y-0 pr-2.5 flex items-center gap-1.5 z-10 text-gray-400 text-sm">
+              {/* Botón allowClear */}
+              {allowClear && Boolean(currentValue) && !disabled && (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  aria-label="Limpiar campo"
+                  className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  tabIndex={-1}
+                >
+                  <Icon.Clear size="xs" />
+                </button>
+              )}
+
+              {/* Password visibility toggle */}
+              {isPassword && showPasswordToggle && !disabled && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                  className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <Icon.EyeOff size="sm" /> : <Icon.Eye size="sm" />}
+                </button>
+              )}
+
+              {/* Contador de caracteres (showCount) */}
+              {showCount && maxLength && (
+                <span className="text-xs text-gray-400 select-none font-mono">
+                  {currentValue.length}/{maxLength}
+                </span>
+              )}
+
+              {/* Contenido derecho personalizado */}
+              {effectiveRight && (
+                <div
+                  className={cn(
+                    'flex items-center text-gray-400 dark:text-gray-500',
+                    rightSectionPointerEvents === 'none' && 'pointer-events-none'
+                  )}
+                  style={rightSectionWidth ? { width: rightSectionWidth } : undefined}
+                >
+                  {effectiveRight}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {addonAfter && (
+            <div className="inline-flex items-center px-3 border border-l-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-sm rounded-r-md select-none shrink-0">
+              {addonAfter}
             </div>
           )}
         </div>
 
+        {/* Mensaje de Error (Live Region accesible) */}
         {displayError && (
-          <p role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">{displayError}</p>
+          <p
+            id={errorId}
+            role="alert"
+            className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1"
+          >
+            <Icon.Error size="xs" className="shrink-0" />
+            <span>{displayError}</span>
+          </p>
         )}
 
-
-        {helperText && !displayError && (
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{helperText}</p>
+        {/* Descripción o Helper Text */}
+        {displayDesc && !displayError && (
+          <p id={descId} className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {displayDesc}
+          </p>
         )}
       </div>
     )

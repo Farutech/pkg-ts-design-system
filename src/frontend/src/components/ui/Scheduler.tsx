@@ -520,7 +520,7 @@ function AppointmentModal({
                         <Select
                           label={field.label}
                           value={formData[field.name] || ''}
-                          onChange={(value) => handleChange(field.name, value)}
+                          onChange={(value: any) => handleChange(field.name, value)}
                           options={(field.options || []).map(opt => ({ value: opt, label: opt }))}
                           placeholder="Seleccionar..."
                           error={errors[field.name]}

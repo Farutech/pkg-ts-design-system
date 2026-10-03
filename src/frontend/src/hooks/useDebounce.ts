@@ -4,7 +4,11 @@ export interface UseDebounceOptions {
   delay?: number;
 }
 
-export function useDebounce<T>(value: T, { delay = 300 }: UseDebounceOptions = {}): T {
+export function useDebounce<T>(
+  value: T,
+  optionsOrDelay: UseDebounceOptions | number = {}
+): T {
+  const delay = typeof optionsOrDelay === 'number' ? optionsOrDelay : optionsOrDelay.delay ?? 300;
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {

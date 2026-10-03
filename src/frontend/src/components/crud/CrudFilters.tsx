@@ -82,7 +82,7 @@ export function CrudFilters({ fields, onApply, onReset }: CrudFiltersProps) {
                   label={field.label}
                   options={field.options || []}
                   value={filters[field.key] || ''}
-                  onChange={(e) => handleFilterChange(field.key, e.target.value)}
+                  onChange={(val: any) => handleFilterChange(field.key, typeof val === 'object' && val !== null && 'target' in val ? val.target.value : val)}
                   placeholder={field.placeholder}
                 />
               )

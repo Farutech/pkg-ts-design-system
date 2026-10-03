@@ -25,6 +25,7 @@
 
 export { InputBase, type InputBaseProps, type InputSize, type InputVariant, type InputStatus } from './InputBase'
 export { Input, type InputProps, type ValidationMode } from './Input'
+export { FloatingInput, type FloatingInputProps } from './FloatingInput'
 export { InputGroup, type InputGroupProps } from './InputGroup'
 export { PasswordInput, type PasswordInputProps } from './PasswordInput'
 export { SearchInput, type SearchInputProps } from './SearchInput'
@@ -284,7 +285,7 @@ export {
 // 9. OVERLAYS & FLOATING UI
 // ============================================================================
 
-export { Modal } from './Modal'
+export { Modal, type ModalProps } from './Modal'
 export { Popover } from './Popover'
 export type { PopoverProps } from './Popover'
 

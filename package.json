@@ -1,6 +1,6 @@
 {
   "name": "@farutech/design-system",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "FaruTech Enterprise Design System",
   "main": "./src/frontend/dist/index.js",
   "module": "./src/frontend/dist/index.js",

@@ -13,34 +13,30 @@ export interface CrudPaginationProps {
   total: number
   onPageChange: (page: number) => void
   onPerPageChange?: (perPage: number) => void
+  /** Variante de tema: 'dark' para aplicaciones tipo Ordeon, 'default' para dashboard claro */
+  variant?: 'dark' | 'default' | 'transparent'
   className?: string
 }
 
 /**
- * Obtiene exactamente 3 valores dinámicos de página respetando Anexo A:
- * - Extremo inicial -> [1, 2, 3]
- * - Página 5 -> [5, 6, 7]
- * - Página 7 -> [6, 7, 8]
- * - Extremo final -> [total - 2, total - 1, total]
+ * Obtiene hasta 5 valores dinámicos centrados en la página actual.
  */
-export function getDynamicThreePages(current: number, total: number): number[] {
-  if (total <= 3) {
+export function getDynamicPages(current: number, total: number, maxVisible = 5): number[] {
+  if (total <= maxVisible) {
     return Array.from({ length: total }, (_, i) => i + 1)
   }
-  if (current <= 2) {
-    return [1, 2, 3]
+  const half = Math.floor(maxVisible / 2)
+  let start = Math.max(1, current - half)
+  let end = Math.min(total, start + maxVisible - 1)
+
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1)
   }
-  if (current >= total - 1) {
-    return [total - 2, total - 1, total]
+  const pages: number[] = []
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
   }
-  if (current === 5) {
-    return [5, Math.min(6, total - 1), Math.min(7, total)]
-  }
-  if (current === 7) {
-    return [6, 7, Math.min(8, total)]
-  }
-  const start = Math.max(1, Math.min(current - 1, total - 2))
-  return [start, start + 1, start + 2]
+  return pages
 }
 
 export function CrudPagination({
@@ -50,115 +46,155 @@ export function CrudPagination({
   total,
   onPageChange,
   onPerPageChange,
+  variant = 'dark',
   className,
 }: CrudPaginationProps) {
-  const startItem = total > 0 ? (currentPage - 1) * perPage + 1 : 0
-  const endItem = Math.min(currentPage * perPage, total)
-
-  const dynamicPages = getDynamicThreePages(currentPage, totalPages)
+  const dynamicPages = getDynamicPages(currentPage, Math.max(1, totalPages))
+  const isDark = variant === 'dark' || variant === 'transparent'
 
   return (
-    <div className={cn('flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6', className)}>
-      <div className="flex flex-1 items-center justify-between w-full">
-        <div>
-          <p className="text-sm text-gray-700 dark:text-gray-300">
-            Mostrando <span className="font-medium">{startItem}</span> a{' '}
-            <span className="font-medium">{endItem}</span> de{' '}
-            <span className="font-medium">{total}</span> resultados
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {onPerPageChange && (
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-              <span>Filas:</span>
-              <select
-                aria-label="Registros por página"
-                value={perPage}
-                onChange={(e) => onPerPageChange(Number(e.target.value))}
-                className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white py-1 px-2 text-xs focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
-          )}
-
-          {/* Navegación completa Anexo A: <<, <, [3 dinámicos], >, >> */}
-          <nav className="isolate inline-flex -space-x-px rounded-lg shadow-sm" aria-label="Paginación">
-            {/* Botón Primero (<<) */}
-            <button
-              type="button"
-              onClick={() => onPageChange(1)}
-              disabled={currentPage === 1}
-              title="Primera página"
-              aria-label="Primera página"
-              className="relative inline-flex items-center rounded-l-lg px-2.5 py-2 text-gray-500 dark:text-gray-400 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <ChevronDoubleLeftIcon className="h-4 w-4" />
-            </button>
-
-            {/* Botón Anterior (<) */}
-            <button
-              type="button"
-              onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              title="Página anterior"
-              aria-label="Página anterior"
-              className="relative inline-flex items-center px-2.5 py-2 text-gray-500 dark:text-gray-400 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <ChevronLeftIcon className="h-4 w-4" />
-            </button>
-
-            {/* 3 Valores Dinámicos Centrales */}
-            {dynamicPages.map((page) => {
-              const isCurrent = page === currentPage
-              return (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => onPageChange(page)}
-                  aria-current={isCurrent ? 'page' : undefined}
-                  className={cn(
-                    'relative inline-flex items-center px-3.5 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 transition-colors',
-                    isCurrent
-                      ? 'z-10 bg-primary-600 text-white ring-primary-600 dark:ring-primary-600 hover:bg-primary-700'
-                      : 'text-gray-900 dark:text-gray-100'
-                  )}
-                >
-                  {page}
-                </button>
-              )
-            })}
-
-            {/* Botón Siguiente (>) */}
-            <button
-              type="button"
-              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage >= totalPages}
-              title="Página siguiente"
-              aria-label="Página siguiente"
-              className="relative inline-flex items-center px-2.5 py-2 text-gray-500 dark:text-gray-400 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <ChevronRightIcon className="h-4 w-4" />
-            </button>
-
-            {/* Botón Último (>>) */}
-            <button
-              type="button"
-              onClick={() => onPageChange(totalPages)}
-              disabled={currentPage >= totalPages}
-              title="Última página"
-              aria-label="Última página"
-              className="relative inline-flex items-center rounded-r-lg px-2.5 py-2 text-gray-500 dark:text-gray-400 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <ChevronDoubleRightIcon className="h-4 w-4" />
-            </button>
-          </nav>
-        </div>
+    <div
+      className={cn(
+        'flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-3.5 border-t select-none transition-colors',
+        isDark
+          ? 'bg-[#15161d] border-[#292a34] text-slate-400'
+          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300',
+        variant === 'transparent' && 'bg-transparent border-transparent',
+        className
+      )}
+    >
+      {/* Columna 1: Resumen de conteo y páginas (Izquierda) */}
+      <div className="flex items-center min-w-0">
+        <p className="text-xs text-slate-400 dark:text-slate-400 font-medium tracking-wide">
+          Página <span className={cn('font-bold', isDark ? 'text-slate-200' : 'text-gray-900 dark:text-white')}>{currentPage}</span> de{' '}
+          <span className={cn('font-bold', isDark ? 'text-slate-200' : 'text-gray-900 dark:text-white')}>{Math.max(1, totalPages)}</span> ·{' '}
+          <span>{total}</span> elementos totales
+        </p>
       </div>
+
+      {/* Columna 2: Navegación de páginas centrada (Centro) */}
+      <div className="flex items-center justify-center">
+        <nav className="inline-flex items-center gap-1" aria-label="Navegación de páginas">
+          {/* Botón Primera Página («) */}
+          <button
+            type="button"
+            onClick={() => onPageChange(1)}
+            disabled={currentPage === 1}
+            title="Primera página"
+            aria-label="Primera página"
+            className={cn(
+              'h-8 w-8 inline-flex items-center justify-center rounded-lg border text-xs font-semibold transition-all',
+              isDark
+                ? 'bg-[#1c1d26] border-[#313342] text-slate-400 hover:text-white hover:border-violet-500 disabled:opacity-30 disabled:border-[#262732]'
+                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-40',
+              'disabled:cursor-not-allowed'
+            )}
+          >
+            <ChevronDoubleLeftIcon className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Botón Anterior (‹) */}
+          <button
+            type="button"
+            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            title="Página anterior"
+            aria-label="Página anterior"
+            className={cn(
+              'h-8 w-8 inline-flex items-center justify-center rounded-lg border text-xs font-semibold transition-all',
+              isDark
+                ? 'bg-[#1c1d26] border-[#313342] text-slate-400 hover:text-white hover:border-violet-500 disabled:opacity-30 disabled:border-[#262732]'
+                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-40',
+              'disabled:cursor-not-allowed'
+            )}
+          >
+            <ChevronLeftIcon className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Botones numéricos de página */}
+          {dynamicPages.map((page) => {
+            const isCurrent = page === currentPage
+            return (
+              <button
+                key={page}
+                type="button"
+                onClick={() => onPageChange(page)}
+                aria-current={isCurrent ? 'page' : undefined}
+                className={cn(
+                  'h-8 min-w-8 px-2.5 inline-flex items-center justify-center rounded-lg text-xs font-bold transition-all shadow-sm',
+                  isCurrent
+                    ? 'bg-violet-600 border border-violet-500 text-white shadow-violet-500/20'
+                    : isDark
+                    ? 'bg-[#1c1d26] border border-[#313342] text-slate-300 hover:border-violet-500 hover:text-white'
+                    : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50'
+                )}
+              >
+                {page}
+              </button>
+            )
+          })}
+
+          {/* Botón Siguiente (›) */}
+          <button
+            type="button"
+            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage >= totalPages}
+            title="Página siguiente"
+            aria-label="Página siguiente"
+            className={cn(
+              'h-8 w-8 inline-flex items-center justify-center rounded-lg border text-xs font-semibold transition-all',
+              isDark
+                ? 'bg-[#1c1d26] border-[#313342] text-slate-400 hover:text-white hover:border-violet-500 disabled:opacity-30 disabled:border-[#262732]'
+                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-40',
+              'disabled:cursor-not-allowed'
+            )}
+          >
+            <ChevronRightIcon className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Botón Última Página (») */}
+          <button
+            type="button"
+            onClick={() => onPageChange(totalPages)}
+            disabled={currentPage >= totalPages}
+            title="Última página"
+            aria-label="Última página"
+            className={cn(
+              'h-8 w-8 inline-flex items-center justify-center rounded-lg border text-xs font-semibold transition-all',
+              isDark
+                ? 'bg-[#1c1d26] border-[#313342] text-slate-400 hover:text-white hover:border-violet-500 disabled:opacity-30 disabled:border-[#262732]'
+                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-40',
+              'disabled:cursor-not-allowed'
+            )}
+          >
+            <ChevronDoubleRightIcon className="h-3.5 w-3.5" />
+          </button>
+        </nav>
+      </div>
+
+      {/* Columna 3: Selector por página (Derecha) */}
+      {onPerPageChange && (
+        <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+          <span>Por página</span>
+          <select
+            aria-label="Registros por página"
+            value={perPage}
+            onChange={(e) => onPerPageChange(Number(e.target.value))}
+            className={cn(
+              'h-8 rounded-lg border px-2.5 py-1 text-xs font-semibold outline-none cursor-pointer transition-colors',
+              isDark
+                ? 'bg-[#1c1d26] border-[#313342] text-slate-200 focus:border-violet-500'
+                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-violet-500'
+            )}
+          >
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      )}
     </div>
   )
 }
+

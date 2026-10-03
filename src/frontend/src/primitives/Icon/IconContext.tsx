@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
-import type { IconAdapter, IconName } from './IconAdapter'
+import type { IconAdapter } from './IconAdapter'
 import { defaultHeroiconsAdapter } from './defaultHeroiconsAdapter'
 
 export interface IconContextValue {

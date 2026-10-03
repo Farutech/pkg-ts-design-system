@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react'
+import { useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
 export interface PortalProps {
@@ -8,6 +8,22 @@ export interface PortalProps {
   /** ID del elemento contenedor (si no existe, se crea automáticamente en document.body) */
   containerId?: string
 }
+
+function getPortalNode(container?: HTMLElement | null, containerId = 'ft-portal-root'): HTMLElement | null {
+  if (typeof document === 'undefined') return null
+  if (container) return container
+
+  let node = document.getElementById(containerId)
+  if (!node) {
+    node = document.createElement('div')
+    node.id = containerId
+    node.setAttribute('data-ft-portal-container', 'true')
+    document.body.appendChild(node)
+  }
+  return node
+}
+
+const emptySubscribe = () => () => {}
 
 /**
  * Portal (Primitiva Headless):
@@ -19,36 +35,11 @@ export function Portal({
   container,
   containerId = 'ft-portal-root',
 }: PortalProps) {
-  const [mountNode, setMountNode] = useState<HTMLElement | null>(null)
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return
-
-    if (container) {
-      setMountNode(container)
-      return
-    }
-
-    let node = document.getElementById(containerId)
-    let created = false
-
-    if (!node) {
-      node = document.createElement('div')
-      node.id = containerId
-      node.setAttribute('data-ft-portal-container', 'true')
-      document.body.appendChild(node)
-      created = true
-    }
-
-    setMountNode(node)
-
-    return () => {
-      // Si fue creado dinámicamente y ya no tiene hijos, limpiarlo
-      if (created && node && node.childNodes.length === 0 && node.parentNode) {
-        node.parentNode.removeChild(node)
-      }
-    }
-  }, [container, containerId])
+  const mountNode = useSyncExternalStore(
+    emptySubscribe,
+    () => getPortalNode(container, containerId),
+    () => null
+  )
 
   if (!mountNode) {
     return null

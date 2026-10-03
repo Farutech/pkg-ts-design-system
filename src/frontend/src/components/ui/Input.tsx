@@ -8,7 +8,7 @@ import {
   type MouseEvent,
 } from 'react'
 import { cn } from '@/utils/cn'
-import { InputBase, type InputBaseProps, type InputSize, type InputVariant, type InputStatus } from './InputBase'
+import { InputBase, type InputBaseProps, type InputStatus } from './InputBase'
 import { Icon } from '@/primitives/Icon/Icon'
 
 export type ValidationMode = 'block' | 'error'

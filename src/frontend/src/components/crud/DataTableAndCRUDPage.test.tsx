@@ -68,14 +68,13 @@ describe('DataTable: Enterprise Virtualization, Density & Selection', () => {
   })
 
   it('activates BulkActionsBar when selectable and rows are selected', () => {
-    const onSelectionChange = vi.fn()
-    const { rerender } = render(
+    render(
       <DataTable
         data={sampleData}
         columns={mockColumns}
         selectable
         selectedRows={new Set([1, 2])}
-        onSelectionChange={onSelectionChange}
+        onSelectionChange={vi.fn()}
         bulkActions={[
           { id: 'export', label: 'Exportar lote', onClick: vi.fn() },
         ]}

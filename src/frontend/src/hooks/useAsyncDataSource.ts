@@ -63,6 +63,7 @@ export function useAsyncDataSource<T>({
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const cacheRef = useRef<Map<string, T[]>>(new Map())
   const activeQueryRef = useRef<string>('')
+  const executeFetchRef = useRef<(searchQuery: string, attempt?: number) => Promise<void>>(() => Promise.resolve())
 
   const executeFetch = useCallback(
     async (searchQuery: string, attempt = 0) => {
@@ -108,7 +109,9 @@ export function useAsyncDataSource<T>({
         if (attempt < retryCount) {
           // Reintentar con backoff exponencial
           const delay = Math.pow(2, attempt) * 200
-          setTimeout(() => executeFetch(searchQuery, attempt + 1), delay)
+          setTimeout(() => {
+            void executeFetchRef.current(searchQuery, attempt + 1)
+          }, delay)
           return
         }
 
@@ -119,6 +122,10 @@ export function useAsyncDataSource<T>({
     },
     [loadData, cacheSize, retryCount]
   )
+
+  useEffect(() => {
+    executeFetchRef.current = executeFetch
+  }, [executeFetch])
 
   const search = useCallback(
     (newQuery: string) => {

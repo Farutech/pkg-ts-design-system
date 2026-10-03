@@ -29,7 +29,8 @@ export function ErrorPage({
   className,
 }: ErrorPageProps) {
   const [showDetails, setShowDetails] = useState(false)
-  const effectiveIncident = incidentId || `ERR-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+  const [defaultIncidentId] = useState(() => `ERR-${Math.random().toString(36).substring(2, 8).toUpperCase()}`)
+  const effectiveIncident = incidentId || defaultIncidentId
 
   return (
     <div

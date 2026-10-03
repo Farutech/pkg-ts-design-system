@@ -1,6 +1,6 @@
 import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppShell } from './AppShell'
 import { BulkActionsBar } from '@/components/ui/BulkActionsBar'
@@ -66,7 +66,7 @@ describe('Fase 3 — Compuestos P0 y Patrones Empresariales', () => {
   describe('LoginPage (Patrón Enterprise)', () => {
     it('debe manejar autenticación con validación y estados asíncronos', async () => {
       const user = userEvent.setup()
-      const onLogin = vi.fn(async ({ email, password }) => {
+      const onLogin = vi.fn(async ({ email: _email, password }) => {
         if (password !== 'correcta') {
           throw new Error('Credenciales inválidas')
         }

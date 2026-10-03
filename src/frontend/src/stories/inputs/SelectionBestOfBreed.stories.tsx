@@ -168,7 +168,7 @@ export const VirtualizedLargeDataset: StoryObj = {
             mapping={{
               valueKey: 'sku',
               textKey: 'title',
-              renderOption: (item, { selected, active }) => (
+              renderOption: (item, { selected: _selected, active: _active }) => (
                 <div className="flex items-center justify-between w-full text-xs">
                   <span className="font-mono text-gray-500">{item.sku}</span>
                   <span className="truncate max-w-[180px] font-medium">{item.title}</span>

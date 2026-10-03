@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useCallback, useSyncExternalStore } from 'react'
 
 /**
  * useMediaQuery - Hook seguro para SSR que evalúa media queries CSS.
@@ -8,36 +8,37 @@ import { useState, useEffect } from 'react'
  * const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
  */
 export function useMediaQuery(query: string, defaultValue = false): boolean {
-  const [matches, setMatches] = useState(() => {
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      if (typeof window === 'undefined') return () => {}
+
+      const mediaQueryList = window.matchMedia(query)
+      const listener = () => onStoreChange()
+
+      if (mediaQueryList.addEventListener) {
+        mediaQueryList.addEventListener('change', listener)
+      } else {
+        // Compatibilidad con navegadores antiguos
+        ;(mediaQueryList as any).addListener(listener)
+      }
+
+      return () => {
+        if (mediaQueryList.removeEventListener) {
+          mediaQueryList.removeEventListener('change', listener)
+        } else {
+          ;(mediaQueryList as any).removeListener(listener)
+        }
+      }
+    },
+    [query]
+  )
+
+  const getSnapshot = useCallback(() => {
     if (typeof window === 'undefined') return defaultValue
     return window.matchMedia(query).matches
-  })
+  }, [query, defaultValue])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
+  const getServerSnapshot = useCallback(() => defaultValue, [defaultValue])
 
-    const mediaQueryList = window.matchMedia(query)
-    setMatches(mediaQueryList.matches)
-
-    const listener = (event: MediaQueryListEvent) => {
-      setMatches(event.matches)
-    }
-
-    if (mediaQueryList.addEventListener) {
-      mediaQueryList.addEventListener('change', listener)
-    } else {
-      // Compatibilidad con navegadores antiguos
-      ;(mediaQueryList as any).addListener(listener)
-    }
-
-    return () => {
-      if (mediaQueryList.removeEventListener) {
-        mediaQueryList.removeEventListener('change', listener)
-      } else {
-        ;(mediaQueryList as any).removeListener(listener)
-      }
-    }
-  }, [query])
-
-  return matches
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }

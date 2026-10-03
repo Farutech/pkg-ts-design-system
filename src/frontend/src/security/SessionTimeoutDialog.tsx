@@ -31,7 +31,7 @@ export function SessionTimeoutDialog({
   const [secondsLeft, setSecondsLeft] = useState(warningCountdownSeconds)
   const [isExtending, setIsExtending] = useState(false)
 
-  const lastActivityRef = useRef<number>(Date.now())
+  const lastActivityRef = useRef<number>(0)
   const warningTimerRef = useRef<any>(null)
   const countdownIntervalRef = useRef<any>(null)
 
@@ -43,6 +43,7 @@ export function SessionTimeoutDialog({
   // Escucha de eventos de interacción del usuario
   useEffect(() => {
     if (!enabled) return
+    lastActivityRef.current = Date.now()
 
     const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart']
     const onEvent = () => handleActivity()

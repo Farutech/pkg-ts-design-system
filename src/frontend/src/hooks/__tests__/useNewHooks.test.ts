@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { usePagination } from '../usePagination'
-import { useThrottle, useThrottledCallback } from '../useThrottle'
-import { useLocalStorage, useSessionStorage } from '../useStorage'
+import { useThrottledCallback } from '../useThrottle'
+import { useLocalStorage } from '../useStorage'
 import { useServerDataTable } from '../useServerDataTable'
 
 describe('Fase 4 — Suite de Hooks Avanzados', () => {
@@ -87,7 +87,7 @@ describe('Fase 4 — Suite de Hooks Avanzados', () => {
 
   describe('useServerDataTable', () => {
     it('debe orquestar consultas remotas y proveer props para DataTable', async () => {
-      const mockFetch = vi.fn(async (q) => ({
+      const mockFetch = vi.fn(async (_q) => ({
         data: [{ id: 1, name: 'Item 1' }, { id: 2, name: 'Item 2' }],
         total: 20,
       }))

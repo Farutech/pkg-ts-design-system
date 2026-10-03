@@ -56,7 +56,7 @@ export function UserPicker({
           </div>
         </div>
       )}
-      renderItem={(user, isSelected) => (
+      renderItem={(user, _isSelected) => (
         <div className="flex items-center gap-3">
           <Avatar
             src={user.avatarUrl}

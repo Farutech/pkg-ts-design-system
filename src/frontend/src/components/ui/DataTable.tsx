@@ -30,7 +30,6 @@ import {
   FunnelIcon,
   XMarkIcon,
   EyeIcon,
-  ArrowsUpDownIcon,
 } from '@heroicons/react/24/outline'
 import { cn } from '@/utils/cn'
 import type { Density } from '@/tokens/tokens'

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoginPage } from '@/auth-screens/LoginPage'
@@ -6,7 +6,6 @@ import { CRUDPage } from '@/components/crud/CRUDPage'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Icon } from '@/primitives/Icon/Icon'
-import { DesignSystemProvider } from '@/providers/DesignSystemProvider'
 
 const meta: Meta = {
   title: '11-Templates/EnterprisePatterns',

@@ -1,11 +1,9 @@
 import {
   useState,
-  useRef,
   useId,
   forwardRef,
   useMemo,
   type ReactNode,
-  type KeyboardEvent,
   type ChangeEvent,
 } from 'react'
 import { cn } from '@/utils/cn'
@@ -76,7 +74,7 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
     disabled = false,
     size = 'md',
     density: propDensity,
-    status = 'default',
+    status: _status = 'default',
     fullWidth = true,
     prefix = <Icon.Search size="xs" />,
     allowClear = true,

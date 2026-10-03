@@ -93,7 +93,15 @@ export function useServerDataTable<T extends { id: string | number }>({
 
   useEffect(() => {
     if (autoFetch) {
-      executeFetch()
+      let isMounted = true
+      queueMicrotask(() => {
+        if (isMounted) {
+          void executeFetch()
+        }
+      })
+      return () => {
+        isMounted = false
+      }
     }
   }, [executeFetch, autoFetch])
 

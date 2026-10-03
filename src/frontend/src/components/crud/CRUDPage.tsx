@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Modal } from '@/components/ui/Modal'
 import { Badge } from '@/components/ui/Badge'
-import { BulkActionsBar } from '@/components/ui/BulkActionsBar'
 import type { BulkActionItem } from '@/components/ui/BulkActionsBar'
 import type { Density } from '@/tokens/tokens'
 import {

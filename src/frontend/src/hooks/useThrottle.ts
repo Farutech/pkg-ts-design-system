@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
  */
 export function useThrottle<T>(value: T, intervalMs = 300): T {
   const [throttledValue, setThrottledValue] = useState<T>(value)
-  const lastExecuted = useRef<number>(Date.now())
+  const lastExecuted = useRef<number>(0)
 
   useEffect(() => {
     if (Date.now() >= lastExecuted.current + intervalMs) {

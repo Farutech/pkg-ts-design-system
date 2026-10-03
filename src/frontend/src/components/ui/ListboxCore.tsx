@@ -1,7 +1,6 @@
 import {
   useState,
   useRef,
-  useEffect,
   useCallback,
   useMemo,
   type ReactNode,
@@ -100,12 +99,8 @@ export function ListboxCore<T>({
     return new Set([String(selectedKey)])
   }, [selectedKey])
 
-  // Ajustar activeIndex si la lista cambia de longitud
-  useEffect(() => {
-    if (activeIndex >= items.length) {
-      setActiveIndex(Math.max(0, items.length - 1))
-    }
-  }, [items.length, activeIndex])
+  // Índice activo seguro ante cambios de longitud en items
+  const safeActiveIndex = items.length > 0 ? Math.min(activeIndex, items.length - 1) : 0
 
   const handleScroll = (e: UIEvent<HTMLDivElement>) => {
     if (isVirtualized) {
@@ -114,7 +109,6 @@ export function ListboxCore<T>({
   }
 
   // Cálculo de ventana visible (Windowing matemático)
-  const totalHeight = items.length * itemHeight
   const numericMaxHeight = typeof maxHeight === 'number' ? maxHeight : 260
   const visibleCount = Math.ceil(numericMaxHeight / itemHeight)
   const buffer = 4
@@ -154,7 +148,7 @@ export function ListboxCore<T>({
     switch (e.key) {
       case 'ArrowDown': {
         e.preventDefault()
-        const next = activeIndex < items.length - 1 ? activeIndex + 1 : 0
+        const next = safeActiveIndex < items.length - 1 ? safeActiveIndex + 1 : 0
         setActiveIndex(next)
         onActiveIndexChange?.(next, resolveOptionValue(items[next], mapping.valueKey))
         scrollToIndex(next)
@@ -162,7 +156,7 @@ export function ListboxCore<T>({
       }
       case 'ArrowUp': {
         e.preventDefault()
-        const prev = activeIndex > 0 ? activeIndex - 1 : items.length - 1
+        const prev = safeActiveIndex > 0 ? safeActiveIndex - 1 : items.length - 1
         setActiveIndex(prev)
         onActiveIndexChange?.(prev, resolveOptionValue(items[prev], mapping.valueKey))
         scrollToIndex(prev)
@@ -186,7 +180,7 @@ export function ListboxCore<T>({
       case 'Enter':
       case ' ': {
         e.preventDefault()
-        selectOptionByIndex(activeIndex)
+        selectOptionByIndex(safeActiveIndex)
         break
       }
     }
@@ -241,7 +235,7 @@ export function ListboxCore<T>({
         <div style={{ paddingTop: topOffset, paddingBottom: bottomOffset }}>
           {visibleItems.map(({ item, globalIndex, key, label }) => {
             const isSelected = selectedSet.has(key)
-            const isActive = globalIndex === activeIndex
+            const isActive = globalIndex === safeActiveIndex
             const isDisabled = Boolean(mapping.isOptionDisabled?.(item))
 
             return (

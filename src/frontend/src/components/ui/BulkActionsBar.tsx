@@ -1,7 +1,6 @@
 import { type ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 import { Button } from './Button'
-import { Icon } from '@/primitives/Icon/Icon'
 
 export interface BulkActionItem {
   id: string

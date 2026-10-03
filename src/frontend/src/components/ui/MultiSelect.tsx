@@ -1,6 +1,5 @@
 import {
   useState,
-  useRef,
   useId,
   forwardRef,
   useMemo,
@@ -73,9 +72,9 @@ export const MultiSelect = forwardRef(function MultiSelect<T = MultiSelectOption
     placeholder = 'Selecciona opciones...',
     required,
     disabled = false,
-    size = 'md',
+    size: _size = 'md',
     density: propDensity,
-    status = 'default',
+    status: _status = 'default',
     fullWidth = true,
     allowClear = true,
     name,
@@ -120,7 +119,7 @@ export const MultiSelect = forwardRef(function MultiSelect<T = MultiSelectOption
       .filter((item): item is T => item !== undefined)
   }, [currentValues, optionsMap])
 
-  const handleSelectKey = (key: string, item: T) => {
+  const handleSelectKey = (key: string, _item: T) => {
     let nextValues: string[]
     if (currentValues.includes(key)) {
       nextValues = currentValues.filter((k) => k !== key)

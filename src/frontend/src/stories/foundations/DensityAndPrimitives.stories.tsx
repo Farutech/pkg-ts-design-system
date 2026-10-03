@@ -1,10 +1,9 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ConfigProvider,
   Icon,
   FocusTrap,
-  ClickOutside,
   type Density,
 } from '@/index'
 

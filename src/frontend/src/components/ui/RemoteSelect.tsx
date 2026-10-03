@@ -4,7 +4,6 @@ import {
   useId,
   forwardRef,
   type ReactNode,
-  type KeyboardEvent,
 } from 'react'
 import { cn } from '@/utils/cn'
 import { useDensity } from '@/providers/DesignSystemProvider'
@@ -82,11 +81,11 @@ export const RemoteSelect = forwardRef(function RemoteSelect<T>(
     disabled = false,
     size = 'md',
     density: propDensity,
-    variant = 'outline',
-    status = 'default',
+    variant: _variant = 'outline',
+    status: _status = 'default',
     fullWidth = true,
     prefix,
-    suffix,
+    suffix: _suffix,
     allowClear = true,
     name,
     id,

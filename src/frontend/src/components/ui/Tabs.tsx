@@ -20,6 +20,11 @@ interface TabsProps {
   onChange?: (tabId: string) => void
   variant?: 'line' | 'pills' | 'enclosed'
   className?: string
+  listClassName?: string
+  panelClassName?: string
+  tabClassName?: string
+  style?: React.CSSProperties
+  children?: ReactNode
 }
 
 export function Tabs({ 
@@ -27,7 +32,12 @@ export function Tabs({
   defaultTab, 
   onChange,
   variant = 'line',
-  className 
+  className,
+  listClassName,
+  panelClassName,
+  tabClassName,
+  style,
+  children,
 }: TabsProps) {
   const defaultIndex = defaultTab 
     ? tabs.findIndex(tab => tab.id === defaultTab) 
@@ -38,11 +48,12 @@ export function Tabs({
       defaultIndex={defaultIndex >= 0 ? defaultIndex : 0}
       onChange={(index) => onChange?.(tabs[index].id)}
     >
-      <div className={className}>
+      <div className={className} style={style}>
         {/* Tab List */}
         <Tab.List
           className={cn(
             'flex',
+            listClassName,
             variant === 'line' && 'border-b border-gray-200 dark:border-gray-700 gap-4',
             variant === 'pills' && 'gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl',
             variant === 'enclosed' && 'border-b border-gray-200 dark:border-gray-700 gap-0'
@@ -59,6 +70,7 @@ export function Tabs({
                     'flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all duration-200',
                     'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                     'disabled:opacity-50 disabled:cursor-not-allowed',
+                    tabClassName,
                     variant === 'line' && [
                       selected
                         ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400'
@@ -94,13 +106,15 @@ export function Tabs({
               key={tab.id}
               className={cn(
                 'rounded-xl p-4',
-                'focus:outline-none focus:ring-2 focus:ring-primary-500'
+                'focus:outline-none focus:ring-2 focus:ring-primary-500',
+                panelClassName
               )}
             >
               {tab.content}
             </Tab.Panel>
           ))}
         </Tab.Panels>
+        {children}
       </div>
     </Tab.Group>
   )

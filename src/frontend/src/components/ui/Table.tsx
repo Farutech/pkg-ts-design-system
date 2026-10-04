@@ -20,8 +20,8 @@ export interface TableRowData {
 }
 
 export interface TableProps {
-  columns: TableColumn[]
-  rows: TableRowData[]
+  columns?: TableColumn[]
+  rows?: TableRowData[]
   variant?: 'default' | 'striped' | 'bordered'
   size?: 'sm' | 'md' | 'lg'
   /** Muestra la fila de encabezado en gris. */
@@ -29,6 +29,11 @@ export interface TableProps {
   emptyState?: ReactNode
   caption?: string
   className?: string
+  tableClassName?: string
+  headerClassName?: string
+  bodyClassName?: string
+  style?: React.CSSProperties
+  children?: ReactNode
 }
 
 const ALIGN = {
@@ -46,12 +51,23 @@ const SIZES = {
 type ThProps = ThHTMLAttributes<HTMLTableCellElement>
 type TdProps = TdHTMLAttributes<HTMLTableCellElement>
 
-function Table({ columns, rows, variant = 'default', size = 'md', headerVariant = 'light', emptyState, caption, className }: TableProps) {
+function Table({ columns = [], rows = [], variant = 'default', size = 'md', headerVariant = 'light', emptyState, caption, className, tableClassName, headerClassName, bodyClassName, style, children }: TableProps) {
+  if (children && (!columns.length && !rows.length)) {
+    return (
+      <div className={cn('w-full overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700', className)} style={style}>
+        <table className={cn("w-full border-collapse text-left", tableClassName)}>
+          {caption && <caption className="sr-only">{caption}</caption>}
+          {children}
+        </table>
+      </div>
+    )
+  }
+
   return (
-    <div className={cn('w-full overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700', className)}>
-      <table className="w-full border-collapse text-left">
+    <div className={cn('w-full overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700', className)} style={style}>
+      <table className={cn("w-full border-collapse text-left", tableClassName)}>
         {caption && <caption className="sr-only">{caption}</caption>}
-        <thead className={cn(headerVariant === 'dark' ? 'bg-gray-800 dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/60')}>
+        <thead className={cn(headerVariant === 'dark' ? 'bg-gray-800 dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/60', headerClassName)}>
           <tr>
             {columns.map((column) => (
               <th
@@ -71,7 +87,7 @@ function Table({ columns, rows, variant = 'default', size = 'md', headerVariant 
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
+        <tbody className={cn("divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900", bodyClassName)}>
           {rows.length === 0 && emptyState ? (
             <tr>
               <td colSpan={columns.length} className="px-4 py-8 text-center text-sm text-gray-500">
@@ -104,6 +120,7 @@ function Table({ columns, rows, variant = 'default', size = 'md', headerVariant 
               </tr>
             ))
           )}
+          {children}
         </tbody>
       </table>
     </div>

@@ -196,6 +196,13 @@ export interface DataTableProps<T extends { id: string | number }> {
   
   // Estilos
   className?: string
+  tableClassName?: string
+  headerClassName?: string
+  toolbarClassName?: string
+  paginationClassName?: string
+  rowClassName?: string | ((row: T, index: number) => string)
+  style?: React.CSSProperties
+  children?: ReactNode | ((props: { table: any; data: T[]; selectedRows: Set<string | number> }) => ReactNode)
   wrapped?: boolean
 }
 
@@ -238,6 +245,13 @@ export function DataTable<T extends { id: string | number }>({
   showColumnVisibility = false,
   toolbarSlot,
   responsiveCards = true,
+  tableClassName,
+  headerClassName,
+  toolbarClassName,
+  paginationClassName,
+  rowClassName,
+  style,
+  children,
   className,
   wrapped = true,
 }: DataTableProps<T>) {
@@ -428,7 +442,7 @@ export function DataTable<T extends { id: string | number }>({
     if (!hasToolbar) return null
 
     return (
-      <div className="flex flex-col sm:flex-row gap-3 mb-4 items-stretch sm:items-center justify-between">
+      <div className={cn("flex flex-col sm:flex-row gap-3 mb-4 items-stretch sm:items-center justify-between", toolbarClassName)}>
         {/* Búsqueda */}
         {searchable && (
           <div className="flex-1 max-w-md">
@@ -875,9 +889,9 @@ export function DataTable<T extends { id: string | number }>({
       data-virtualized={isVirtualized}
       data-density={effectiveDensity}
     >
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <table className={cn("min-w-full divide-y divide-gray-200 dark:divide-gray-700", tableClassName)}>
         {/* Header con sticky cuando está virtualizada */}
-        <thead className={cn('bg-gray-50 dark:bg-gray-800', isVirtualized && 'sticky top-0 z-10 shadow-xs')}>
+        <thead className={cn('bg-gray-50 dark:bg-gray-800', isVirtualized && 'sticky top-0 z-10 shadow-xs', headerClassName)}>
           <tr>
             {selectable && (
               <th className={cn('w-12 text-center', thPaddingClass)}>
@@ -936,11 +950,14 @@ export function DataTable<T extends { id: string | number }>({
             </tr>
           )}
 
-          {visibleRows.map((row) => (
+          {visibleRows.map((row) => {
+            const customRowClass = typeof rowClassName === 'function' ? rowClassName(row.original, visibleRows.indexOf(row)) : rowClassName;
+            return (
             <tr
               key={row.id}
               className={cn(
                 'transition-colors duration-150',
+                customRowClass,
                 onRowClick && 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800',
                 selectedRows.has(row.original.id) && 'bg-primary-50 dark:bg-primary-900/20'
               )}
@@ -966,7 +983,7 @@ export function DataTable<T extends { id: string | number }>({
                 </td>
               ))}
             </tr>
-          ))}
+          )})}
 
           {/* Bottom spacer row para virtualización */}
           {bottomSpacerHeight > 0 && (
@@ -1075,7 +1092,7 @@ export function DataTable<T extends { id: string | number }>({
   }
 
   const content = (
-    <div className={className}>
+    <div className={className} style={style}>
       {renderToolbar()}
       {renderFilters()}
 
@@ -1090,9 +1107,14 @@ export function DataTable<T extends { id: string | number }>({
         </>
       )}
 
+      {/* Children opcional: slot para contenido adicional, sub-tablas o resúmenes */}
+      {typeof children === 'function'
+        ? children({ table, data, selectedRows })
+        : children}
+
       {/* Paginación */}
       {pagination && data.length > 0 && (
-        <div className="mt-4">
+        <div className={cn("mt-4", paginationClassName)}>
           <CrudPagination
             currentPage={pagination.page}
             totalPages={pagination.totalPages || Math.ceil(pagination.total / pagination.perPage)}

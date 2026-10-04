@@ -28,6 +28,9 @@ export interface AdminCatalogLayoutProps {
   children: ReactNode
   /** ClassName adicional para el contenedor raíz. */
   className?: string
+  headerClassName?: string
+  contentClassName?: string
+  style?: React.CSSProperties
   /** Variante de tema. `dark` por defecto. */
   variant?: 'dark' | 'default'
 }
@@ -43,6 +46,9 @@ export function AdminCatalogLayout({
   headerActions,
   children,
   className,
+  headerClassName,
+  contentClassName,
+  style,
   variant = 'dark',
 }: AdminCatalogLayoutProps) {
   const isDark = variant === 'dark'
@@ -50,10 +56,11 @@ export function AdminCatalogLayout({
   return (
     <section
       aria-labelledby={`acl-${title.replace(/\s+/g, '-').toLowerCase()}`}
+      style={style}
       className={cn('flex flex-col gap-4', className)}
     >
       <header
-        className={cn(
+        className={cn(headerClassName,
           'flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b',
           isDark ? 'border-white/10' : 'border-gray-200'
         )}
@@ -110,7 +117,7 @@ export function AdminCatalogLayout({
       </header>
 
       <div
-        className={cn(
+        className={cn(contentClassName,
           'rounded-xl border overflow-hidden',
           isDark
             ? 'bg-[#15161d] border-white/10'

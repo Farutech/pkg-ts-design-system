@@ -50,6 +50,11 @@ export interface EmptyStateProps {
   size?: 'sm' | 'md' | 'lg'
   /** Clase CSS adicional */
   className?: string
+  titleClassName?: string
+  descriptionClassName?: string
+  iconClassName?: string
+  style?: React.CSSProperties
+  children?: ReactNode
 }
 
 const variantStyles = {
@@ -94,30 +99,37 @@ export function EmptyState({
   variant = 'gray',
   size = 'md',
   className,
+  titleClassName,
+  descriptionClassName,
+  iconClassName,
+  style,
+  children,
 }: EmptyStateProps) {
   const styles = sizeStyles[size]
   const iconColor = variantStyles[variant]
 
   return (
-    <div className={cn('flex flex-col items-center justify-center px-4 text-center', styles.padding, className)}>
+    <div style={style} className={cn('flex flex-col items-center justify-center px-4 text-center', styles.padding, className)}>
       {/* Ícono */}
       {icon && (
-        <div className={cn('mb-4 flex items-center justify-center mx-auto [&>svg]:h-full [&>svg]:w-full', iconColor, styles.icon)}>
+        <div className={cn('mb-4 flex items-center justify-center mx-auto [&>svg]:h-full [&>svg]:w-full', iconColor, styles.icon, iconClassName)}>
           {icon}
         </div>
       )}
 
       {/* Título */}
-      <h3 className={cn('font-semibold text-gray-900 dark:text-white mb-2', styles.title)}>
+      <h3 className={cn('font-semibold text-gray-900 dark:text-white mb-2', styles.title, titleClassName)}>
         {title}
       </h3>
 
       {/* Descripción */}
       {description && (
-        <p className={cn('text-gray-500 dark:text-gray-400 max-w-md mb-6', styles.description)}>
+        <p className={cn('text-gray-500 dark:text-gray-400 max-w-md mb-6', styles.description, descriptionClassName)}>
           {description}
         </p>
       )}
+
+      {children}
 
       {/* Acciones */}
       {(action || secondaryAction) && (

@@ -35,6 +35,11 @@ interface DropdownProps {
   loadingMessage?: string
   /** Mensaje cuando no hay items disponibles */
   emptyMessage?: string
+  menuClassName?: string
+  triggerClassName?: string
+  itemClassName?: string
+  style?: React.CSSProperties
+  children?: React.ReactNode
 }
 
 const sizeStyles = {
@@ -62,6 +67,11 @@ export function Dropdown({
   size = 'md',
   loadingMessage = 'Cargando...',
   emptyMessage = 'No hay opciones',
+  menuClassName,
+  triggerClassName,
+  itemClassName,
+  style,
+  children,
 }: DropdownProps) {
   // Priorizar asyncItems sobre items si está disponible
   const finalItems = asyncItems !== undefined ? asyncItems : items
@@ -69,7 +79,7 @@ export function Dropdown({
   const hasItems = finalItems.length > 0
 
   return (
-    <Menu as="div" className={cn('relative', className)}>
+    <Menu as="div" className={cn('relative', className)} style={style}>
       {label && (
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           {label}
@@ -84,6 +94,7 @@ export function Dropdown({
           'text-gray-900 dark:text-white',
           sizeStyles[size],
           variantStyles[variant],
+          triggerClassName,
           isLoading && 'opacity-50 cursor-wait'
         )}
         disabled={isLoading || (!hasItems && !isLoading)}
@@ -102,8 +113,9 @@ export function Dropdown({
         )}
       </Menu.Button>
 
-      <Menu.Items className="absolute right-0 mt-2 w-full min-w-[200px] origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-black/5 dark:ring-white/5 focus:outline-none z-50 max-h-60 overflow-auto">
+      <Menu.Items className={cn("absolute right-0 mt-2 w-full min-w-[200px] origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-black/5 dark:ring-white/5 focus:outline-none z-50 max-h-60 overflow-auto", menuClassName)}>
         <div className="p-1">
+          {children}
           {isLoading ? (
             <div className="flex items-center justify-center py-4">
               <Spinner size="md" className="text-primary-600" />
@@ -128,6 +140,7 @@ export function Dropdown({
                         }}
                         className={cn(
                           'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200',
+                          itemClassName,
                           active && !item.disabled && 'bg-gray-100 dark:bg-gray-700',
                           item.disabled && 'opacity-50 cursor-not-allowed',
                           value === item.value && 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium'

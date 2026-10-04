@@ -35,6 +35,9 @@ export interface AccordionItemProps {
   defaultOpen?: boolean
   disabled?: boolean
   className?: string
+  headerClassName?: string
+  contentClassName?: string
+  style?: React.CSSProperties
 }
 
 export function AccordionItem({
@@ -116,6 +119,7 @@ export interface AccordionProps {
   /** Variante de separación entre items. */
   variant?: 'separated' | 'flush'
   className?: string
+  style?: React.CSSProperties
 }
 
 export function Accordion({

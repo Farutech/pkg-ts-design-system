@@ -14,6 +14,10 @@ export interface FormFieldProps {
   labelPosition?: 'top' | 'left' | 'right' | 'bottom'
   htmlFor?: string
   className?: string
+  labelClassName?: string
+  errorClassName?: string
+  helperClassName?: string
+  style?: React.CSSProperties
   children: React.ReactNode | ((props: { id: string; describedBy?: string; invalid: boolean }) => React.ReactNode)
 }
 
@@ -34,6 +38,10 @@ export function FormField({
   labelPosition = 'top',
   htmlFor,
   className,
+  labelClassName,
+  errorClassName,
+  helperClassName,
+  style,
   children,
 }: FormFieldProps) {
   const generatedId = useId()
@@ -49,10 +57,10 @@ export function FormField({
     : children
 
   return (
-    <div className={cn('w-full space-y-1.5', labelPosition === 'left' && 'flex items-center gap-4 space-y-0', disabled && 'opacity-60 pointer-events-none', className)}>
+    <div style={style} className={cn('w-full space-y-1.5', labelPosition === 'left' && 'flex items-center gap-4 space-y-0', disabled && 'opacity-60 pointer-events-none', className)}>
       {label && (
         <div className={cn('flex items-center justify-between', labelPosition === 'left' && 'min-w-[140px] shrink-0')}>
-          <label htmlFor={controlId} className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor={controlId} className={cn("flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300", labelClassName)}>
             <span>{label}</span>
             {required && <span className="text-red-500 font-bold" aria-hidden="true">*</span>}
             {tooltip && (
@@ -69,12 +77,12 @@ export function FormField({
       </div>
 
       {error ? (
-        <p id={errorId} role="alert" className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400 mt-1">
+        <p id={errorId} role="alert" className={cn("flex items-center gap-1 text-xs text-red-600 dark:text-red-400 mt-1", errorClassName)}>
           <Icon.Error size="xs" className="shrink-0" />
           <span>{error}</span>
         </p>
       ) : displayDesc ? (
-        <p id={descId} className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <p id={descId} className={cn("text-xs text-gray-500 dark:text-gray-400 mt-1", helperClassName)}>
           {displayDesc}
         </p>
       ) : null}

@@ -80,6 +80,16 @@ export interface CRUDTableProps<T = any> {
   exportable?: boolean;
   onExport?: (format: 'csv' | 'excel' | 'pdf') => void;
   className?: string;
+  tableClassName?: string;
+  headerClassName?: string;
+  toolbarClassName?: string;
+  paginationClassName?: string;
+  rowClassName?: string | ((record: T, index: number) => string);
+  cellClassName?: string | ((value: any, record: T, column: Column<T>) => string);
+  footerSlot?: React.ReactNode;
+  extraHeaderSlot?: React.ReactNode;
+  style?: React.CSSProperties;
+  children?: React.ReactNode | ((props: { data: T[]; selectedRows: T[] }) => React.ReactNode);
   emptyMessage?: string;
   rowKey?: keyof T | ((record: T) => string | number);
   bulkActions?: GlobalAction[];
@@ -110,6 +120,16 @@ export function CRUDTable<T = any>({
   onSelectionChange,
   sortable = true,
   onSortChange,
+  tableClassName,
+  headerClassName,
+  toolbarClassName,
+  paginationClassName,
+  rowClassName,
+  cellClassName,
+  footerSlot,
+  extraHeaderSlot,
+  style,
+  children,
   className = '',
   emptyMessage = 'No hay datos disponibles',
   rowKey,
@@ -243,10 +263,12 @@ export function CRUDTable<T = any>({
   };
 
   return (
-    <div className={`w-full bg-slate-900/60 border border-slate-800 rounded-2xl shadow-xl overflow-hidden backdrop-blur-md ${className}`}>
+    <div style={style} className={`w-full bg-slate-900/60 border border-slate-800 rounded-2xl shadow-xl overflow-hidden backdrop-blur-md ${className}`}>
+      {extraHeaderSlot}
       {/* Barra Superior: Búsqueda y Botones de Creación / Acciones */}
       {(searchable || (onCreate && showCreateButton) || globalActions.length > 0) && (
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 border-b border-slate-800 bg-slate-950/40">
+        <div className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 border-b border-slate-800 bg-slate-950/40 ${toolbarClassName || ''}`}>
+
           {searchable && (
             <div className="relative flex-1 max-w-md">
               <svg
@@ -350,8 +372,9 @@ export function CRUDTable<T = any>({
             <p className="text-sm">{emptyMessage}</p>
           </div>
         ) : (
-          <table className="w-full text-left text-sm border-collapse">
-            <thead className="bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-800">
+          <table className={`w-full text-left text-sm border-collapse ${tableClassName || ''}`}>
+            <thead className={`bg-slate-950/80 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-800 ${headerClassName || ''}`}>
+
               <tr>
                 {selectable && (
                   <th className="p-3.5 w-12 text-center">
@@ -393,8 +416,9 @@ export function CRUDTable<T = any>({
             <tbody className="divide-y divide-slate-800/60 bg-transparent">
               {paginatedData.map((record, index) => {
                 const key = getRowKey(record, index);
+                const customRow = typeof rowClassName === 'function' ? rowClassName(record, index) : (rowClassName || '');
                 return (
-                  <tr key={key} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={key} className={`hover:bg-slate-800/40 transition-colors ${customRow}`}>
                     {selectable && (
                       <td className="p-3.5 text-center">
                         <input
@@ -409,7 +433,7 @@ export function CRUDTable<T = any>({
                       <td
                         key={String(column.key)}
                         style={{ textAlign: column.align }}
-                        className="p-3.5 text-slate-200 text-sm align-middle"
+                        className={`p-3.5 text-slate-200 text-sm align-middle ${typeof cellClassName === "function" ? cellClassName(record[column.key as keyof T], record, column) : (cellClassName || "")}`}
                       >
                         {(() => {
                           const val = record[column.key as keyof T];
@@ -456,8 +480,16 @@ export function CRUDTable<T = any>({
         )}
       </div>
 
+      {/* Children opcional o footerSlot */}
+      {typeof children === 'function'
+        ? children({ data: processedData, selectedRows })
+        : children}
+
+      {footerSlot}
+
       {/* Paginación Estandarizada con CrudPagination (perPageOptions configurable) */}
       {pagination && (
+        <div className={paginationClassName}>
         <CrudPagination
           currentPage={localPage}
           totalPages={totalPages}
@@ -476,6 +508,7 @@ export function CRUDTable<T = any>({
           showJumpToPage={showJumpToPage}
           variant="dark"
         />
+        </div>
       )}
     </div>
   );

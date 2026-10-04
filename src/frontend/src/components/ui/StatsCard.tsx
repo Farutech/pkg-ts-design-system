@@ -53,6 +53,10 @@ export interface StatsCardProps {
   className?: string
   /** Evento onClick */
   onClick?: () => void
+  titleClassName?: string
+  valueClassName?: string
+  style?: React.CSSProperties
+  children?: ReactNode
 }
 
 const variantStyles = {
@@ -146,6 +150,10 @@ export function StatsCard({
   loading = false,
   className,
   onClick,
+  titleClassName,
+  valueClassName,
+  style,
+  children,
 }: StatsCardProps) {
   const styles = sizeStyles[size]
   const colors = variantStyles[variant]
@@ -159,6 +167,7 @@ export function StatsCard({
 
   return (
     <Card
+      style={style}
       className={cn(
         styles.padding,
         onClick && 'cursor-pointer hover:shadow-lg transition-all duration-200 active:scale-[0.98]',
@@ -169,10 +178,10 @@ export function StatsCard({
       <div className="flex items-start justify-between">
         {/* Contenido */}
         <div className="flex-1">
-          <p className={cn('font-medium text-gray-600 dark:text-gray-400 mb-2', styles.title)}>
+          <p className={cn('font-medium text-gray-600 dark:text-gray-400 mb-2', styles.title, titleClassName)}>
             {title}
           </p>
-          <p className={cn('font-bold text-gray-900 dark:text-white mb-1', styles.value)}>
+          <p className={cn('font-bold text-gray-900 dark:text-white mb-1', styles.value, valueClassName)}>
             {value}
           </p>
 
@@ -197,6 +206,7 @@ export function StatsCard({
           )}
         </div>
 
+        {children}
         {/* Ícono */}
         {icon && (
           <div className={cn('rounded-lg flex-shrink-0', colors.icon, styles.iconContainer)}>

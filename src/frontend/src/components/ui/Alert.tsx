@@ -16,6 +16,9 @@ export interface AlertProps {
   children: ReactNode
   onClose?: () => void
   className?: string
+  titleClassName?: string
+  contentClassName?: string
+  style?: React.CSSProperties
 }
 
 const errorStyle = {
@@ -52,7 +55,7 @@ const variantStyles: Record<AlertVariant, typeof errorStyle> = {
   },
 }
 
-export function Alert({ variant = 'info', title, children, onClose, className }: AlertProps) {
+export function Alert({ variant = 'info', title, children, onClose, className, titleClassName, contentClassName, style }: AlertProps) {
   const [dismissed, setDismissed] = useState(false)
   if (dismissed) return null
 
@@ -66,6 +69,7 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
 
   return (
     <div
+      style={style}
       className={cn(
         'rounded-xl border p-4 shadow-sm transition-all duration-200',
         'ft-alert',
@@ -81,11 +85,11 @@ export function Alert({ variant = 'info', title, children, onClose, className }:
         </div>
         <div className="flex-1">
           {title && (
-            <h3 className={cn('text-sm font-bold mb-1', styles.title)}>
+            <h3 className={cn('text-sm font-bold mb-1', styles.title, titleClassName)}>
               {title}
             </h3>
           )}
-          <div className={cn('text-sm', styles.text)}>
+          <div className={cn('text-sm', styles.text, contentClassName)}>
             {children}
           </div>
         </div>

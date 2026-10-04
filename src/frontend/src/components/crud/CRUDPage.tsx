@@ -165,6 +165,20 @@ export interface CRUDPageProps<T extends { id: string | number } = any> {
   /** Control de virtualización (auto si > 100, true para forzar, false para desactivar) */
   virtualized?: boolean
 
+  headerClassName?: string
+  toolbarClassName?: string
+  filtersClassName?: string
+  tableClassName?: string
+  modalClassName?: string
+  modalBodyClassName?: string
+  style?: React.CSSProperties
+  /** Children opcional para renderizar paneles adicionales, métricas o contenido acoplado */
+  children?: ReactNode | ((props: {
+    items: T[]
+    selectedRows: Set<string | number>
+    isModalOpen: boolean
+    openCreateModal: () => void
+  }) => ReactNode)
   className?: string
 }
 
@@ -222,6 +236,14 @@ export function CRUDPage<T extends { id: string | number } = any>({
   showDensitySwitcher = true,
   showColumnVisibility = true,
   virtualized,
+  headerClassName,
+  toolbarClassName,
+  filtersClassName,
+  tableClassName,
+  modalClassName,
+  modalBodyClassName,
+  style,
+  children,
   className,
 }: CRUDPageProps<T>) {
   const effectivePermissions = useMemo(
@@ -531,12 +553,12 @@ export function CRUDPage<T extends { id: string | number } = any>({
   }, [bulkActions, effectivePermissions.canDelete, onBulkDelete, onDelete])
 
   return (
-    <div className={cn('space-y-6 w-full', className)}>
+    <div className={cn('space-y-6 w-full', className)} style={style}>
       {/* Header Slot o Header Predeterminado */}
       {headerSlot ? (
         headerSlot
       ) : (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-5">
+        <div className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-5", headerClassName)}>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               {title}
@@ -549,7 +571,7 @@ export function CRUDPage<T extends { id: string | number } = any>({
           </div>
 
           {/* Toolbar Slot o Global Actions */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className={cn("flex flex-wrap items-center gap-2", toolbarClassName)}>
             {toolbarSlot}
 
             {effectivePermissions.canPrint && (
@@ -608,7 +630,7 @@ export function CRUDPage<T extends { id: string | number } = any>({
       {filtersSlot ? (
         filtersSlot
       ) : (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className={cn("flex flex-col sm:flex-row items-center justify-between gap-3", filtersClassName)}>
           <div className="relative w-full sm:w-80">
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             <input
@@ -634,7 +656,7 @@ export function CRUDPage<T extends { id: string | number } = any>({
       {tableSlot ? (
         tableSlot
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xs border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className={cn("bg-white dark:bg-gray-800 rounded-xl shadow-xs border border-gray-200 dark:border-gray-700 overflow-hidden", tableClassName)}>
           <DataTable
             data={effectiveData}
             columns={tableColumns}
@@ -651,6 +673,16 @@ export function CRUDPage<T extends { id: string | number } = any>({
         </div>
       )}
 
+      {/* Children opcional: paneles adicionales, métricas o contenido acoplado */}
+      {typeof children === 'function'
+        ? children({
+            items: effectiveData,
+            selectedRows: activeSelectedRows,
+            isModalOpen,
+            openCreateModal: handleOpenCreate,
+          })
+        : children}
+
       {/* Renderizado de BulkActionsSlot si se proporciona como slot explícito */}
       {activeSelectedRows.size > 0 && bulkActionsSlot && (
         typeof bulkActionsSlot === 'function'
@@ -663,6 +695,9 @@ export function CRUDPage<T extends { id: string | number } = any>({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingItem ? `Editar registro (${editingItem[idKey]})` : `Crear nuevo registro en ${title}`}
+        size={modalSize}
+        className={modalClassName}
+        bodyClassName={modalBodyClassName}
       >
         <div className={cn('space-y-4 py-2', modalWidthClass)}>
           {renderForm ? (

@@ -76,6 +76,16 @@ export interface AdminCatalogSectionProps<T> {
   showJumpToPage?: boolean
   /** ClassName adicional para el contenedor raíz. */
   className?: string
+  headerClassName?: string
+  tableContainerClassName?: string
+  toolbarClassName?: string
+  style?: React.CSSProperties
+  children?: ReactNode | ((params: {
+    data: T[]
+    isLoading: boolean
+    isFetching: boolean
+    refresh: () => void
+  }) => ReactNode)
 }
 
 export function AdminCatalogSection<T>({
@@ -96,6 +106,11 @@ export function AdminCatalogSection<T>({
   paginationVariant = 'dark',
   showJumpToPage = true,
   className,
+  headerClassName,
+  tableContainerClassName,
+  toolbarClassName,
+  style,
+  children,
 }: AdminCatalogSectionProps<T>) {
   // ----- Estado de paginación -----
   const [page, setPage] = useState(1)
@@ -175,10 +190,11 @@ export function AdminCatalogSection<T>({
   return (
     <section
       aria-labelledby={`${id}-title`}
+      style={style}
       className={cn('flex flex-col gap-4', className)}
     >
       {/* Header estandarizado */}
-      <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-white/10">
+      <header className={cn("flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-white/10", headerClassName)}>
         <div className="flex items-start gap-3 min-w-0">
           {icon && (
             <div
@@ -211,7 +227,7 @@ export function AdminCatalogSection<T>({
       </header>
 
       {/* Buscador + Filtros */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3", toolbarClassName)}>
         <div className="relative w-full sm:w-80">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
           <input
@@ -253,7 +269,7 @@ export function AdminCatalogSection<T>({
       )}
 
       {/* Contenido principal: tabla o estados */}
-      <div className="rounded-xl bg-[#15161d] border border-white/10 overflow-hidden">
+      <div className={cn("rounded-xl bg-[#15161d] border border-white/10 overflow-hidden", tableContainerClassName)}>
         {isInitialLoading ? (
           <div
             role="status"
@@ -277,7 +293,7 @@ export function AdminCatalogSection<T>({
             <p className="text-xs text-slate-500 max-w-md text-center">{emptyMessage}</p>
           </div>
         ) : (
-          renderTable({ data, isLoading: isInitialLoading, isFetching, refresh })
+          typeof children === 'function' ? children({ data, isLoading: isInitialLoading, isFetching, refresh }) : (children ?? renderTable({ data, isLoading: isInitialLoading, isFetching, refresh }))
         )}
       </div>
 

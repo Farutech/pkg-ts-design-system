@@ -84,7 +84,7 @@ jobs:
           fi
           exit $EXIT_CODE
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
 
 
       - name: Dry run info

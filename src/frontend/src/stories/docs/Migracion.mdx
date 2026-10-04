@@ -1,30 +1,27 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Meta } from "@storybook/addon-docs/blocks"
 
 <Meta title="Guía/Migración" />
 
 # 🔄 Guía de Migración
 
-Historial de cambios importantes y pasos de migración entre versiones de `@farutech/design-system`.
+Historial de cambios importantes, mejoras arquitecturales y pasos de migración entre versiones de `@farutech/design-system`.
 
 ---
 
-## v1.1.0 → v1.2.x
+## v1.1.0 → v1.2.0
 
-### ✨ Novedades
+### ✨ Novedades y Mejoras
 
-- **TopNav**: nuevo componente de navegación horizontal multinivel con soporte de permisos
-- **Storybook 10**: documentación viva completa con play functions e interaction testing
-- **`@storybook/test`**: testing integrado sin `*.test.tsx` separados
-- Eliminados los archivos `.test.tsx` de vitest (migrados a play functions)
+- **CrudPagination**: Nuevo paginador balanceado de tres columnas con selector dinámico de registros por página (`perPageOptions`), navegación con teclado, botones numéricos inteligentes y salto directo (`showJumpToPage`).
+- **Storybook 10 & Visual Testing**: Incorporación de `@chromatic-com/storybook` para pruebas de regresión visual y publicación automatizada de Storybook para feedback del equipo.
+- **Controles y Viewports**: Todas las historias de componentes soportan manipulación interactiva de propiedades mediante Controls y previsualización responsive en múltiples Viewports (Mobile Small, Mobile Large, Tablet, Laptop, Desktop).
+- **TopNav & Layouts**: Mejor soporte para layouts de catálogos y paneles administrativos densos.
 
-### 🔧 Cambios en imports
+### 🔧 Compatibilidad de API
 
+La API pública mantiene retrocompatibilidad total:
 ```tsx
-// Antes (v1.1.x)
-import { Button } from '@farutech/design-system'
-
-// Ahora — igual, sin cambios en la API pública
-import { Button } from '@farutech/design-system'
+import { CrudPagination, DEFAULT_PER_PAGE_OPTIONS } from "@farutech/design-system"
 ```
 
 ---
@@ -36,59 +33,36 @@ import { Button } from '@farutech/design-system'
 #### DataTable: prop `columns` renombrada
 
 ```tsx
-// ❌ v1.0.x
+// Antes (v1.0.x)
 <DataTable cols={columns} data={data} />
 
-// ✅ v1.1.0
+// Ahora (v1.1.0+)
 <DataTable columns={columns} data={data} />
 ```
 
-#### Navbar: requiere `MemoryRouter` o `BrowserRouter`
-
-El `Navbar` y `Sidebar` usan `react-router-dom` internamente. Asegúrate de que tu app tenga un router en el árbol:
-
-```tsx
-import { BrowserRouter } from 'react-router-dom'
-
-<BrowserRouter>
-  <DesignSystemProvider>
-    <App />
-  </DesignSystemProvider>
-</BrowserRouter>
-```
-
-#### Tokens CSS: prefijo `--ft-` (antes `--ds-`)
+#### Tokens CSS: prefijo oficial `--ft-`
 
 ```css
-/* ❌ v1.0.x */
+/* Antes (v1.0.x) */
 --ds-color-primary: #2563eb;
 
-/* ✅ v1.1.0 */
---ft-color-primary: #2563eb;
+/* Ahora (v1.1.0+) */
+--ft-color-primary: #6366f1;
 ```
 
-### Deprecaciones
-
-| API deprecada | Reemplazar con |
-|---|---|
-| `<Toast>` (basic) | `useToast()` hook |
-| `useSidebar()` | `useSidebarStore()` de Zustand |
-| `<NavMenu>` | `<Sidebar>` + `<TopNav>` |
-
 ---
 
-## Soporte de versiones
+## 📋 Matriz de Soporte de Versiones
 
-| Versión DS | React | Storybook | Node |
+| Versión DS | React | Storybook | Node.js |
 |---|---|---|---|
-| 1.2.x | 18 / 19 | 10.x | ≥20.19 |
-| 1.1.x | 18 / 19 | 8.x | ≥20.0 |
-| 1.0.x | 18 | 7.x | ≥18.0 |
+| **1.2.x** | 18 / 19 | 10.x | ≥ 20.x |
+| **1.1.x** | 18 / 19 | 8.x | ≥ 18.x |
+| **1.0.x** | 18 | 7.x | ≥ 16.x |
 
 ---
 
-## Ayuda
+## 💬 Soporte y Enlaces
 
-- 📂 [Repositorio](https://github.com/Farutech/pkg-ts-design-system)
-- 🐛 [Issues](https://github.com/Farutech/pkg-ts-design-system/issues)
-- 📝 [CHANGELOG](https://github.com/Farutech/pkg-ts-design-system/blob/main/MIGRATION.md)
+- 📂 [Repositorio FaruTech](https://github.com/Farutech/pkg-ts-design-system)
+- 📝 [Changelog Detallado](https://github.com/Farutech/pkg-ts-design-system/blob/main/CHANGELOG.md)

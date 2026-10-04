@@ -5,7 +5,9 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string
+  style?: import('react').CSSProperties
   children: ReactNode
   header?: ReactNode
   footer?: ReactNode

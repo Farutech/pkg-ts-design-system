@@ -26,6 +26,7 @@
 export { InputBase, type InputBaseProps, type InputSize, type InputVariant, type InputStatus } from './InputBase'
 export { Input, type InputProps, type ValidationMode } from './Input'
 export { FloatingInput, type FloatingInputProps } from './FloatingInput'
+export { LookupInput, type LookupInputProps, type LookupOption } from './LookupInput'
 export { InputGroup, type InputGroupProps } from './InputGroup'
 export { PasswordInput, type PasswordInputProps } from './PasswordInput'
 export { SearchInput, type SearchInputProps } from './SearchInput'

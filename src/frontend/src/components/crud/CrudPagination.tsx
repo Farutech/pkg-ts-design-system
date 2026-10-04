@@ -1,10 +1,14 @@
+import { cn } from '@/utils/cn'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
 } from '@heroicons/react/24/solid'
-import { cn } from '@/utils/cn'
+import { useEffect, useState } from 'react'
+
+/** Opciones por defecto para "registros por página". */
+export const DEFAULT_PER_PAGE_OPTIONS: number[] = [10, 25, 50, 100]
 
 export interface CrudPaginationProps {
   currentPage: number
@@ -13,6 +17,14 @@ export interface CrudPaginationProps {
   total: number
   onPageChange: (page: number) => void
   onPerPageChange?: (perPage: number) => void
+  /**
+   * Opciones configurables para el selector "Por página".
+   * Si no se provee, usa {@link DEFAULT_PER_PAGE_OPTIONS}.
+   * Ejemplo: `[5, 10, 25, 50]` para catálogos pequeños.
+   */
+  perPageOptions?: number[]
+  /** Permite saltar a una página específica escribiendo el número. */
+  showJumpToPage?: boolean
   /** Variante de tema: 'dark' para aplicaciones tipo Ordeon, 'default' para dashboard claro */
   variant?: 'dark' | 'default' | 'transparent'
   className?: string
@@ -27,7 +39,7 @@ export function getDynamicPages(current: number, total: number, maxVisible = 5):
   }
   const half = Math.floor(maxVisible / 2)
   let start = Math.max(1, current - half)
-  let end = Math.min(total, start + maxVisible - 1)
+  const end = Math.min(total, start + maxVisible - 1)
 
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1)
@@ -46,11 +58,29 @@ export function CrudPagination({
   total,
   onPageChange,
   onPerPageChange,
+  perPageOptions = DEFAULT_PER_PAGE_OPTIONS,
+  showJumpToPage = true,
   variant = 'dark',
   className,
 }: CrudPaginationProps) {
   const dynamicPages = getDynamicPages(currentPage, Math.max(1, totalPages))
   const isDark = variant === 'dark' || variant === 'transparent'
+
+  // Estado local para "saltar a página". Se sincroniza cuando cambia la página externa.
+  const [jumpValue, setJumpValue] = useState<string>(String(currentPage))
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setJumpValue(String(currentPage))
+  }, [currentPage])
+
+  const handleJump = () => {
+    const parsed = Number(jumpValue)
+    if (Number.isFinite(parsed) && parsed >= 1 && parsed <= Math.max(1, totalPages)) {
+      onPageChange(Math.floor(parsed))
+    } else {
+      setJumpValue(String(currentPage))
+    }
+  }
 
   return (
     <div
@@ -172,26 +202,56 @@ export function CrudPagination({
         </nav>
       </div>
 
-      {/* Columna 3: Selector por página (Derecha) */}
+      {/* Columna 3: Selector por página + Salto directo (Derecha) */}
       {onPerPageChange && (
-        <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-          <span>Por página</span>
-          <select
-            aria-label="Registros por página"
-            value={perPage}
-            onChange={(e) => onPerPageChange(Number(e.target.value))}
-            className={cn(
-              'h-8 rounded-lg border px-2.5 py-1 text-xs font-semibold outline-none cursor-pointer transition-colors',
-              isDark
-                ? 'bg-[#1c1d26] border-[#313342] text-slate-200 focus:border-violet-500'
-                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-violet-500'
-            )}
-          >
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
+        <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs text-slate-400 font-medium">
+          <div className="flex items-center gap-2">
+            <span>Por página</span>
+            <select
+              aria-label="Registros por página"
+              value={perPage}
+              onChange={(e) => onPerPageChange(Number(e.target.value))}
+              className={cn(
+                'h-8 rounded-lg border px-2.5 py-1 text-xs font-semibold outline-none cursor-pointer transition-colors',
+                isDark
+                  ? 'bg-[#1c1d26] border-[#313342] text-slate-200 focus:border-violet-500'
+                  : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-violet-500'
+              )}
+            >
+              {perPageOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {showJumpToPage && totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <span>Ir a</span>
+              <input
+                type="number"
+                min={1}
+                max={Math.max(1, totalPages)}
+                value={jumpValue}
+                onChange={(e) => setJumpValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleJump()
+                  }
+                }}
+                onBlur={handleJump}
+                aria-label="Saltar a página específica"
+                className={cn(
+                  'h-8 w-14 rounded-lg border px-2 py-1 text-xs font-semibold outline-none text-center transition-colors',
+                  isDark
+                    ? 'bg-[#1c1d26] border-[#313342] text-slate-200 focus:border-violet-500'
+                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-violet-500'
+                )}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

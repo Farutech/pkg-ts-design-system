@@ -1,11 +1,11 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Meta } from "@storybook/addon-docs/blocks"
 
 <Meta title="Guía/Introducción" />
 
-# 👋 FaruTech Design System
+# ⚡ FaruTech Design System
 
-> **ES**: Sistema de diseño corporativo y framework de componentes de **FaruTech** — componentes UI accesibles, tokens tematizables, suite de pruebas automatizada con Storybook + Vitest y documentación viva para aplicaciones web, dashboards e intranets.  
-> **EN**: Official **FaruTech** design system & component library — accessible UI components, themeable tokens, automated testing suite with Storybook + Vitest, and living documentation for web applications, dashboards, and enterprise intranets.
+> **ES**: Sistema de diseño corporativo y framework de componentes de **FaruTech** — componentes UI accesibles, tokens tematizables, suite de pruebas visuales automatizadas con Storybook 10 + Chromatic + Vitest y documentación viva para aplicaciones web, dashboards operativos e intranets empresariales.  
+> **EN**: Official **FaruTech** design system & component library — accessible UI components, themeable tokens, automated visual testing suite with Storybook 10 + Chromatic + Vitest, and living documentation for web applications, operational dashboards, and enterprise intranets.
 
 ---
 
@@ -18,19 +18,45 @@ import { Meta } from '@storybook/addon-docs/blocks'
 | **Animations** | Framer Motion | Transiciones fluidas, modales y micro-interacciones |
 | **Accessibility** | Headless UI + WAI-ARIA | Menús, diálogos y popovers 100% accesibles por teclado |
 | **State Management** | Zustand (v5) | Estado reactivo para theme, locale, sidebar y auth |
-| **Data Tables** | TanStack Table (v8) | Tablas ordenables, paginables y con selección múltiple |
-| **Testing Engine** | Vitest (v5) + `@storybook/addon-vitest` | Ejecución de historias como tests unitarios y de interacción |
-| **A11y & Docs** | Storybook 10 + `@storybook/addon-a11y` | Documentación interactiva y auditorías Axe en tiempo real |
+| **Data Tables & CRUD** | TanStack Table (v8) + CrudPagination | Tablas ordenables, paginables con perPage configurable y selección |
+| **Testing & CI** | Vitest + `@chromatic-com/storybook` | Pruebas unitarias, pruebas visuales y regresión en CI |
+| **A11y & Docs** | Storybook 10 + `@storybook/addon-a11y` | Documentación viva interactiva con controles y viewports |
 
 ---
 
-## 📦 Instalación y Configuración / Installation & Setup
+## 🎨 Storybook & Herramientas de Desarrollo
+
+El entorno de Storybook está configurado para ofrecer una experiencia interactiva completa:
+
+### 1. Control dinámico con Controls
+Cada historia expone sus propiedades mediante el panel de **Controls**. Puedes modificar variantes, tamaños, colores, estados (deshabilitado, cargando) y textos en tiempo real para verificar el comportamiento del componente.
+
+### 2. Responsividad con Viewports
+Verifica el diseño adaptativo seleccionando la resolución deseada en la barra superior de Storybook:
+- **Mobile (Small)**: 375px × 667px
+- **Mobile (Large)**: 414px × 896px
+- **Tablet (iPad)**: 768px × 1024px
+- **Laptop**: 1280px × 800px
+- **Desktop**: 1440px × 900px
+
+### 3. Pruebas Visuales con Chromatic (`@chromatic-com/storybook`)
+Integrado directamente en Storybook mediante el addon de **Visual Tests**:
+- Captura snapshots automáticos en múltiples navegadores y viewports.
+- Detecta regresiones visuales antes de que lleguen a producción.
+- Permite publicar Storybook para revisión y feedback colaborativo del equipo.
+
+### 4. Automatización en CI
+El flujo `.github/workflows/chromatic.yml` ejecuta las pruebas visuales en cada Pull Request y publica la versión actualizada de Storybook para revisión del equipo.
+
+---
+
+## 📦 Instalación Rápida / Quick Start
 
 ```bash
 # Instalación del paquete
 npm install @farutech/design-system
 
-# Peer dependencies necesarias
+# Dependencias requeridas
 npm install react react-dom
 ```
 
@@ -38,17 +64,16 @@ npm install react react-dom
 
 ```tsx
 // main.tsx o App.tsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import '@farutech/design-system/styles.css'
-import { DesignSystemProvider } from '@farutech/design-system'
-import { MiApp } from './MiApp'
+import React from "react"
+import ReactDOM from "react-dom/client"
+import "@farutech/design-system/styles.css"
+import { DesignSystemProvider } from "@farutech/design-system"
+import App from "./App"
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    {/* Puedes personalizar colores, fuentes y radios mediante el prop theme */}
-    <DesignSystemProvider theme={{ colorPrimary: '#7c3aed' }}>
-      <MiApp />
+    <DesignSystemProvider colorMode="dark">
+      <App />
     </DesignSystemProvider>
   </React.StrictMode>
 )
@@ -56,106 +81,19 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ---
 
-## 🧪 Estrategia de Testing / Testing Strategy
+## 🧩 Componentes Principales
 
-El Design System implementa la suite completa de pruebas recomendada por **Storybook** y potenciada por **Vitest**:
-
-### 1. Test your components (Pruebas de Componentes)
-Cada historia (`.stories.tsx`) es automáticamente un test ejecutable por Vitest sin necesidad de duplicar código en archivos `.test.tsx`:
-```bash
-# Ejecutar todas las historias de Storybook como tests
-npm run test:storybook
-
-# O ejecutar toda la suite (historias + unit tests)
-npm test
-```
-
-### 2. Test functionality with interactions (Pruebas de Interacción)
-Utilizamos la función `play` con `userEvent` y `expect` para simular interacciones reales de usuario (clicks, typing, navegación por teclado):
-```tsx
-export const Interactive: Story = {
-  play: async ({ canvas, userEvent }) => {
-    const button = canvas.getByRole('button', { name: /guardar/i })
-    await userEvent.click(button)
-    await expect(button).toHaveAttribute('aria-disabled', 'true')
-  },
-}
-```
-
-### 3. Run accessibility tests (Auditorías de Accesibilidad - a11y)
-Cada componente se valida automáticamente contra las directrices **WCAG 2.1 AA** mediante `@storybook/addon-a11y` (Axe-core), garantizando contraste, roles ARIA y accesibilidad para lectores de pantalla.
-
-### 4. Visual tests (Pruebas Visuales con Chromatic)
-Para detectar regresiones visuales y variaciones de pixel entre versiones:
-```bash
-npx chromatic --project-token=<TU_CHROMATIC_TOKEN>
-```
-
-### 5. Coverage report (Reporte de Cobertura de Código)
-Monitorea qué porcentaje de líneas, ramas y funciones están cubiertas por los tests:
-```bash
-npm run test:coverage
-```
-
-### 6. Automate tests in CI (Automatización en Integración Continua)
-Los tests se ejecutan automáticamente en cada Push o Pull Request mediante GitHub Actions (`.github/workflows/test.yml`) usando:
-```bash
-vitest run --project storybook --project unit
-```
+| Categoría | Componentes clave |
+|---|---|
+| **Layout & Shell** | `MainLayout`, `Sidebar`, `Navbar`, `TopNav`, `PageHeader` |
+| **Data & CRUD** | `DataTable`, `CrudPagination`, `Badge`, `Card`, `MetricCard` |
+| **Inputs & Forms** | `Button`, `Input`, `FloatingInput`, `LookupInput`, `Select`, `DatePicker` |
+| **Modales & Feedback** | `Modal`, `Alert`, `Toast`, `ConfirmDialog`, `Tooltip` |
 
 ---
 
-## 🎨 Theming y Personalización / Theming & White-label
+## 🛡️ Principios de Diseño
 
-El sistema está diseñado para admitir cualquier marca blanca o aplicación cliente sin necesidad de bifurcar el código (*fork*).
-
-### Vía CSS Custom Properties (`:root`)
-```css
-:root {
-  --ft-color-primary: #0284c7;        /* Color primario corporativo */
-  --ft-color-primary-hover: #0369a1;  /* Estado hover */
-  --ft-color-accent: #10b981;         /* Color de acento */
-  --ft-font-sans: 'Inter', sans-serif;/* Tipografía principal */
-  --ft-radius-md: 0.5rem;             /* Radio de bordes estándar */
-}
-```
-
-### Vía Props de `DesignSystemProvider`
-```tsx
-<DesignSystemProvider
-  theme={{
-    colorPrimary: '#2563eb',
-    fontSans: 'Roboto, sans-serif',
-    radiusMd: '8px',
-  }}
->
-  <App />
-</DesignSystemProvider>
-```
-
----
-
-## 🗂️ Arquitectura de Componentes / Component Taxonomy
-
-| Categoría / Category | Descripción / Description | Ejemplos / Examples |
-|---|---|---|
-| **1-Foundations** | Primitivas de diseño y tokens base | Colors, Typography, Spacing, Shadows, Icons |
-| **2-Layout** | Estructuras principales de página y contenedores | MainLayout, Sidebar, Navbar, PageTransition |
-| **3-Navigation** | Elementos de navegación y localización | TopNav, Breadcrumb, Tabs, Pagination |
-| **4-Inputs** | Controles de entrada de datos y formularios | Button, Input, Select, Checkbox, Slider, DatePicker |
-| **5-Data Display** | Visualización estructurada de datos | Table, Card, Badge, Avatar, Timeline, Skeleton |
-| **6-Feedback** | Notificaciones, estados y retroalimentación | Alert, Toast, Loading, LogoSpinner, EmptyState |
-| **7-Overlays** | Elementos flotantes y modales interactivos | Modal, Drawer, Popover, Dropdown, Tooltip |
-| **8-Auth** | Pantallas completas de autenticación configurables | LoginScreen, RegisterScreen, ForgotPassword |
-| **9-Hooks & Stores** | Estado global reactivo y utilidades | useTheme, useLocale, useToast, useSidebar |
-| **10-Helpers** | Componentes utilitarios de composición | FormField, Divider, IconButton, ThemeToggle |
-| **11-Templates** | Páginas y dashboards listos para producción | DashboardAnalytics, CRUDPage, LandingApp |
-
----
-
-## 💡 Soporte y Contribución / Support & Contribution
-
-Para reportar problemas o sugerir nuevas características:
-- **Repositorio**: [GitHub Farutech/pkg-ts-design-system](https://github.com/Farutech/pkg-ts-design-system)
-- **Autor**: Farid Maloof Suarez — FaruTech
-- **Licencia**: MIT
+1. **Alto Contraste y Accesibilidad (WCAG AA)**: Colores y tipografías optimizados para entornos oscuros y claros con legibilidad impecable.
+2. **Consistencia Visual**: Espaciados, radios de borde y sombras basados en la escala oficial de FaruTech.
+3. **Ergonomía de Operación**: Menús compactos, tablas densas pero legibles y navegación fluida para sistemas de alta demanda operativa.

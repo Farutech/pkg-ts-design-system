@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import { CrudPagination, DEFAULT_PER_PAGE_OPTIONS } from './CrudPagination';
+export { DEFAULT_PER_PAGE_OPTIONS } from './CrudPagination';
 
 // ==================== TYPES ====================
 
@@ -57,6 +59,15 @@ export interface CRUDTableProps<T = any> {
   onFilterChange?: (filters: Record<string, any>) => void;
   pagination?: boolean;
   pageSize?: number;
+  /**
+   * Opciones configurables para el selector "Por página" de la paginación
+   * interna. Si no se provee, usa {@link DEFAULT_PER_PAGE_OPTIONS}.
+   */
+  perPageOptions?: number[];
+  /**
+   * Permite saltar a una página específica con un input numérico.
+   */
+  showJumpToPage?: boolean;
   total?: number;
   onPageChange?: (page: number, pageSize: number) => void;
   currentPage?: number;
@@ -90,7 +101,10 @@ export function CRUDTable<T = any>({
   onFilterChange,
   pagination = true,
   pageSize = 10,
+  perPageOptions = DEFAULT_PER_PAGE_OPTIONS,
+  showJumpToPage = true,
   total,
+  onPageChange,
   selectable = false,
   selectedRows = [],
   onSelectionChange,
@@ -103,7 +117,7 @@ export function CRUDTable<T = any>({
   const [localSearch, setLocalSearch] = useState('');
   const [localFilters, setLocalFilters] = useState<Record<string, any>>({});
   const [localPage, setLocalPage] = useState(1);
-  const [localPageSize] = useState(pageSize);
+  const [localPageSize, setLocalPageSize] = useState(pageSize);
   const [localSort, setLocalSort] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
   const getRowKey = (record: T, index: number): string | number => {
@@ -202,7 +216,7 @@ export function CRUDTable<T = any>({
   };
 
 
-  const getPaginationItems = () => {
+  const _getPaginationItems = () => {
     const items: (number | 'ellipsis-start' | 'ellipsis-end')[] = [];
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) items.push(i);
@@ -442,100 +456,26 @@ export function CRUDTable<T = any>({
         )}
       </div>
 
-      {/* Paginación Estandarizada */}
+      {/* Paginación Estandarizada con CrudPagination (perPageOptions configurable) */}
       {pagination && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 bg-slate-950/80 border-t border-slate-800 text-xs text-slate-300">
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <span>Página</span>
-            <span className="font-bold text-white px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700">
-              {localPage}
-            </span>
-            <span>de</span>
-            <span className="font-bold text-white px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700">
-              {totalPages}
-            </span>
-            <span className="mx-2 text-slate-600">|</span>
-            <span>Mostrando {processedData.length === 0 ? 0 : (localPage - 1) * localPageSize + 1} a {Math.min(localPage * localPageSize, total ?? processedData.length)} de <strong className="text-slate-200">{total ?? processedData.length}</strong> registros</span>
-          </div>
-
-          <div className="flex items-center gap-1">
-            {/* Primero */}
-            <button
-              type="button"
-              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
-              onClick={() => setLocalPage(1)}
-              disabled={localPage <= 1}
-              title="Ir a la primera página"
-            >
-              <span>⏮</span>
-              <span className="hidden md:inline">Primero</span>
-            </button>
-
-            {/* Anterior */}
-            <button
-              type="button"
-              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
-              onClick={() => setLocalPage(localPage - 1)}
-              disabled={localPage <= 1}
-              title="Página anterior"
-            >
-              <span>◀</span>
-              <span className="hidden sm:inline">Anterior</span>
-            </button>
-
-            {/* Números de página */}
-            <div className="flex items-center gap-1 mx-1">
-              {getPaginationItems().map((item, idx) => {
-                if (typeof item === 'string') {
-                  return (
-                    <span key={item + idx} className="px-1.5 py-1 text-slate-500 font-bold select-none">
-                      ...
-                    </span>
-                  );
-                }
-                const isActive = item === localPage;
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setLocalPage(item)}
-                    className={'min-w-8 h-8 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ' + (
-                      isActive
-                        ? 'bg-indigo-600 text-white border border-indigo-400 shadow-md shadow-indigo-600/30 font-bold'
-                        : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:text-white'
-                    )}
-                  >
-                    {item}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Siguiente */}
-            <button
-              type="button"
-              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
-              onClick={() => setLocalPage(localPage + 1)}
-              disabled={localPage >= totalPages}
-              title="Página siguiente"
-            >
-              <span className="hidden sm:inline">Siguiente</span>
-              <span>▶</span>
-            </button>
-
-            {/* Último */}
-            <button
-              type="button"
-              className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-1 cursor-pointer"
-              onClick={() => setLocalPage(totalPages)}
-              disabled={localPage >= totalPages}
-              title="Ir a la última página"
-            >
-              <span className="hidden md:inline">Último</span>
-              <span>⏭</span>
-            </button>
-          </div>
-        </div>
+        <CrudPagination
+          currentPage={localPage}
+          totalPages={totalPages}
+          perPage={localPageSize}
+          total={total ?? processedData.length}
+          onPageChange={(newPage) => {
+            setLocalPage(newPage);
+            onPageChange?.(newPage, localPageSize);
+          }}
+          onPerPageChange={(newSize) => {
+            setLocalPageSize(newSize);
+            setLocalPage(1);
+            onPageChange?.(1, newSize);
+          }}
+          perPageOptions={perPageOptions}
+          showJumpToPage={showJumpToPage}
+          variant="dark"
+        />
       )}
     </div>
   );

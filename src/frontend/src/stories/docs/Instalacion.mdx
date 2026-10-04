@@ -1,49 +1,49 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Meta } from "@storybook/addon-docs/blocks"
 
 <Meta title="Guía/Instalación" />
 
-# 📦 Instalación y configuración
+# 📦 Instalación y Configuración
 
-Guía paso a paso para integrar `@farutech/design-system` en cualquier proyecto React.
+Guía paso a paso para integrar y configurar `@farutech/design-system` en cualquier proyecto React con TypeScript.
 
 ---
 
 ## 1. Instalar la librería
 
 ```bash
-# npm
+# Usando npm
 npm install @farutech/design-system
 
-# pnpm
+# Usando pnpm
 pnpm add @farutech/design-system
 
-# yarn
+# Usando yarn
 yarn add @farutech/design-system
 ```
 
-**Peer dependencies requeridas:**
+**Dependencias requeridas (Peer Dependencies):**
 
 ```bash
-npm install react@^19 react-dom@^19
+npm install react@^18.0.0 || ^19.0.0 react-dom@^18.0.0 || ^19.0.0
 ```
 
 ---
 
 ## 2. Configurar Tailwind CSS
 
-El design system usa Tailwind CSS. En tu `tailwind.config.js`:
+Si tu proyecto utiliza Tailwind CSS, extiende la configuración agregando los tokens oficiales y las rutas de los componentes:
 
 ```js
 // tailwind.config.js
-import { farutechPreset } from '@farutech/design-system/tokens'
+import { farutechPreset } from "@farutech/design-system/tokens"
 
 export default {
   content: [
-    './src/**/*.{ts,tsx}',
-    // ✅ Incluir los componentes de la librería
-    './node_modules/@farutech/design-system/dist/**/*.{js,mjs}',
+    "./src/**/*.{ts,tsx}",
+    // Incluir rutas compiladas de la librería
+    "./node_modules/@farutech/design-system/dist/**/*.{js,mjs}",
   ],
-  presets: [farutechPreset],   // tokens, colores y radios
+  presets: [farutechPreset], // Tokens corporativos, paleta HSL y radios
 }
 ```
 
@@ -51,117 +51,69 @@ export default {
 
 ## 3. Importar los estilos base
 
-En tu `main.tsx` o `App.tsx`:
-
-```tsx
-import '@farutech/design-system/styles.css'
-```
-
----
-
-## 4. Envolver tu app con `DesignSystemProvider`
+En el punto de entrada de la aplicación (`main.tsx` o `index.tsx`):
 
 ```tsx
 // main.tsx
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import '@farutech/design-system/styles.css'
-import { DesignSystemProvider } from '@farutech/design-system'
-import App from './App'
+import React from "react"
+import { createRoot } from "react-dom/client"
+import "@farutech/design-system/styles.css"
+import { DesignSystemProvider } from "@farutech/design-system"
+import App from "./App"
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <DesignSystemProvider>
+createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <DesignSystemProvider colorMode="dark">
       <App />
     </DesignSystemProvider>
-  </StrictMode>
+  </React.StrictMode>
 )
 ```
 
 ---
 
-## 5. Importar componentes
+## 4. Importar componentes
 
 ```tsx
-// Con alias @farutech/design-system (recomendado en apps consumidoras)
-import { Button, Badge, DataTable, Modal } from '@farutech/design-system'
+// Importación principal (Recomendada)
+import {
+  Button,
+  Badge,
+  DataTable,
+  CrudPagination,
+  Modal,
+  Input,
+  FloatingInput
+} from "@farutech/design-system"
 
-// O con subpaths para tree-shaking óptimo
-import { Button } from '@farutech/design-system/components/ui'
-import { Sidebar, Navbar } from '@farutech/design-system/components/layout'
-import { TopNav } from '@farutech/design-system/components/navigation'
+// O mediante subpaths para optimización extrema de bundles:
+import { Button } from "@farutech/design-system/components/ui"
+import { CrudPagination } from "@farutech/design-system/components/crud"
+import { Sidebar, Navbar } from "@farutech/design-system/components/layout"
 ```
 
 ---
 
-## 6. Alias `@/` (proyectos internos)
+## 5. Theming y Modo Oscuro (Dark Mode)
 
-Si trabajas directamente en este repo, el alias `@/` apunta a `src/`:
+El sistema de diseño incluye soporte nativo para temas claro y oscuro:
 
-```ts
-// tsconfig.json
-{
-  "compilerOptions": {
-    "paths": { "@/*": ["src/*"] }
-  }
-}
-
-// vite.config.ts
-resolve: { alias: { '@': path.resolve('./src/frontend') } }
-```
-
----
-
-## 7. Theming personalizado
-
-### Opción A — CSS Custom Properties
-
-```css
-/* globals.css de tu app */
-:root {
-  --ft-color-primary: #7c3aed;
-  --ft-color-primary-hover: #6d28d9;
-  --ft-primary-600: 124 58 237;   /* canales RGB para Tailwind */
-  --ft-font-sans: 'Outfit', sans-serif;
-  --ft-radius-lg: 1rem;
-}
-```
-
-### Opción B — `DesignSystemProvider`
-
+### Opción A — Atributo HTML
 ```tsx
-<DesignSystemProvider
-  theme={{
-    colorPrimary: '#7c3aed',
-    colorPrimaryHover: '#6d28d9',
-    fontSans: 'Outfit, sans-serif',
-    radiusLg: '1rem',
-  }}
->
+document.documentElement.setAttribute("data-theme", "dark")
+```
+
+### Opción B — Provider reactivo
+```tsx
+<DesignSystemProvider colorMode="dark">
   <App />
 </DesignSystemProvider>
 ```
 
-> 💡 Los dos métodos son compatibles. `DesignSystemProvider` actúa sobre un subárbol y puede anidarse.
-
 ---
 
-## 8. Dark mode
+## 6. Configuración de Storybook para Pruebas Visuales
 
-El design system soporta dark mode vía `data-theme="dark"` en `<html>`:
-
-```tsx
-// Con ThemeToggle incluido
-import { ThemeToggle } from '@farutech/design-system'
-
-// O manualmente
-document.documentElement.setAttribute('data-theme', 'dark')
-```
-
-El `DesignSystemProvider` también acepta `colorMode`:
-
-```tsx
-<DesignSystemProvider colorMode="dark">
-  ...
-</DesignSystemProvider>
-```
+Para habilitar pruebas visuales con Chromatic en tu equipo:
+1. Agrega tu token de proyecto en secrets de GitHub: `CHROMATIC_PROJECT_TOKEN`.
+2. El workflow `.github/workflows/chromatic.yml` se encargará de ejecutar las pruebas de regresión visual y publicar Storybook automáticamente.

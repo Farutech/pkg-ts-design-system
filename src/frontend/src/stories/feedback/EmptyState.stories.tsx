@@ -10,24 +10,43 @@ import {
 const meta = {
   title: '6-Feedback/EmptyState',
   component: EmptyState,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
-    docs: { description: { component: 'Estado vacío para listas, búsquedas y módulos sin datos. Acepta ícono, título, descripción y acción.' } },
+    docs: { description: { component: 'Estado vacio para listas, busquedas y modulos sin datos. Acepta icono, titulo, descripcion y accion.' } },
+  },
+  argTypes: {
+    title: { control: 'text', description: 'Titulo del estado vacio' },
+    description: { control: 'text', description: 'Descripcion o instruccion de accion' },
+    className: { control: 'text', description: 'Clases CSS personalizadas' },
+  },
+  args: {
+    title: 'No hay datos disponibles',
+    description: 'No se encontraron registros para los filtros seleccionados.',
+    icon: <MagnifyingGlassIcon className="h-12 w-12 text-violet-400" />,
   },
 } satisfies Meta<typeof EmptyState>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
+export const Default: Story = {
+  render: (args) => (
+    <div className="w-[420px] p-6 bg-slate-900/40 rounded-2xl border border-slate-800">
+      <EmptyState {...args} />
+    </div>
+  ),
+}
+
 export const SinResultados: Story = {
-  name: 'Sin resultados de búsqueda',
+  name: 'Sin resultados de busqueda',
   args: {
     title: 'Sin resultados',
-    description: 'No encontramos registros que coincidan con tu búsqueda. Intenta con otros términos.',
-    icon: <MagnifyingGlassIcon className="h-12 w-12" />,
+    description: 'No encontramos registros que coincidan con tu busqueda. Intenta con otros terminos.',
+    icon: <MagnifyingGlassIcon className="h-12 w-12 text-violet-400" />,
     action: {
       label: 'Limpiar filtros',
-      onClick: () => {},
+      onClick: () => alert('Filtros reseteados'),
       variant: 'secondary',
       icon: <MagnifyingGlassIcon className="h-4 w-4" />,
     },
@@ -37,22 +56,22 @@ export const SinResultados: Story = {
 export const TablaVacia: Story = {
   name: 'Tabla sin registros',
   args: {
-    title: 'No hay registros aún',
-    description: 'Comienza creando el primer registro en este módulo.',
-    icon: <FolderOpenIcon className="h-12 w-12" />,
+    title: 'No hay registros aun',
+    description: 'Comienza creando el primer registro en este modulo.',
+    icon: <FolderOpenIcon className="h-12 w-12 text-amber-400" />,
     action: {
       label: 'Crear primer registro',
-      onClick: () => {},
+      onClick: () => alert('Crear registro'),
       icon: <PlusIcon className="h-4 w-4" />,
     },
   },
 }
 
 export const BandejaNoticias: Story = {
-  name: 'Bandeja de entrada vacía',
+  name: 'Bandeja de entrada vacia',
   args: {
-    title: 'Bandeja vacía',
-    description: 'No tienes notificaciones pendientes. ¡Todo al día!',
-    icon: <InboxIcon className="h-12 w-12" />,
+    title: 'Bandeja vacia',
+    description: 'No tienes notificaciones pendientes. ¡Todo al dia!',
+    icon: <InboxIcon className="h-12 w-12 text-emerald-400" />,
   },
 }

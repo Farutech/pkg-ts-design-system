@@ -2,23 +2,36 @@ import React, { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import type { ReactNode } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import { cn } from '@/utils/cn'
 
 export interface ModalProps {
   isOpen: boolean
   onClose: () => void
   title?: string
-  /** Subtítulo o descripción explicativa bajo el título */
+  /** Subtitulo o descripcion explicativa bajo el titulo */
   subtitle?: ReactNode
   description?: ReactNode
   /** Icono representativo en el encabezado del modal */
   icon?: ReactNode
-  children: ReactNode
+  children?: ReactNode
   /** Botones principales del footer (e.g. Cancelar y Guardar) */
   footer?: ReactNode
   /** Acciones auxiliares o secundarias ubicadas en el extremo izquierdo (e.g. Eliminar) */
   extraActions?: ReactNode
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
   closeButton?: boolean
+  /** Clases CSS adicionales para el contenedor principal de la ventana modal */
+  className?: string
+  /** Clases CSS adicionales para el contenedor del cuerpo (children) */
+  bodyClassName?: string
+  /** Clases CSS adicionales para el encabezado */
+  headerClassName?: string
+  /** Clases CSS adicionales para el pie/footer */
+  footerClassName?: string
+  /** Clases CSS para el backdrop (fondo oscurecido con blur) */
+  backdropClassName?: string
+  /** Estilos inline directos */
+  style?: React.CSSProperties
 }
 
 export function Modal({
@@ -33,6 +46,12 @@ export function Modal({
   extraActions,
   size = 'md',
   closeButton = true,
+  className,
+  bodyClassName,
+  headerClassName,
+  footerClassName,
+  backdropClassName,
+  style,
 }: ModalProps) {
   useEffect(() => {
     if (!isOpen) return
@@ -61,9 +80,12 @@ export function Modal({
 
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      {/* Backdrop con desenfoque suave agradable */}
+      {/* Backdrop con desenfoque suave y soporte para personalizacion */}
       <div
-        className="fixed inset-0 bg-black/65 backdrop-blur-md transition-opacity animate-fadeIn"
+        className={cn(
+          'fixed inset-0 bg-black/65 backdrop-blur-md transition-opacity animate-fadeIn',
+          backdropClassName
+        )}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -73,12 +95,17 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
-        className={`relative z-10 w-full ${sizeClasses[size]} my-8 bg-[#1a1b24] border border-[#333544] rounded-2xl shadow-[0_24px_70px_rgba(0,0,0,0.75)] overflow-hidden flex flex-col max-h-[90vh] transform transition-all animate-scaleUp text-slate-100`}
+        style={style}
+        className={cn(
+          'relative z-10 w-full my-8 bg-[#1a1b24] border border-[#333544] rounded-2xl shadow-[0_24px_70px_rgba(0,0,0,0.75)] overflow-hidden flex flex-col max-h-[90vh] transform transition-all animate-scaleUp text-slate-100',
+          sizeClasses[size],
+          className
+        )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header con icono y subtítulo */}
+        {/* Header con icono y subtitulo */}
         {(title || closeButton) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#2d2f3d] bg-[#15161e] shrink-0">
+          <div className={cn('flex items-center justify-between px-6 py-4 border-b border-[#2d2f3d] bg-[#15161e] shrink-0', headerClassName)}>
             <div className="flex items-center gap-3 min-w-0">
               {icon && (
                 <div className="w-9 h-9 rounded-xl bg-violet-600/20 text-violet-400 border border-violet-500/30 flex items-center justify-center shrink-0">
@@ -112,14 +139,14 @@ export function Modal({
           </div>
         )}
 
-        {/* Body */}
-        <div className="px-6 py-5 overflow-y-auto flex-1 text-slate-200 text-sm">
+        {/* Body con soporte de children y custom classes */}
+        <div className={cn('px-6 py-5 overflow-y-auto flex-1 text-slate-200 text-sm', bodyClassName)}>
           {children}
         </div>
 
-        {/* Footer con distribución de botones básicos y adicionales */}
+        {/* Footer con distribucion de botones basicos y adicionales */}
         {(footer || extraActions) && (
-          <div className="px-6 py-4 bg-[#15161e] border-t border-[#2d2f3d] shrink-0 flex items-center justify-between gap-3">
+          <div className={cn('px-6 py-4 bg-[#15161e] border-t border-[#2d2f3d] shrink-0 flex items-center justify-between gap-3', footerClassName)}>
             <div className="flex items-center gap-2">
               {extraActions}
             </div>

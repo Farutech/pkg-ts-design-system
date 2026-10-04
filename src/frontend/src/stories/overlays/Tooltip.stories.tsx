@@ -1,81 +1,91 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Tooltip } from '@/components/ui/Tooltip'
+import { Tooltip, type TooltipType } from '@/components/ui/Tooltip'
 import { Button } from '@/components/ui/Button'
 
-/**
- * Tooltip — Mensajes contextuales que aparecen al hover o focus.
- *
- * Soporta 4 posiciones (top, bottom, left, right), delays editables,
- * y tipos: info, danger, warning, success.
- */
-const meta = {
+const meta: Meta<any> = {
   title: '7-Overlays/Tooltip',
+  component: Tooltip,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Tooltip contextual con 4 posiciones, tipos semánticos y delay configurable. Aparece al hover o focus del elemento trigger.',
+        component: 'Tooltip contextual con 4 posiciones, variantes semanticas, soporte para iconos y delay configurable.',
       },
     },
   },
-} satisfies Meta
+  argTypes: {
+    content: {
+      control: 'text',
+      description: 'Texto o nodo mostrado dentro del tooltip',
+    },
+    position: {
+      control: 'select',
+      options: ['top', 'bottom', 'left', 'right'],
+      description: 'Posicion relativa respecto al elemento activador',
+    },
+    type: {
+      control: 'select',
+      options: ['default', 'info', 'success', 'warning', 'error'],
+      description: 'Variante semantica de color',
+    },
+    delay: {
+      control: 'number',
+      description: 'Retardo en milisegundos antes de mostrarse',
+    },
+    showIcon: {
+      control: 'boolean',
+      description: 'Muestra un icono acorde a la variante',
+    },
+    className: {
+      control: 'text',
+      description: 'Clases CSS para el tooltip',
+    },
+  },
+  args: {
+    content: 'Guarda los cambios realizados en el formulario',
+    position: 'top',
+    type: 'default',
+    delay: 150,
+    showIcon: true,
+  },
+}
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<any>
 
-export const Posiciones: Story = {
-  name: '4 posiciones',
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '600px' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
-        {(['top', 'bottom', 'left', 'right'] as const).map((pos) => (
-          <div key={pos} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <Tooltip content={`Tooltip ${pos}`} position={pos}>
-              <Button variant="outline">Hover aquí</Button>
-            </Tooltip>
-            <span style={{ fontSize: '0.75rem', color: 'var(--ft-color-muted-foreground)', textTransform: 'capitalize' }}>
-              {pos}
-            </span>
-          </div>
-        ))}
-      </div>
+export const Default: Story = {
+  render: (args: any) => (
+    <div className="py-12">
+      <Tooltip content={args.content || "Informacion relevante"} {...args}>
+        <Button variant="primary">Pasa el cursor aqui</Button>
+      </Tooltip>
     </div>
   ),
 }
 
-export const TiposSemanticos: Story = {
-  name: 'Tipos semánticos',
+export const Posiciones: Story = {
+  name: '4 posiciones',
   render: () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
-      {(['default', 'error', 'warning', 'success', 'info'] as const).map((type) => (
-        <Tooltip key={type} content={`${type}`} type={type} showIcon>
-          <Button variant="outline">{type}</Button>
+    <div className="flex flex-wrap gap-8 justify-center py-12">
+      {(['top', 'bottom', 'left', 'right'] as const).map((pos) => (
+        <Tooltip key={pos} content={`Tooltip en posicion ${pos}`} position={pos}>
+          <Button variant="outline">Hover ({pos})</Button>
         </Tooltip>
       ))}
     </div>
   ),
 }
 
-export const ConDelay: Story = {
-  name: 'Con delay personalizado',
-  parameters: {
-    docs: {
-      description: {
-        story: 'El delay por defecto es 200ms. Puedes ajustarlo para tooltips que necesitan más o menos tiempo.',
-      },
-    },
-  },
+export const TiposSemanticos: Story = {
+  name: 'Tipos semanticos',
   render: () => (
-    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-      <Tooltip content="Aparece rápido (50ms)" delay={50}>
-        <Button variant="outline">Rápido</Button>
-      </Tooltip>
-      <Tooltip content="Aparece normal (200ms)" delay={200}>
-        <Button variant="outline">Normal</Button>
-      </Tooltip>
-      <Tooltip content="Aparece lento (500ms)" delay={500}>
-        <Button variant="outline">Lento</Button>
-      </Tooltip>
+    <div className="flex flex-wrap gap-4 justify-center py-12">
+      {(['default', 'info', 'success', 'warning', 'error'] as const).map((type: TooltipType) => (
+        <Tooltip key={type} content={`Mensaje de tipo ${type}`} type={type} showIcon>
+          <Button variant="outline" className="capitalize">{type}</Button>
+        </Tooltip>
+      ))}
     </div>
   ),
 }

@@ -2,48 +2,76 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Divider, SectionHeader as SectionHeaderComponent } from '@/components/ui/Divider'
 import { Button } from '@/components/ui/Button'
 
-/**
- * Divider — separador horizontal o vertical con o sin label.
- *
- * Soporta 3 variantes de línea (solid, dashed, dotted), 3 niveles de
- * espaciado (sm, md, lg) y label opcional centrado.
- */
 const meta = {
   title: '10-Helpers/Divider',
+  component: Divider,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Separador horizontal o vertical con 3 variantes de línea y label opcional centrado.',
+        component: 'Separador horizontal o vertical con variantes de linea (solid, dashed, dotted), espaciado y label centrado.',
       },
     },
   },
-} satisfies Meta
+  argTypes: {
+    orientation: {
+      control: 'select',
+      options: ['horizontal', 'vertical'],
+      description: 'Orientacion del separador',
+    },
+    variant: {
+      control: 'select',
+      options: ['solid', 'dashed', 'dotted'],
+      description: 'Estilo de la linea',
+    },
+    spacing: {
+      control: 'select',
+      options: ['none', 'sm', 'md', 'lg'],
+      description: 'Margen o espaciado alrededor del separador',
+    },
+    label: {
+      control: 'text',
+      description: 'Texto centrado sobre la linea',
+    },
+    className: {
+      control: 'text',
+      description: 'Clases CSS personalizadas',
+    },
+  },
+  args: {
+    orientation: 'horizontal',
+    variant: 'solid',
+    spacing: 'md',
+    label: 'O continuar con',
+  },
+} satisfies Meta<typeof Divider>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Horizontal: Story = {
-  render: () => (
-    <div style={{ width: '500px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <Divider />
-      <Divider variant="dashed" spacing="lg" />
-      <Divider variant="dotted" spacing="lg" />
-      <Divider label="Continuar con..." orientation="horizontal" spacing="lg" />
-      <Divider label="Sección 2" orientation="horizontal" variant="dashed" spacing="lg" />
+export const Default: Story = {
+  render: (args) => (
+    <div className="w-[450px] p-6 bg-slate-900/40 rounded-xl border border-slate-800">
+      <p className="text-xs text-slate-400 mb-4">Seccion superior de contenido</p>
+      <Divider {...args} />
+      <p className="text-xs text-slate-400 mt-4">Seccion inferior de contenido</p>
     </div>
   ),
 }
 
 export const Vertical: Story = {
   name: 'Vertical (inline)',
-  render: () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'var(--ft-color-surface)', borderRadius: '0.5rem' }}>
-      <Button variant="outline">Opción A</Button>
-      <Divider orientation="vertical" />
-      <Button variant="outline">Opción B</Button>
-      <Divider orientation="vertical" />
-      <Button variant="outline">Opción C</Button>
+  args: {
+    orientation: 'vertical',
+  },
+  render: (args) => (
+    <div className="flex items-center gap-3 p-4 bg-slate-900/40 rounded-xl border border-slate-800 h-16">
+      <Button variant="outline" size="sm">Opcion A</Button>
+      <Divider {...args} />
+      <Button variant="outline" size="sm">Opcion B</Button>
+      <Divider {...args} />
+      <Button variant="outline" size="sm">Opcion C</Button>
     </div>
   ),
 }
@@ -51,10 +79,10 @@ export const Vertical: Story = {
 export const SectionHeader: Story = {
   name: 'SectionHeader (utility)',
   render: () => (
-    <div style={{ width: '400px' }}>
-      <SectionHeaderComponent title="Configuración de cuenta" subtitle="Administra tu perfil y preferencias" />
+    <div className="w-[400px] space-y-4">
+      <SectionHeaderComponent title="Configuracion de cuenta" subtitle="Administra tu perfil y preferencias" />
       <Divider />
-      <SectionHeaderComponent title="Preferencias de notificaciones" subtitle="Elige qué notificaciones recibir" />
+      <SectionHeaderComponent title="Preferencias de notificaciones" subtitle="Elige que notificaciones recibir" />
     </div>
   ),
 }

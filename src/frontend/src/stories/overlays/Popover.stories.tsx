@@ -1,15 +1,79 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Popover } from '@/components/ui/Popover'
+import { Popover, type PopoverProps } from '@/components/ui/Popover'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { BellIcon, MagnifyingGlassIcon, UserIcon, CogIcon } from '@heroicons/react/24/outline'
+import { BellIcon, UserIcon, CogIcon } from '@heroicons/react/24/outline'
 
-/**
- * Popover — Panel flotante que se activa desde un trigger personalizado.
- *
- * El trigger recibe `open` y `toggle` para controlar su estado.
- * El panel se puede posicionar: bottom (default), top, left, right.
- */
+const meta: Meta<PopoverProps> = {
+  title: '7-Overlays/Popover',
+  component: Popover,
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'Panel flotante interactivo con posicionamiento dinamico, trigger configurable y cierre automatico al presionar Escape o hacer click fuera.',
+      },
+    },
+  },
+  argTypes: {
+    placement: {
+      control: 'select',
+      options: ['bottom', 'top', 'left', 'right'],
+      description: 'Posicion relativa respecto al trigger',
+    },
+    panelClassName: {
+      control: 'text',
+      description: 'Clases CSS para el panel flotante',
+    },
+    dismissOnClickOutside: {
+      control: 'boolean',
+      description: 'Cierra al hacer clic fuera del panel',
+    },
+    dismissOnEscape: {
+      control: 'boolean',
+      description: 'Cierra al presionar Escape',
+    },
+  },
+  args: {
+    placement: 'bottom',
+    panelClassName: 'w-72 p-4',
+    dismissOnClickOutside: true,
+    dismissOnEscape: true,
+  },
+}
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  render: (args) => (
+    <div className="py-20">
+      <Popover
+        {...args}
+        trigger={({ open, toggle }) => (
+          <Button variant="primary" onClick={toggle}>
+            {open ? 'Cerrar Popover' : 'Abrir Popover'}
+          </Button>
+        )}
+      >
+        <div className="space-y-2 text-slate-200">
+          <h4 className="font-bold text-sm text-white">Panel Interactivo</h4>
+          <p className="text-xs text-slate-400">
+            Cambia la posicion (<code className="text-violet-400">placement</code>) o las clases CSS desde la pestana de Controles en Storybook.
+          </p>
+          <div className="pt-2 border-t border-slate-700/60 flex justify-end">
+            <Button size="sm" variant="secondary">Entendido</Button>
+          </div>
+        </div>
+      </Popover>
+    </div>
+  ),
+}
+
+export const MenuDePerfil: Story = {
+  render: () => <ProfilePopover />,
+}
+
 function ProfilePopover() {
   return (
     <Popover
@@ -29,7 +93,7 @@ function ProfilePopover() {
     >
       <div className="flex flex-col gap-1">
         <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700 mb-1">
-          <p className="m-0 font-semibold text-gray-900 dark:text-white">María García</p>
+          <p className="m-0 font-semibold text-gray-900 dark:text-white">Maria Garcia</p>
           <p className="m-0 text-xs text-gray-500 dark:text-gray-400">maria@empresa.com</p>
         </div>
         <button
@@ -44,7 +108,7 @@ function ProfilePopover() {
           className="flex items-center gap-2.5 w-full px-3 py-2 text-sm rounded-lg text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
           <CogIcon className="h-4 w-4 shrink-0 text-gray-400" />
-          <span>Configuración</span>
+          <span>Configuracion</span>
         </button>
         <button
           type="button"
@@ -53,94 +117,7 @@ function ProfilePopover() {
           <BellIcon className="h-4 w-4 shrink-0 text-gray-400" />
           <span>Notificaciones</span>
         </button>
-        <button
-          type="button"
-          className="flex items-center gap-2.5 w-full px-3 py-2 text-sm rounded-lg text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        >
-          <span className="w-4 shrink-0" /> {/* Espaciador para alinear con items que tienen icono */}
-          <span>Centro de ayuda (sin icono)</span>
-        </button>
-        <div className="border-t border-gray-200 dark:border-gray-700 mt-1 pt-1">
-          <button
-            type="button"
-            className="flex items-center gap-2.5 w-full px-3 py-2 text-sm rounded-lg text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-          >
-            <span className="w-4 shrink-0" />
-            <span>Cerrar sesión</span>
-          </button>
-        </div>
       </div>
     </Popover>
   )
-}
-
-function FormPopover() {
-  return (
-    <Popover
-      trigger={({ open, toggle, ariaAttributes }) => (
-        <Button onClick={toggle} {...ariaAttributes}>
-          <MagnifyingGlassIcon className="h-4 w-4 mr-2" />
-          {open ? 'Cerrar' : 'Abrir formulario'}
-        </Button>
-      )}
-      placement="bottom"
-      panelClassName="w-80"
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Contacto rápido</h3>
-        <Input label="Nombre" placeholder="Tu nombre" />
-        <Input label="Correo" type="email" placeholder="tu@email.com" />
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', paddingTop: '0.5rem', borderTop: '1px solid var(--ft-color-border)' }}>
-          <Button variant="ghost">Cancelar</Button>
-          <Button>Enviar</Button>
-        </div>
-      </div>
-    </Popover>
-  )
-}
-
-const meta = {
-  title: '7-Overlays/Popover',
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component: 'Panel flotante con trigger personalizado. Soporta 4 posiciones y cierre por Escape o click fuera.',
-      },
-    },
-  },
-} satisfies Meta
-
-export default meta
-type Story = StoryObj<typeof meta>
-
-export const MenuDePerfil: Story = {
-  render: () => <ProfilePopover />,
-}
-
-export const ConFormulario: Story = {
-  render: () => <FormPopover />,
-}
-
-export const Posiciones: Story = {
-  name: '4 posiciones',
-  render: () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
-      {(['bottom', 'top', 'left', 'right'] as const).map((placement) => (
-        <Popover
-          key={placement}
-          trigger={({ toggle }) => (
-            <Button variant="outline" onClick={toggle}>
-              {placement} — click
-            </Button>
-          )}
-          placement={placement}
-        >
-          <p style={{ margin: 0, fontSize: '0.875rem' }}>
-            Popover {placement}
-          </p>
-        </Popover>
-      ))}
-    </div>
-  ),
 }

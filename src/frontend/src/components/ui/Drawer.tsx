@@ -1,29 +1,3 @@
-/**
- * Drawer - Panel lateral deslizable (Offcanvas)
- * 
- * Características:
- * - ✅ Slide desde cualquier lado (left, right, top, bottom)
- * - ✅ Tamaños configurables (sm, md, lg, full)
- * - ✅ Overlay con blur
- * - ✅ Cierre automático al hacer clic fuera
- * - ✅ Animaciones suaves
- * - ✅ Header con título y botón cerrar
- * - ✅ Footer opcional para acciones
- * 
- * @example
- * ```tsx
- * <Drawer
- *   isOpen={isOpen}
- *   onClose={() => setIsOpen(false)}
- *   title="Editar Usuario"
- *   position="right"
- *   size="md"
- * >
- *   <p>Contenido del drawer...</p>
- * </Drawer>
- * ```
- */
-
 import { Fragment, type ReactNode } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
@@ -31,24 +5,20 @@ import { cn } from '@/utils/cn'
 import { Button } from './Button'
 
 export interface DrawerProps {
-  /** Estado de apertura */
   isOpen: boolean
-  /** Callback al cerrar */
   onClose: () => void
-  /** Título del drawer */
   title?: string
-  /** Contenido del drawer */
-  children: ReactNode
-  /** Posición del drawer */
+  children?: ReactNode
   position?: 'left' | 'right' | 'top' | 'bottom'
-  /** Tamaño del drawer */
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
-  /** Footer con acciones */
   footer?: ReactNode
-  /** Ocultar botón de cerrar */
   hideCloseButton?: boolean
-  /** Clase CSS adicional */
   className?: string
+  bodyClassName?: string
+  headerClassName?: string
+  footerClassName?: string
+  backdropClassName?: string
+  style?: import('react').CSSProperties
 }
 
 const sizeStyles = {
@@ -121,9 +91,6 @@ const positionStyles = {
   },
 }
 
-/**
- * Componente Drawer
- */
 export function Drawer({
   isOpen,
   onClose,
@@ -134,6 +101,11 @@ export function Drawer({
   footer,
   hideCloseButton = false,
   className,
+  bodyClassName,
+  headerClassName,
+  footerClassName,
+  backdropClassName,
+  style,
 }: DrawerProps) {
   const posStyles = positionStyles[position]
   const sizeClass = sizeStyles[position][size]
@@ -142,7 +114,6 @@ export function Drawer({
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
-        {/* Overlay */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -152,7 +123,7 @@ export function Drawer({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-900/50 dark:bg-gray-900/80 backdrop-blur-sm transition-opacity" />
+          <div className={cn('fixed inset-0 bg-gray-900/50 dark:bg-gray-900/80 backdrop-blur-sm transition-opacity', backdropClassName)} />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden">
@@ -168,6 +139,7 @@ export function Drawer({
                 leaveTo={posStyles.leaveTo}
               >
                 <Dialog.Panel
+                  style={style}
                   className={cn(
                     'pointer-events-auto w-full',
                     sizeClass,
@@ -175,9 +147,8 @@ export function Drawer({
                     className
                   )}
                 >
-                  {/* Header */}
                   {(title || !hideCloseButton) && (
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <div className={cn('flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700', headerClassName)}>
                       {title && (
                         <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
                           {title}
@@ -196,14 +167,12 @@ export function Drawer({
                     </div>
                   )}
 
-                  {/* Content */}
-                  <div className="flex-1 overflow-y-auto px-6 py-4">
+                  <div className={cn('flex-1 overflow-y-auto px-6 py-4', bodyClassName)}>
                     {children}
                   </div>
 
-                  {/* Footer */}
                   {footer && (
-                    <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                    <div className={cn('flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800', footerClassName)}>
                       {footer}
                     </div>
                   )}
@@ -217,9 +186,6 @@ export function Drawer({
   )
 }
 
-/**
- * Drawer Footer Helper - Para botones de acción estándar
- */
 export function DrawerFooter({
   onCancel,
   onConfirm,

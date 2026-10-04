@@ -29,7 +29,18 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Check Chromatic Token
+        id: check_token
+        run: |
+          if [ -z "${{ secrets.CHROMATIC_PROJECT_TOKEN }}" ]; then
+            echo "token_present=false" >> $GITHUB_OUTPUT
+            echo "::notice::CHROMATIC_PROJECT_TOKEN is not set. Visual regression tests skipped."
+          else
+            echo "token_present=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish Storybook to Chromatic & Run Visual Tests
+        if: steps.check_token.outputs.token_present == 'true'
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

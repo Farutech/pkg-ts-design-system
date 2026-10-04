@@ -1,7 +1,5 @@
 name: Publish @farutech/design-system to GitHub Packages
 
-# Dispara automáticamente al hacer push de un tag v* (ej: v1.1.0, v1.2.0)
-# También permite ejecución manual desde la UI de GitHub Actions.
 on:
   push:
     tags:
@@ -39,7 +37,7 @@ jobs:
         run: npm run lint
 
       - name: Tests
-        run: npm test -- --run
+        run: npm run test:unit
 
       - name: Build
         run: npm run build
@@ -70,7 +68,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build (producción)
+      - name: Build (produccion)
         run: npm run build
 
       - name: Publish to GitHub Packages
@@ -79,14 +77,13 @@ jobs:
           npm publish --access public 2>&1 | tee publish.log
           EXIT_CODE=${PIPESTATUS[0]}
           if grep -q "409 Conflict" publish.log || grep -q "Cannot publish over existing version" publish.log; then
-            echo "::notice::Version already published — skipping (idempotent). OK."
+            echo "::notice::Version already published - skipping (idempotent). OK."
             exit 0
           fi
           exit $EXIT_CODE
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
 
-
       - name: Dry run info
         if: ${{ github.event.inputs.dry_run == 'true' }}
-        run: echo "Dry run completado. Build y tests pasaron. No se publicó."
+        run: echo "Dry run completado. Build y tests pasaron. No se publico."

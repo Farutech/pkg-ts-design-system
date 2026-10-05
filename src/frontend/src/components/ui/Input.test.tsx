@@ -9,6 +9,8 @@ import {
   SearchInput,
   NumberInput,
   Textarea,
+  Form,
+  Select,
   Button,
   FloatingInput,
   LookupInput,
@@ -398,4 +400,97 @@ describe('Fase 1 — Sistema de Inputs y Formularios', () => {
       expect(input).toHaveAttribute('data-status', 'error')
     })
   })
+
+  describe('Estandarización de Labels y FloatingTitle (v1.1.5)', () => {
+    it('debe soportar labelMode="external" por defecto o explícito', () => {
+      render(
+        <Input
+          id="ext-input"
+          label="Etiqueta Externa"
+          labelMode="external"
+          placeholder="Escribe aquí"
+        />
+      )
+      const label = screen.getByText('Etiqueta Externa')
+      expect(label).toBeInTheDocument()
+      expect(label).toHaveAttribute('for', 'ext-input')
+    })
+
+    it('debe soportar labelMode="floating" y convertir placeholder/label en floatingTitle al enfocar', async () => {
+      const user = userEvent.setup()
+      render(
+        <Input
+          id="float-input"
+          label="Ingresa tu correo"
+          floatingTitle="CORREO ELECTRÓNICO"
+          labelMode="floating"
+          placeholder="usuario@dominio.com"
+        />
+      )
+
+      // Inicialmente en reposo muestra el label / placeholder
+      expect(screen.getByText('Ingresa tu correo')).toBeInTheDocument()
+      expect(screen.queryByText('CORREO ELECTRÓNICO')).not.toBeInTheDocument()
+
+      const input = screen.getByRole('textbox')
+      await user.click(input)
+
+      // Al enfocar, se convierte en el floatingTitle
+      expect(screen.getByText('CORREO ELECTRÓNICO')).toBeInTheDocument()
+    })
+
+    it('debe mantener floatingTitle cuando el input tiene valor tras desenfocar', async () => {
+      const user = userEvent.setup()
+      render(
+        <Input
+          id="val-input"
+          label="Número de Documento"
+          floatingTitle="DOCUMENTO"
+          labelMode="floating"
+        />
+      )
+
+      const input = screen.getByRole('textbox')
+      await user.type(input, '12345678')
+      await user.tab() // Desenfoque
+
+      // Mantiene el floatingTitle porque tiene valor
+      expect(screen.getByText('DOCUMENTO')).toBeInTheDocument()
+    })
+
+    it('debe propagar defaultLabelMode="floating" desde Form a través del FormContext', () => {
+      render(
+        <Form defaultLabelMode="floating">
+          <Input id="form-input" label="Campo en Formulario" floatingTitle="TÍTULO ELEVADO" defaultValue="123" />
+        </Form>
+      )
+
+      // Como tiene defaultValue, se activa inmediatamente con el floatingTitle
+      expect(screen.getByText('TÍTULO ELEVADO')).toBeInTheDocument()
+    })
+
+    it('debe soportar floatingTitle en Select y Textarea', () => {
+      render(
+        <div>
+          <Select
+            label="Seleccione Opción"
+            floatingTitle="OPCIÓN ACTIVA"
+            labelMode="floating"
+            value="1"
+            options={[{ value: '1', label: 'Opción 1' }]}
+          />
+          <Textarea
+            label="Comentarios"
+            floatingTitle="OBSERVACIONES"
+            labelMode="floating"
+            defaultValue="Observación preliminar"
+          />
+        </div>
+      )
+
+      expect(screen.getByText('OPCIÓN ACTIVA')).toBeInTheDocument()
+      expect(screen.getByText('OBSERVACIONES')).toBeInTheDocument()
+    })
+  })
+
 });

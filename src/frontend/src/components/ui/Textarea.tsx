@@ -11,11 +11,16 @@ import { useDensity } from '@/providers/DesignSystemProvider'
 import type { Density } from '@/tokens/tokens'
 import type { InputSize, InputStatus, InputVariant } from './InputBase'
 import { Icon } from '@/primitives/Icon/Icon'
+import { useFormContext } from './Form'
+import type { LabelMode } from './input/types'
 
 export type ValidationMode = 'block' | 'error'
 
 export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size' | 'onChange'> {
   label?: ReactNode
+  labelMode?: LabelMode
+  floatingTitle?: ReactNode
+  activeLabel?: ReactNode
   description?: ReactNode
   error?: ReactNode
   helperText?: ReactNode
@@ -46,6 +51,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
       label,
+      labelMode,
+      floatingTitle,
+      activeLabel,
       description,
       error,
       helperText,
@@ -80,12 +88,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const errorId = `${textareaId}-error`
     const descId = `${textareaId}-description`
 
+    const [isFocused, setIsFocused] = useState(false)
     const [internalValue, setInternalValue] = useState<string>(
       String(value ?? defaultValue ?? '')
     )
+    const formContext = useFormContext()
+    const effectiveLabelMode: LabelMode = labelMode || (variant === 'floating' ? 'floating' : formContext.defaultLabelMode) || 'external'
+    const isFloating = variant === 'floating' || effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
     const [validationError, setValidationError] = useState<string>('')
 
     const currentValue = value !== undefined ? String(value) : internalValue
+    const isFloatingActive = isFocused || Boolean(currentValue && currentValue.length > 0)
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
       const val = e.target.value
@@ -158,7 +171,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className={cn('flex flex-col text-left', fullWidth && 'w-full')}>
-        {label && (
+        {!isFloating && label && effectiveLabelMode !== 'hidden' && (
           <label
             htmlFor={textareaId}
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
@@ -167,13 +180,41 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
           </label>
         )}
+        {!isFloating && label && effectiveLabelMode === 'hidden' && (
+          <label htmlFor={textareaId} className="sr-only">
+            {label}
+          </label>
+        )}
 
         <div className="relative w-full">
+          {isFloating && (
+            <span
+              className={cn(
+                'absolute left-3.5 pointer-events-none transition-all duration-200 ease-out select-none transform origin-top-left z-10',
+                isFloatingActive
+                  ? 'top-1.5 text-[10px] font-bold text-primary-600 dark:text-primary-400 tracking-wider uppercase scale-95'
+                  : 'top-3.5 text-xs text-gray-500 dark:text-gray-400 font-normal scale-100'
+              )}
+            >
+              {isFloatingActive && (floatingTitle || activeLabel)
+                ? (floatingTitle || activeLabel)
+                : (label || props.placeholder)}
+              {required && <span className="text-red-500 ml-0.5">*</span>}
+            </span>
+          )}
           <textarea
             ref={ref}
             id={textareaId}
             value={currentValue}
             onChange={handleChange}
+            onFocus={(e) => {
+              setIsFocused(true)
+              props.onFocus?.(e)
+            }}
+            onBlur={(e) => {
+              setIsFocused(false)
+              props.onBlur?.(e)
+            }}
             disabled={disabled}
             readOnly={readOnly}
             maxLength={maxLength}
@@ -185,7 +226,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             className={cn(
               'w-full rounded-md transition-colors outline-none min-h-[80px]',
               'text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500',
-              paddingClasses,
+              isFloating ? 'pt-6 px-3.5 pb-2 text-sm' : paddingClasses,
               variantStyles,
               statusStyles,
               resizeStyles,

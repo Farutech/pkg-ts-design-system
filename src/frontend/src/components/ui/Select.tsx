@@ -19,6 +19,8 @@ import {
 import { ListboxCore } from './ListboxCore'
 import { ClickOutside } from '@/primitives/ClickOutside'
 import { Icon } from '@/primitives/Icon/Icon'
+import { useFormContext } from './Form'
+import type { LabelMode } from './input/types'
 
 export interface SelectOption {
   value: string | number
@@ -55,6 +57,9 @@ export interface SelectProps<T = SelectOption> extends DataMappingProps<T> {
   debounceMs?: number
 
   label?: ReactNode
+  labelMode?: LabelMode
+  floatingTitle?: ReactNode
+  activeLabel?: ReactNode
   description?: ReactNode
   error?: ReactNode
   helperText?: ReactNode
@@ -103,6 +108,9 @@ export const Select = forwardRef(function Select<T = SelectOption>(
     onChange,
     onValueChange,
     label,
+    labelMode,
+    floatingTitle,
+    activeLabel,
     description,
     error,
     helperText,
@@ -156,6 +164,9 @@ export const Select = forwardRef(function Select<T = SelectOption>(
 
   const currentValue = value !== undefined ? String(value) : internalValue
   const triggerRef = useRef<HTMLDivElement>(null)
+  const formContext = useFormContext()
+  const effectiveLabelMode: LabelMode = labelMode || (variant === 'floating' ? 'floating' : formContext.defaultLabelMode) || 'external'
+  const isFloating = variant === 'floating' || effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
 
   // Advertencia de deprecación en desarrollo si se utiliza onChange en lugar de onValueChange
   const hasWarnedRef = useRef(false)
@@ -236,8 +247,8 @@ export const Select = forwardRef(function Select<T = SelectOption>(
         ref={ref}
         className={cn('flex flex-col relative text-left', fullWidth && 'w-full')}
       >
-        {/* Label */}
-        {label && (
+        {/* Label Externo */}
+        {!isFloating && label && effectiveLabelMode !== 'hidden' && (
           <label
             id={labelId}
             htmlFor={selectId}
@@ -276,7 +287,7 @@ export const Select = forwardRef(function Select<T = SelectOption>(
             onClick={() => !disabled && setIsOpen(!isOpen)}
             onKeyDown={handleTriggerKeyDown}
             className={cn(
-              'flex-1 flex items-center justify-between cursor-pointer select-none outline-none transition-colors',
+              'flex-1 flex items-center justify-between cursor-pointer select-none outline-none transition-colors relative', isFloating && 'min-h-[48px]',
               heightClasses,
               variantStyles,
               statusStyles,
@@ -286,8 +297,25 @@ export const Select = forwardRef(function Select<T = SelectOption>(
               className
             )}
           >
+            {/* Label Flotante Dinámico */}
+            {isFloating && (
+              <span
+                className={cn(
+                  'absolute left-3.5 pointer-events-none transition-all duration-200 ease-out select-none transform origin-top-left',
+                  (isOpen || Boolean(selectedItem) || Boolean(currentValue))
+                    ? 'top-1 text-[10px] font-bold text-primary-600 dark:text-primary-400 tracking-wider uppercase scale-95'
+                    : 'top-3 text-xs text-gray-500 dark:text-gray-400 font-normal scale-100'
+                )}
+              >
+                {(isOpen || Boolean(selectedItem) || Boolean(currentValue)) && (floatingTitle || activeLabel)
+                  ? (floatingTitle || activeLabel)
+                  : (label || placeholder)}
+                {required && <span className="text-red-500 ml-0.5">*</span>}
+              </span>
+            )}
+
             {/* Lado Izquierdo */}
-            <div className="flex items-center gap-2 truncate">
+            <div className={cn("flex items-center gap-2 truncate", isFloating && "mt-3")}>
               {prefix && <span className="text-gray-400 shrink-0">{prefix}</span>}
               {selectedItem ? (
                 renderValue ? (
@@ -295,6 +323,12 @@ export const Select = forwardRef(function Select<T = SelectOption>(
                 ) : (
                   <span className="truncate">{selectedDisplayLabel}</span>
                 )
+              ) : isFloating ? (
+                (isOpen || Boolean(currentValue)) && placeholder ? (
+                  <span className="text-gray-400 dark:text-gray-500 truncate text-xs sm:text-sm">
+                    {placeholder}
+                  </span>
+                ) : null
               ) : (
                 <span className="text-gray-400 dark:text-gray-500 truncate">
                   {placeholder}

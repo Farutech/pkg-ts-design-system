@@ -1,51 +1,73 @@
 /**
- * Componente Form - Sistema de formularios con grid responsivo tipo Bootstrap
+ * Componente Form - Sistema de formularios empresarial con grid responsivo y contexto unificado
  */
 
-import React from 'react'
+import React, { createContext, useContext } from 'react'
 import { cn } from '@/utils/cn'
+import type { LabelMode } from './input/types'
+import type { Density } from '@/tokens/tokens'
 
-interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
+export interface FormContextValue {
+  /** Modo de etiqueta por defecto para todos los controles descendientes ('external' | 'floating' | 'placeholder' | 'hidden') */
+  defaultLabelMode?: LabelMode
+  /** Densidad por defecto para el formulario ('comfortable' | 'compact' | 'dense') */
+  density?: Density
+}
+
+export const FormContext = createContext<FormContextValue>({})
+
+/**
+ * Hook para consumir la configuración heredada del formulario padre
+ */
+export const useFormContext = () => useContext(FormContext)
+
+export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode
   className?: string
+  /** Configura el modo de etiqueta para todos los campos hijos (ej. 'floating' para etiquetas elevadas automáticas) */
+  defaultLabelMode?: LabelMode
+  /** Configura la densidad global para los campos del formulario */
+  density?: Density
 }
 
 /**
- * Form - Contenedor principal del formulario
+ * Form - Contenedor principal del formulario con propagación de contexto
  * @example
- * <Form onSubmit={handleSubmit}>
+ * <Form defaultLabelMode="floating" onSubmit={handleSubmit}>
  *   <FormRow>
  *     <FormGroup cols={{ default: 12, md: 6 }}>
- *       <Input label="Nombre" />
+ *       <Input label="Nombre completo" floatingTitle="NOMBRE" />
+ *     </FormGroup>
+ *     <FormGroup cols={{ default: 12, md: 6 }}>
+ *       <Select label="Departamento" floatingTitle="DEPARTAMENTO" options={...} />
  *     </FormGroup>
  *   </FormRow>
  * </Form>
  */
-export function Form({ children, className, ...props }: FormProps) {
+export function Form({
+  children,
+  className,
+  defaultLabelMode,
+  density,
+  ...props
+}: FormProps) {
   return (
-    <form className={cn('space-y-6', className)} {...props}>
-      {children}
-    </form>
+    <FormContext.Provider value={{ defaultLabelMode, density }}>
+      <form className={cn('space-y-6', className)} {...props}>
+        {children}
+      </form>
+    </FormContext.Provider>
   )
 }
 
-interface FormRowProps {
+export interface FormRowProps {
   children: React.ReactNode
   className?: string
   gap?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
 }
 
 /**
- * FormRow - Fila que contiene FormGroups en un grid responsivo
- * @example
- * <FormRow gap="md">
- *   <FormGroup cols={{ default: 12, md: 6 }}>
- *     <Input label="Campo 1" />
- *   </FormGroup>
- *   <FormGroup cols={{ default: 12, md: 6 }}>
- *     <Input label="Campo 2" />
- *   </FormGroup>
- * </FormRow>
+ * FormRow - Fila que contiene FormGroups en un grid responsivo de 12 columnas
  */
 export function FormRow({ children, className, gap = 'md' }: FormRowProps) {
   const gapClasses = {
@@ -63,9 +85,9 @@ export function FormRow({ children, className, gap = 'md' }: FormRowProps) {
   )
 }
 
-type ColumnSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+export type ColumnSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 
-interface FormGroupProps {
+export interface FormGroupProps {
   children: React.ReactNode
   className?: string
   /** Configuración de columnas por breakpoint */
@@ -82,24 +104,11 @@ interface FormGroupProps {
 }
 
 /**
- * FormGroup - Grupo de formulario con sistema de columnas responsivo
- * Similar al sistema de grid de Bootstrap (col-md-6, etc.)
- * @example
- * // Ocupa 12 columnas en móvil, 6 en tablet, 4 en desktop
- * <FormGroup cols={{ default: 12, md: 6, lg: 4 }}>
- *   <Input label="Nombre" />
- * </FormGroup>
- * 
- * // Atajo: ocupa 6 columnas en todas las pantallas
- * <FormGroup col={6}>
- *   <Input label="Email" />
- * </FormGroup>
+ * FormGroup - Grupo de formulario con sistema de columnas responsivo (1 a 12 cols)
  */
 export function FormGroup({ children, className, cols, col }: FormGroupProps) {
-  // Si se usa el atajo 'col', aplicar a todas las pantallas
   const columnConfig = col ? { default: col } : cols
 
-  // Generar clases de columnas responsivas
   const colClasses = columnConfig
     ? Object.entries(columnConfig).map(([breakpoint, size]) => {
         if (breakpoint === 'default') {
@@ -116,7 +125,7 @@ export function FormGroup({ children, className, cols, col }: FormGroupProps) {
   )
 }
 
-interface FormSectionProps {
+export interface FormSectionProps {
   children: React.ReactNode
   title?: string
   description?: string
@@ -124,14 +133,7 @@ interface FormSectionProps {
 }
 
 /**
- * FormSection - Sección de formulario con título y descripción opcional
- * @example
- * <FormSection 
- *   title="Información Personal" 
- *   description="Completa tus datos personales"
- * >
- *   <FormRow>...</FormRow>
- * </FormSection>
+ * FormSection - Sección de formulario con encabezado, título y descripción
  */
 export function FormSection({ 
   children, 
@@ -160,19 +162,14 @@ export function FormSection({
   )
 }
 
-interface FormActionsProps {
+export interface FormActionsProps {
   children: React.ReactNode
   className?: string
   align?: 'left' | 'center' | 'right' | 'between'
 }
 
 /**
- * FormActions - Contenedor para botones de acción del formulario
- * @example
- * <FormActions align="right">
- *   <Button variant="secondary">Cancelar</Button>
- *   <Button type="submit">Guardar</Button>
- * </FormActions>
+ * FormActions - Barra de botones de acción del formulario
  */
 export function FormActions({ children, className, align = 'right' }: FormActionsProps) {
   const alignClasses = {

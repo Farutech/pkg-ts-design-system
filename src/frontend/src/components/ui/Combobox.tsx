@@ -18,6 +18,8 @@ import {
 import { ListboxCore } from './ListboxCore'
 import { ClickOutside } from '@/primitives/ClickOutside'
 import { Icon } from '@/primitives/Icon/Icon'
+import { useFormContext } from './Form'
+import type { LabelMode } from './input/types'
 
 export interface ComboboxOption {
   value: string | number
@@ -34,6 +36,9 @@ export interface ComboboxProps<T = ComboboxOption> extends DataMappingProps<T> {
   onValueChange?: (value: string) => void
 
   label?: ReactNode
+  labelMode?: LabelMode
+  floatingTitle?: ReactNode
+  activeLabel?: ReactNode
   description?: ReactNode
   error?: ReactNode
   placeholder?: string
@@ -67,6 +72,9 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
     onChange,
     onValueChange,
     label,
+    labelMode,
+    floatingTitle,
+    activeLabel,
     description,
     error,
     placeholder = 'Escribe o selecciona...',
@@ -95,6 +103,9 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
   const contextDensity = useDensity()
   const activeDensity = propDensity ?? contextDensity
 
+  const formContext = useFormContext()
+  const effectiveLabelMode: LabelMode = labelMode || formContext.defaultLabelMode || 'external'
+  const isFloating = effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
   const generatedId = useId()
   const comboboxId = id || `ft-combobox-${generatedId}`
 
@@ -158,7 +169,7 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
   return (
     <ClickOutside onClickOutside={() => setIsOpen(false)}>
       <div ref={ref} className={cn('flex flex-col relative text-left', fullWidth && 'w-full')}>
-        {label && (
+        {!isFloating && label && effectiveLabelMode !== 'hidden' && (
           <label htmlFor={comboboxId} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {label}
             {required && <span className="text-red-500 ml-0.5">*</span>}
@@ -171,13 +182,29 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
           className={cn(
             'flex items-center justify-between border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-md outline-none transition-colors',
             heightClasses,
+            isFloating && 'min-h-[48px]',
             isOpen && 'ring-2 ring-primary-500/20 border-primary-500',
             error && 'border-red-500 ring-red-500/20',
             disabled && 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-800',
             className
           )}
         >
-          <div className="flex items-center gap-2 w-full">
+          <div className={cn("flex items-center gap-2 w-full relative", isFloating && "pt-3.5")}>
+            {isFloating && (
+              <span
+                className={cn(
+                  'absolute left-0 pointer-events-none transition-all duration-200 ease-out select-none transform origin-top-left',
+                  (isOpen || Boolean(currentValue) || Boolean(searchQuery))
+                    ? 'top-[-8px] text-[10px] font-bold text-primary-600 dark:text-primary-400 tracking-wider uppercase scale-95'
+                    : 'top-0.5 text-xs text-gray-500 dark:text-gray-400 font-normal scale-100'
+                )}
+              >
+                {(isOpen || Boolean(currentValue) || Boolean(searchQuery)) && (floatingTitle || activeLabel)
+                  ? (floatingTitle || activeLabel)
+                  : (label || placeholder)}
+                {required && <span className="text-red-500 ml-0.5">*</span>}
+              </span>
+            )}
             {prefix && <span className="text-gray-400 shrink-0">{prefix}</span>}
             <input
               id={comboboxId}
@@ -185,7 +212,11 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
               value={displayInputValue}
               onChange={handleInputChange}
               onFocus={() => !disabled && setIsOpen(true)}
-              placeholder={selectedItem ? resolveOptionLabel(selectedItem, textKey, textTemplate) : placeholder}
+              placeholder={
+                isFloating
+                  ? ((isOpen || Boolean(currentValue)) ? (selectedItem ? resolveOptionLabel(selectedItem, textKey, textTemplate) : placeholder) : '')
+                  : (selectedItem ? resolveOptionLabel(selectedItem, textKey, textTemplate) : placeholder)
+              }
               disabled={disabled}
               className="w-full bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400 text-sm"
             />

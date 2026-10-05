@@ -58,6 +58,10 @@ export interface InputProps
   // --- Contenido ---
   /** Label accesible vinculado automáticamente con htmlFor */
   label?: ReactNode
+  /** Título o etiqueta elevada personalizada cuando el control está enfocado o con valor (si difiere del label/placeholder en reposo) */
+  floatingTitle?: ReactNode
+  /** Alias para floatingTitle */
+  activeLabel?: ReactNode
   /** Placeholder textual */
   placeholder?: string
   /** Descripción o mensaje de ayuda */

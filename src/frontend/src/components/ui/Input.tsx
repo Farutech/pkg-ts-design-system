@@ -12,6 +12,7 @@ import {
 } from 'react'
 import { cn } from '@/utils/cn'
 import { InputBase } from './InputBase'
+import { useFormContext } from './Form'
 import { Icon } from '@/primitives/Icon/Icon'
 import type {
   InputProps,
@@ -73,6 +74,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       label,
+      floatingTitle,
+      activeLabel,
       description,
       error,
       helperText,
@@ -111,7 +114,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       size = 'md',
       density,
       variant = 'outline',
-      labelMode = 'external',
+      labelMode,
       surfaceVariant = 'default',
       fullWidth = true,
       id,
@@ -154,10 +157,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     // Comportamiento automático enriquecido por tipo
     const behavior = getInputBehavior(type)
+    const formContext = useFormContext()
+    const effectiveLabelMode: LabelMode = labelMode || (variant === 'floating' ? 'floating' : formContext.defaultLabelMode) || 'external'
+    const isFloating = variant === 'floating' || effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
     const isPassword = type === 'password'
     const isNumber = type === 'number'
     const isLookup = variant === 'lookup'
-    const isFloating = variant === 'floating' || labelMode === 'floating'
 
     const [showPassword, setShowPassword] = useState(false)
     const [isFocused, setIsFocused] = useState(false)
@@ -453,13 +458,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <div className="relative flex-1 h-full flex flex-col justify-center px-3.5 pt-3 pb-1">
               <span
                 className={cn(
-                  'absolute left-3.5 pointer-events-none transition-all duration-150 select-none',
+                  'absolute left-3.5 pointer-events-none transition-all duration-200 ease-out select-none transform origin-top-left',
                   isFloatingActive
-                    ? 'top-1.5 text-[10px] font-bold text-primary-500 dark:text-primary-400 tracking-wider uppercase'
-                    : 'top-3.5 text-xs text-gray-500 dark:text-gray-400 font-normal'
+                    ? 'top-1.5 text-[10px] font-bold text-primary-600 dark:text-primary-400 tracking-wider uppercase scale-95'
+                    : 'top-3.5 text-xs text-gray-500 dark:text-gray-400 font-normal scale-100'
                 )}
               >
-                {label}
+                {isFloatingActive && (floatingTitle || activeLabel) ? (floatingTitle || activeLabel) : label}
                 {required && <span className="text-red-500 ml-0.5">*</span>}
               </span>
 
@@ -642,7 +647,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           disabled && 'opacity-60 cursor-not-allowed'
         )}
       >
-        {label && labelMode !== 'hidden' && (
+        {label && effectiveLabelMode !== 'hidden' && (
           <label
             htmlFor={inputId}
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
@@ -656,7 +661,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
 
-        {label && labelMode === 'hidden' && (
+        {label && effectiveLabelMode === 'hidden' && (
           <label htmlFor={inputId} className="sr-only">
             {label}
           </label>

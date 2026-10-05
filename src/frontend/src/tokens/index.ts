@@ -151,3 +151,5 @@ export const zIndex = {
 // Re-export HSL tokens map and custom properties converter
 export * from './tokens'
 export * from './input'
+
+export * from './inputTypes'

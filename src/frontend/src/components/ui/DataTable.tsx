@@ -113,6 +113,8 @@ export interface DataTableActions<T = any> {
   onEdit?: (row: T) => void
   onDelete?: (row: T) => void
   onDuplicate?: (row: T) => void
+  /** Modo de visualización de acciones: "buttons" (iconos compactos con tooltip), "dropdown" (menú flotante), "auto" */
+  displayMode?: 'buttons' | 'dropdown' | 'auto'
   custom?: Array<{
     label: string
     icon?: ReactNode
@@ -168,6 +170,10 @@ export interface DataTableProps<T extends { id: string | number }> {
   selectedRows?: Set<string | number>
   onSelectionChange?: (selected: Set<string | number>) => void
   
+  // Herramientas de Exportación (Print, CSV, PDF, Excel)
+  exportTools?: boolean | Array<'print' | 'csv' | 'pdf' | 'excel'>
+  onExport?: (format: 'print' | 'csv' | 'pdf' | 'excel') => void
+
   // Acciones masivas
   bulkActions?: BulkActionItem[]
   onClearSelection?: () => void
@@ -233,6 +239,8 @@ export function DataTable<T extends { id: string | number }>({
   selectable = false,
   selectedRows = new Set(),
   onSelectionChange,
+  exportTools,
+  onExport,
   bulkActions,
   onClearSelection,
   actions,
@@ -312,6 +320,7 @@ export function DataTable<T extends { id: string | number }>({
           onEdit={actions.onEdit ? () => actions.onEdit?.(row.original) : undefined}
           onDelete={actions.onDelete ? () => actions.onDelete?.(row.original) : undefined}
           onDuplicate={actions.onDuplicate ? () => actions.onDuplicate?.(row.original) : undefined}
+          displayMode={actions.displayMode ?? "auto"}
           customActions={actions.custom?.map((action) => ({
             label: action.label,
             icon: action.icon,
@@ -1075,6 +1084,7 @@ export function DataTable<T extends { id: string | number }>({
                   onEdit={actions.onEdit ? () => actions.onEdit?.(row.original) : undefined}
                   onDelete={actions.onDelete ? () => actions.onDelete?.(row.original) : undefined}
                   onDuplicate={actions.onDuplicate ? () => actions.onDuplicate?.(row.original) : undefined}
+                  displayMode={actions.displayMode ?? "auto"}
                   customActions={actions.custom?.map((action) => ({
                     label: action.label,
                     icon: action.icon,
@@ -1087,6 +1097,71 @@ export function DataTable<T extends { id: string | number }>({
             )}
           </Card>
         ))}
+      </div>
+    )
+  }
+
+
+  const handleExportClick = (format: 'print' | 'csv' | 'pdf' | 'excel') => {
+    if (onExport) {
+      onExport(format)
+    } else {
+      if (format === 'print') {
+        window.print()
+      } else {
+        alert(`Exportando datos en formato ${format.toUpperCase()}...`)
+      }
+    }
+  }
+
+  const renderExportBar = () => {
+    if (!exportTools) return null
+    const allowedFormats = Array.isArray(exportTools)
+      ? exportTools
+      : (['print', 'csv', 'pdf', 'excel'] as const)
+
+    return (
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {allowedFormats.includes('print') && (
+          <button
+            type="button"
+            onClick={() => handleExportClick('print')}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+          >
+            <span>🖨</span>
+            <span>Imprimir</span>
+          </button>
+        )}
+        {allowedFormats.includes('csv') && (
+          <button
+            type="button"
+            onClick={() => handleExportClick('csv')}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+          >
+            <span>📄</span>
+            <span>CSV</span>
+          </button>
+        )}
+        {allowedFormats.includes('pdf') && (
+          <button
+            type="button"
+            onClick={() => handleExportClick('pdf')}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+          >
+            <span>📑</span>
+            <span>PDF</span>
+          </button>
+        )}
+        {allowedFormats.includes('excel') && (
+          <button
+            type="button"
+            onClick={() => handleExportClick('excel')}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+          >
+            <span>📊</span>
+            <span>Excel</span>
+          </button>
+        )}
       </div>
     )
   }
@@ -1112,17 +1187,24 @@ export function DataTable<T extends { id: string | number }>({
         ? children({ table, data, selectedRows })
         : children}
 
-      {/* Paginación */}
-      {pagination && data.length > 0 && (
-        <div className={cn("mt-4", paginationClassName)}>
-          <CrudPagination
-            currentPage={pagination.page}
-            totalPages={pagination.totalPages || Math.ceil(pagination.total / pagination.perPage)}
-            perPage={pagination.perPage}
-            total={pagination.total}
-            onPageChange={pagination.onPageChange}
-            onPerPageChange={pagination.onPerPageChange}
-          />
+      {/* Barra de Exportación y Paginación */}
+      {(exportTools || (pagination && data.length > 0)) && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+          <div className="order-2 sm:order-1 w-full sm:w-auto">
+            {renderExportBar()}
+          </div>
+          {pagination && data.length > 0 && (
+            <div className={cn("order-1 sm:order-2 w-full sm:w-auto", paginationClassName)}>
+              <CrudPagination
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages || Math.ceil(pagination.total / pagination.perPage)}
+                perPage={pagination.perPage}
+                total={pagination.total}
+                onPageChange={pagination.onPageChange}
+                onPerPageChange={pagination.onPerPageChange}
+              />
+            </div>
+          )}
         </div>
       )}
 

@@ -1,4 +1,4 @@
-# @farutech/design-system (v1.1.1)
+# @farutech/design-system (v1.1.6)
 
 Biblioteca oficial de componentes UI, tokens tematizables, componentes CRUD, hooks y utilidades de **FaruTech**.
 
@@ -16,7 +16,7 @@ Configura tu archivo `.npmrc` para autenticarte contra GitHub Packages:
 Instala el paquete en tu proyecto:
 
 ```bash
-npm install @farutech/design-system@1.1.1
+npm install @farutech/design-system@1.1.6
 ```
 
 ---
@@ -128,7 +128,7 @@ npm run build-storybook
 
 ---
 
-## 📋 Control de Cambios (Changelog v1.1.1)
+## 📋 Control de Cambios (Changelog v1.1.6)
 
 * **Paginación**: Soporte configurable para `perPageOptions` en `CrudPagination` y navegación por teclado.
 * **Tipos**: Exportación explícita de `className` y `style` en `CardProps`.

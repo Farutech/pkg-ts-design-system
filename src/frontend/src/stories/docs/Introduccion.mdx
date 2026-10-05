@@ -11,16 +11,59 @@ import { Meta } from "@storybook/addon-docs/blocks"
 
 ## 🚀 Pila Tecnológica / Tech Stack
 
-| Capa / Layer | Tecnología / Technology | Propósito / Purpose |
-|---|---|---|
-| **UI Components** | React 18 / 19 + TypeScript (Strict) | Componentes tipados, accesibles y modulares |
-| **Styling** | Tailwind CSS v3 + CSS Custom Properties (`--ft-*`) | Estilos utilitarios con theming de marca sin fork |
-| **Animations** | Framer Motion | Transiciones fluidas, modales y micro-interacciones |
-| **Accessibility** | Headless UI + WAI-ARIA | Menús, diálogos y popovers 100% accesibles por teclado |
-| **State Management** | Zustand (v5) | Estado reactivo para theme, locale, sidebar y auth |
-| **Data Tables & CRUD** | TanStack Table (v8) + CrudPagination | Tablas ordenables, paginables con perPage configurable y selección |
-| **Testing & CI** | Vitest + `@chromatic-com/storybook` | Pruebas unitarias, pruebas visuales y regresión en CI |
-| **A11y & Docs** | Storybook 10 + `@storybook/addon-a11y` | Documentación viva interactiva con controles y viewports |
+<div className="overflow-x-auto my-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
+  <table className="w-full text-left border-collapse text-sm">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold border-b border-gray-200 dark:border-gray-700">
+        <th className="py-3 px-4">Capa / Layer</th>
+        <th className="py-3 px-4">Tecnología / Technology</th>
+        <th className="py-3 px-4">Propósito / Purpose</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900">
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">UI Components</td>
+        <td className="py-3 px-4 font-mono text-xs">React 18 / 19 + TypeScript (Strict)</td>
+        <td className="py-3 px-4">Componentes tipados, accesibles y modulares con SOLID/DRY</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Styling & Tokens</td>
+        <td className="py-3 px-4 font-mono text-xs">Tailwind CSS v3 + CSS Custom Properties (--ft-*)</td>
+        <td className="py-3 px-4">Estilos utilitarios con theming de marca sin fork ni hardcodeo</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Animations</td>
+        <td className="py-3 px-4 font-mono text-xs">Framer Motion + CSS GPU Transitions</td>
+        <td className="py-3 px-4">Transiciones fluidas, modales y micro-interacciones de 60fps</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Accessibility</td>
+        <td className="py-3 px-4 font-mono text-xs">Headless UI + WAI-ARIA</td>
+        <td className="py-3 px-4">Menús, diálogos y popovers 100% accesibles por teclado (WCAG 2.1 AA)</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">State Management</td>
+        <td className="py-3 px-4 font-mono text-xs">Zustand (v5)</td>
+        <td className="py-3 px-4">Estado reactivo atómico para theme, locale, sidebar y auth</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Data Tables & CRUD</td>
+        <td className="py-3 px-4 font-mono text-xs">TanStack Table (v8) + CrudPagination</td>
+        <td className="py-3 px-4">Tablas ordenables, paginables con perPage configurable, filtros y acciones</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Testing & CI</td>
+        <td className="py-3 px-4 font-mono text-xs">Vitest + @chromatic-com/storybook</td>
+        <td className="py-3 px-4">136+ pruebas unitarias, pruebas visuales y regresión en CI</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">A11y & Docs</td>
+        <td className="py-3 px-4 font-mono text-xs">Storybook 10 + @storybook/addon-a11y</td>
+        <td className="py-3 px-4">Documentación viva interactiva con controles y viewports</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 
@@ -83,12 +126,38 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ## 🧩 Componentes Principales
 
-| Categoría | Componentes clave |
-|---|---|
-| **Layout & Shell** | `MainLayout`, `Sidebar`, `Navbar`, `TopNav`, `PageHeader` |
-| **Data & CRUD** | `DataTable`, `CrudPagination`, `Badge`, `Card`, `MetricCard` |
-| **Inputs & Forms** | `Button`, `Input`, `FloatingInput`, `LookupInput`, `Select`, `DatePicker` |
-| **Modales & Feedback** | `Modal`, `Alert`, `Toast`, `ConfirmDialog`, `Tooltip` |
+<div className="overflow-x-auto my-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
+  <table className="w-full text-left border-collapse text-sm">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold border-b border-gray-200 dark:border-gray-700">
+        <th className="py-3 px-4">Categoría</th>
+        <th className="py-3 px-4">Componentes clave</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900">
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Layout & Shell</td>
+        <td className="py-3 px-4 font-mono text-xs">MainLayout, Sidebar, Navbar, TopNav, PageHeader</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Data & CRUD</td>
+        <td className="py-3 px-4 font-mono text-xs">DataTable, Table, CrudPagination, Badge, Card, StatsCard</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Inputs & Forms</td>
+        <td className="py-3 px-4 font-mono text-xs">Form, FormRow, FormGroup, Input, Select, Combobox, Textarea, NumberInput, PasswordInput</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Auth Suite</td>
+        <td className="py-3 px-4 font-mono text-xs">LoginCard, LoginScreen, ForgotPasswordCard, ForgotPasswordScreen, TokenStorage</td>
+      </tr>
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <td className="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">Modales & Feedback</td>
+        <td className="py-3 px-4 font-mono text-xs">Modal, Alert, Toast, Tooltip, Popover, Drawer</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 

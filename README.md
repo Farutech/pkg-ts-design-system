@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-1.1.1-6366f1.svg?style=flat-square)](https://github.com/Farutech/pkg-ts-design-system)
+[![Version](https://img.shields.io/badge/version-1.1.6-6366f1.svg?style=flat-square)](https://github.com/Farutech/pkg-ts-design-system)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg?style=flat-square)](https://www.typescriptlang.org/)
 [![Storybook 10](https://img.shields.io/badge/Storybook-10.6-ff4785.svg?style=flat-square)](https://storybook.js.org/)
@@ -88,13 +88,13 @@ En la raíz de tu proyecto consumidor o en tu directorio de usuario (`~/.npmrc`)
 
 ```bash
 # npm
-npm install @farutech/design-system@1.1.1
+npm install @farutech/design-system@1.1.6
 
 # pnpm
-pnpm add @farutech/design-system@1.1.1
+pnpm add @farutech/design-system@1.1.6
 
 # yarn
-yarn add @farutech/design-system@1.1.1
+yarn add @farutech/design-system@1.1.6
 ```
 
 ---

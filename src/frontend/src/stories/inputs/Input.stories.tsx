@@ -1,39 +1,73 @@
+import React from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { Input } from '@/components/ui/Input'
-import { MagnifyingGlassIcon, EnvelopeIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline'
 
 /**
- * Input — Campo de entrada de texto con soporte completo de validación,
- * iconos, estados de error y toggle de contraseña.
+ * # Input (Best-of-Breed Unificado) - FaruTech Design System
+ * 
+ * ## Árbol de Decisión de Selección de Variante (Decision Tree)
+ * 
+ * ### 1. ¿Necesitas etiqueta flotante compacta para formularios densos o búsquedas?
+ * - **SÍ** → `variant="floating"`
+ * - **NO** → ¿Es una búsqueda de entidades con autocompletado y catálogo?
+ *   - **SÍ** → `variant="lookup"`
+ *   - **NO** → `variant="outline"` (estándar por defecto) o `variant="filled"` / `variant="flushed"`
+ * 
+ * ### 2. ¿Qué modo de etiqueta (`labelMode`) seleccionar?
+ * - Formulario estándar con múltiples campos → `labelMode="external"` (default)
+ * - Campo aislado, modal compacto o estética moderna → `labelMode="floating"`
+ * - Entrada compacta donde el placeholder guía → `labelMode="placeholder"`
+ * - Entradas con accesibilidad visual oculta → `labelMode="hidden"`
+ * 
+ * ### 3. ¿Qué tipo (`type`) elegir?
+ * - Correo electrónico → `type="email"` (icono Mail automático + validación + clear)
+ * - Contraseña → `type="password"` (icono Lock + toggle visibilidad con target >= 44px)
+ * - Búsqueda → `type="search"` (icono Search + clear)
+ * - Teléfono → `type="tel"` (icono Phone + formateo en tiempo real)
+ * - Número → `type="number"` (stepper interactivo +/- con target >= 44px)
+ * - Enlace web → `type="url"` (icono Globe + validación)
+ * - Fecha → `type="date"` (icono Calendar)
+ * - Texto libre → `type="text"`
  */
 const meta = {
-  title: '4-Inputs/Input',
+  title: '4-Inputs/Input (Unificado)',
   component: Input,
   argTypes: {
     label: { control: 'text' },
     placeholder: { control: 'text' },
     error: { control: 'text' },
-    helperText: { control: 'text' },
+    description: { control: 'text' },
     disabled: { control: 'boolean' },
+    readOnly: { control: 'boolean' },
     fullWidth: { control: 'boolean' },
+    variant: {
+      control: 'select',
+      options: ['outline', 'filled', 'flushed', 'borderless', 'underline', 'floating', 'lookup'],
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg', 'xl'],
+    },
+    status: {
+      control: 'select',
+      options: ['default', 'error', 'success', 'warning', 'info'],
+    },
     type: {
       control: 'select',
-      options: ['text', 'email', 'password', 'number', 'search', 'tel', 'url'],
+      options: ['text', 'email', 'password', 'number', 'search', 'tel', 'url', 'date'],
     },
   },
   args: {
     label: 'Nombre completo',
     placeholder: 'Ej. María García',
     fullWidth: true,
+    size: 'md',
+    variant: 'outline',
+    status: 'default',
   },
   parameters: {
     layout: 'centered',
-    docs: {
-      description: {
-        component: 'Input con validación por regex, iconos, helper text y toggle de contraseña incorporado.',
-      },
-    },
   },
 } satisfies Meta<typeof Input>
 
@@ -42,49 +76,98 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
-export const ConIcono: Story = {
-  name: 'Con ícono',
+export const Variantes: Story = {
+  name: 'Variantes: Outline, Filled, Flushed, Floating',
   render: () => (
-    <div style={{ width: '360px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <Input label="Buscar" placeholder="Buscar componentes..." icon={<MagnifyingGlassIcon className="h-4 w-4" />} iconPosition="left" />
-      <Input label="Correo electrónico" placeholder="tu@email.com" type="email" icon={<EnvelopeIcon className="h-4 w-4" />} />
-      <Input label="Usuario" placeholder="@usuario" icon={<UserIcon className="h-4 w-4" />} iconPosition="right" />
+    <div style={{ width: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <Input variant="outline" label="Variante Outline (Estándar)" placeholder="Borde clásico 360°" />
+      <Input variant="filled" label="Variante Filled" placeholder="Fondo gris sutil" />
+      <Input variant="flushed" label="Variante Flushed" placeholder="Borde inferior únicamente" />
+      <Input
+        variant="floating"
+        label="Variante Floating"
+        tooltip="La etiqueta asciende suavemente al enfocar o contener valor"
+        defaultValue="Texto con etiqueta elevada"
+      />
     </div>
   ),
 }
 
-export const Contraseña: Story = {
-  name: 'Contraseña con toggle',
+export const EscalaDeTamanios: Story = {
+  name: 'Escala de Tamaños: SM, MD, LG, XL',
   render: () => (
-    <div style={{ width: '360px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <Input label="Contraseña" type="password" placeholder="Mínimo 8 caracteres" icon={<LockClosedIcon className="h-4 w-4" />} helperText="Debe tener mayúsculas, minúsculas y números." />
+    <div style={{ width: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <Input size="sm" label="Pequeño (sm: 32px)" placeholder="Tablas densas y filtros" />
+      <Input size="md" label="Mediano (md: 36px - default)" placeholder="Formularios estándar" />
+      <Input size="lg" label="Grande (lg: 40px)" placeholder="Formularios destacados" />
+      <Input size="xl" label="Extra Grande (xl: 48px)" placeholder="Hero sections y CTAs" />
     </div>
   ),
 }
 
-export const ConError: Story = {
-  name: 'Con error de validación',
+export const EstadosVisuales: Story = {
+  name: 'Estados Visuales con Iconos Internos y ARIA',
   render: () => (
-    <div style={{ width: '360px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <Input label="Correo electrónico" type="email" defaultValue="email-invalido" error="Ingresa un correo electrónico válido." />
-      <Input label="Teléfono" defaultValue="abc" error="Solo se permiten números." />
+    <div style={{ width: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <Input label="Estado: Por Defecto" placeholder="Estado neutro" />
+      <Input
+        label="Estado: Éxito"
+        status="success"
+        defaultValue="registro_valido"
+        description="Nombre de usuario verificado y disponible"
+      />
+      <Input
+        label="Estado: Advertencia"
+        status="warning"
+        defaultValue="contrasenia_debil"
+        description="Se sugiere incluir caracteres especiales"
+      />
+      <Input
+        label="Estado: Error"
+        status="error"
+        defaultValue="correo_sin_arroba"
+        error="Ingresa una dirección de correo válida"
+      />
+      <Input label="Estado: Deshabilitado" disabled defaultValue="Valor bloqueado por permisos" />
+      <Input label="Estado: Solo Lectura" readOnly defaultValue="Solo lectura (inmutable)" />
     </div>
   ),
 }
 
-export const Deshabilitado: Story = {
+export const ComportamientosPorTipo: Story = {
+  name: 'Comportamientos Automáticos por Tipo',
   render: () => (
-    <div style={{ width: '360px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <Input label="Campo deshabilitado" disabled defaultValue="No se puede editar" />
-      <Input label="Campo de solo lectura" readOnly defaultValue="Solo lectura" />
+    <div style={{ width: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <Input type="email" label="Correo Electrónico" defaultValue="contacto@farutech.com" />
+      <Input type="password" label="Contraseña" defaultValue="MiPassword123!" />
+      <Input type="search" label="Búsqueda" defaultValue="Productos destacados" />
+      <Input type="tel" label="Teléfono (Autoformateo)" defaultValue="3001234567" />
+      <Input type="number" label="Número con Stepper" defaultValue="15" showStepper min={0} max={100} />
+      <Input type="url" label="Sitio Web" defaultValue="https://farutech.com" />
+      <Input type="date" label="Fecha" />
     </div>
   ),
 }
 
-/**
- * 2. Test de Funcionalidad e Interacción:
- * Simula escritura de texto con userEvent y valida el valor resultante.
- */
+export const VarianteLookup: Story = {
+  name: 'Variante Lookup (Búsqueda de Catálogo)',
+  render: () => (
+    <div style={{ width: '440px' }}>
+      <Input
+        variant="lookup"
+        label="Buscar Cliente / Proveedor"
+        onSearch={async (query) => [
+          { value: '1', label: `Cliente ${query} Bogotá`, description: 'NIT 900.555.123' },
+          { value: '2', label: `Distribuidor ${query} Medellín`, description: 'NIT 890.333.444' },
+          { value: '3', label: `Sucursal ${query} Cali`, description: 'NIT 800.111.222' },
+        ]}
+        onAdvancedSearch={() => alert('Abriendo búsqueda avanzada modal...')}
+        advancedSearchLabel="Búsqueda avanzada de clientes"
+      />
+    </div>
+  ),
+}
+
 export const TestInteraccion: Story = {
   name: 'Test: Escritura e Interacción',
   args: {
@@ -101,10 +184,6 @@ export const TestInteraccion: Story = {
   },
 }
 
-/**
- * 3. Test de Accesibilidad y Atributos ARIA:
- * Verifica accesibilidad de etiqueta, estado de error y mensaje aria-describedby.
- */
 export const TestAccesibilidad: Story = {
   name: 'Test: Accesibilidad y Validación ARIA',
   args: {
@@ -119,4 +198,3 @@ export const TestAccesibilidad: Story = {
     await expect(canvas.getByText(/el formato del correo es inválido/i)).toBeInTheDocument()
   },
 }
-

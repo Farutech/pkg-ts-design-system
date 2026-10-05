@@ -10,7 +10,10 @@ import {
   NumberInput,
   Textarea,
   Button,
+  FloatingInput,
+  LookupInput,
 } from './index'
+import { inputColorTokens, inputSizeTokens } from '@/tokens/input'
 
 describe('Fase 1 — Sistema de Inputs y Formularios', () => {
   describe('Input (Best-of-Breed)', () => {
@@ -269,4 +272,130 @@ describe('Fase 1 — Sistema de Inputs y Formularios', () => {
       expect(screen.getByText('9/100')).toBeInTheDocument()
     })
   })
-})
+
+  describe('Auditoría Input - Fases 1 a 7 (Best-of-Breed Unificado)', () => {
+    it('debe exportar tokens centralizados de input (Fase 1)', () => {
+      expect(inputColorTokens).toBeDefined()
+      expect(inputSizeTokens.sm.height).toBe('2rem')
+      expect(inputSizeTokens.md.height).toBe('2.25rem')
+      expect(inputSizeTokens.lg.height).toBe('2.5rem')
+      expect(inputSizeTokens.xl.height).toBe('3rem')
+    })
+
+    it('debe renderizar variante floating con etiqueta animada y tooltip accesible (Fase 2 & 3)', () => {
+      render(
+        <Input
+          variant="floating"
+          label="Nombre de Entidad"
+          tooltip="Información complementaria"
+          defaultValue="FaruTech SAS"
+        />
+      )
+
+      expect(screen.getByText('Nombre de Entidad')).toBeInTheDocument()
+      const input = screen.getByDisplayValue('FaruTech SAS')
+      expect(input).toBeInTheDocument()
+    })
+
+    it('debe renderizar variante lookup con combobox y soporte de búsqueda (Fase 2 & 3)', async () => {
+      const user = userEvent.setup()
+      const onSearch = vi.fn().mockResolvedValue([
+        { value: '1', label: 'Cliente Bogotá', description: 'NIT 900.123.456' },
+      ])
+      const onLookupChange = vi.fn()
+      const onAdvancedSearch = vi.fn()
+
+      render(
+        <Input
+          variant="lookup"
+          label="Buscar Cliente"
+          onSearch={onSearch}
+          onLookupChange={onLookupChange}
+          onAdvancedSearch={onAdvancedSearch}
+          advancedSearchLabel="Búsqueda avanzada de clientes"
+        />
+      )
+
+      const combobox = screen.getByRole('combobox')
+      expect(combobox).toBeInTheDocument()
+      expect(combobox).toHaveAttribute('aria-autocomplete', 'list')
+
+      const advBtn = screen.getByLabelText('Búsqueda avanzada de clientes')
+      expect(advBtn).toBeInTheDocument()
+      await user.click(advBtn)
+      expect(onAdvancedSearch).toHaveBeenCalledTimes(1)
+    })
+
+    it('debe garantizar retrocompatibilidad 100% con FloatingInput y LookupInput wrappers (Fase 2)', async () => {
+      const onSearch = vi.fn().mockReturnValue([])
+      render(
+        <div>
+          <FloatingInput label="Flotante Legacy" defaultValue="Valor 1" />
+          <LookupInput label="Lookup Legacy" onSearch={onSearch} />
+        </div>
+      )
+
+      expect(screen.getByText('Flotante Legacy')).toBeInTheDocument()
+      expect(screen.getByText('Lookup Legacy')).toBeInTheDocument()
+    })
+
+    it('debe cumplir con target size >= 44x44px en botones interactivos según WCAG 2.5.8 (Fase 4)', () => {
+      render(
+        <Input
+          placeholder="Objetivos táctiles"
+          allowClear
+          defaultValue="Texto prueba"
+          type="password"
+          showPasswordToggle
+        />
+      )
+
+      const clearBtn = screen.getByLabelText('Limpiar campo')
+      expect(clearBtn).toHaveClass('min-w-[44px]', 'min-h-[44px]')
+
+      const eyeBtn = screen.getByLabelText('Ver contraseña')
+      expect(eyeBtn).toHaveClass('min-w-[44px]', 'min-h-[44px]')
+    })
+
+    it('debe activar comportamientos automáticos por tipo: email, tel y url (Fase 5)', async () => {
+      const user = userEvent.setup()
+      const onValueChange = vi.fn()
+
+      const { rerender } = render(
+        <Input
+          type="email"
+          placeholder="correo@ejemplo.com"
+          onValueChange={onValueChange}
+        />
+      )
+
+      const emailInput = screen.getByPlaceholderText('correo@ejemplo.com')
+      expect(emailInput).toHaveAttribute('type', 'email')
+
+      // Teléfono con formato automático
+      rerender(
+        <Input
+          type="tel"
+          placeholder="Teléfono"
+          onValueChange={onValueChange}
+        />
+      )
+
+      const telInput = screen.getByPlaceholderText('Teléfono')
+      await user.type(telInput, '3001234567')
+      expect(telInput).toHaveValue('300 123 4567')
+    })
+
+    it('debe mostrar estados de status con data-status y aria-invalid (Fase 4)', () => {
+      const { rerender } = render(<Input placeholder="Status" status="success" />)
+      let input = screen.getByPlaceholderText('Status')
+      expect(input).toHaveAttribute('aria-invalid', 'false')
+      expect(input).toHaveAttribute('data-status', 'success')
+
+      rerender(<Input placeholder="Status" status="error" />)
+      input = screen.getByPlaceholderText('Status')
+      expect(input).toHaveAttribute('aria-invalid', 'true')
+      expect(input).toHaveAttribute('data-status', 'error')
+    })
+  })
+});

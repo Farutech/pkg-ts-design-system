@@ -39,7 +39,8 @@ export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
 
 /**
  * Textarea (Componente de Texto Multilínea):
- * Soporta densidad automática, contador de caracteres, estados de validación y accesibilidad.
+ * Soporta densidad automática, escala estandarizada ('sm' | 'md' | 'lg' | 'xl'),
+ * contador de caracteres, estados de validación y accesibilidad estricta WCAG.
  */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
@@ -65,6 +66,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       defaultValue,
       maxLength,
       disabled,
+      readOnly,
       id,
       ...props
     },
@@ -124,6 +126,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       sm: { comfortable: 'p-2.5 text-sm', compact: 'p-2 text-xs', dense: 'p-1.5 text-xs' },
       md: { comfortable: 'p-3.5 text-base', compact: 'p-3 text-sm', dense: 'p-2 text-xs' },
       lg: { comfortable: 'p-4 text-lg', compact: 'p-3.5 text-base', dense: 'p-2.5 text-sm' },
+      xl: { comfortable: 'p-5 text-xl', compact: 'p-4 text-lg', dense: 'p-3 text-base' },
     }[size][activeDensity]
 
     const variantStyles = {
@@ -131,15 +134,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       default: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700',
       outlined: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700',
       filled: 'bg-gray-100 dark:bg-gray-800 border border-transparent focus:bg-white dark:focus:bg-gray-900',
+      flushed: 'border-0 border-b-2 border-gray-300 dark:border-gray-700 bg-transparent rounded-none px-0',
       borderless: 'border-none bg-transparent shadow-none px-0',
       underline: 'border-0 border-b-2 border-gray-300 dark:border-gray-700 bg-transparent rounded-none px-0',
+      floating: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl',
+      lookup: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl',
     }[variant]
 
     const statusStyles = {
       default: 'focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20',
-      error: 'border-red-500 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20',
+      error: 'border-red-500 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-red-900 dark:text-red-100',
       warning: 'border-amber-500 dark:border-amber-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20',
       success: 'border-emerald-500 dark:border-emerald-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20',
+      info: 'border-blue-500 dark:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
     }[activeStatus]
 
     const resizeStyles = {
@@ -168,9 +175,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             value={currentValue}
             onChange={handleChange}
             disabled={disabled}
+            readOnly={readOnly}
             maxLength={maxLength}
-            aria-invalid={activeStatus === 'error' ? 'true' : undefined}
-            aria-required={required ? 'true' : undefined}
+            aria-invalid={activeStatus === 'error' ? 'true' : activeStatus === 'success' ? 'false' : undefined}
+            data-status={activeStatus}
+            aria-disabled={disabled ? 'true' : undefined}
+            aria-readonly={readOnly ? 'true' : undefined}
             aria-describedby={cn(displayError && errorId, displayDesc && descId) || undefined}
             className={cn(
               'w-full rounded-md transition-colors outline-none min-h-[80px]',
@@ -180,6 +190,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
               statusStyles,
               resizeStyles,
               disabled && 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-800',
+              readOnly && 'bg-gray-50 dark:bg-gray-800/50 cursor-default',
               className
             )}
             {...props}

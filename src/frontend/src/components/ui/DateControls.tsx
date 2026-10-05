@@ -517,6 +517,7 @@ export function DatePicker({
     sm: { comfortable: 'h-9 text-sm px-2.5', compact: 'h-8 text-xs px-2', dense: 'h-6 text-xs px-1.5' },
     md: { comfortable: 'h-11 text-base px-3.5', compact: 'h-9 text-sm px-3', dense: 'h-7 text-xs px-2' },
     lg: { comfortable: 'h-14 text-lg px-4', compact: 'h-11 text-base px-3.5', dense: 'h-9 text-sm px-2.5' },
+    xl: { comfortable: 'h-16 text-xl px-5', compact: 'h-12 text-lg px-4', dense: 'h-10 text-base px-3' },
   }[size][activeDensity]
 
   const dateValue = value ? (typeof value === 'string' ? new Date(value) : value) : null
@@ -739,6 +740,7 @@ export function DateRangePicker({
     sm: { comfortable: 'h-9 text-sm px-2.5', compact: 'h-8 text-xs px-2', dense: 'h-6 text-xs px-1.5' },
     md: { comfortable: 'h-11 text-base px-3.5', compact: 'h-9 text-sm px-3', dense: 'h-7 text-xs px-2' },
     lg: { comfortable: 'h-14 text-lg px-4', compact: 'h-11 text-base px-3.5', dense: 'h-9 text-sm px-2.5' },
+    xl: { comfortable: 'h-16 text-xl px-5', compact: 'h-12 text-lg px-4', dense: 'h-10 text-base px-3' },
   }[size][activeDensity]
 
   const [start, end] = value

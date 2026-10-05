@@ -24,7 +24,9 @@
 // ============================================================================
 
 export { InputBase, type InputBaseProps, type InputSize, type InputVariant, type InputStatus } from './InputBase'
-export { Input, type InputProps, type ValidationMode } from './Input'
+export { Input, type InputProps, type ValidationMode, type InputType, type LabelMode, type SurfaceVariant } from './Input'
+export { inputBehaviors, getInputBehavior, validateInputValue, formatValueByType } from './input/inputBehaviors'
+export type { InputBehavior } from './input/types'
 export { FloatingInput, type FloatingInputProps } from './FloatingInput'
 export { LookupInput, type LookupInputProps, type LookupOption } from './LookupInput'
 export { InputGroup, type InputGroupProps } from './InputGroup'

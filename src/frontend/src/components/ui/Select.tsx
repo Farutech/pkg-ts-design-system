@@ -209,6 +209,7 @@ export const Select = forwardRef(function Select<T = SelectOption>(
     sm: { comfortable: 'h-9 text-sm px-2.5', compact: 'h-8 text-xs px-2', dense: 'h-6 text-xs px-1.5' },
     md: { comfortable: 'h-11 text-base px-3.5', compact: 'h-9 text-sm px-3', dense: 'h-7 text-xs px-2' },
     lg: { comfortable: 'h-14 text-lg px-4', compact: 'h-11 text-base px-3.5', dense: 'h-9 text-sm px-2.5' },
+    xl: { comfortable: 'h-16 text-xl px-5', compact: 'h-12 text-lg px-4', dense: 'h-10 text-base px-3' },
   }[size][activeDensity]
 
   const variantStyles = {
@@ -216,6 +217,9 @@ export const Select = forwardRef(function Select<T = SelectOption>(
     filled: 'border border-transparent bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md',
     borderless: 'border-none bg-transparent shadow-none px-0',
     underline: 'border-0 border-b-2 border-gray-300 dark:border-gray-700 bg-transparent rounded-none px-0',
+    flushed: 'border-0 border-b-2 border-gray-300 dark:border-gray-700 bg-transparent rounded-none px-0',
+    floating: 'border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl',
+    lookup: 'border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl',
   }[variant]
 
   const statusStyles = {
@@ -223,6 +227,7 @@ export const Select = forwardRef(function Select<T = SelectOption>(
     error: 'border-red-500 dark:border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/20',
     warning: 'border-amber-500 dark:border-amber-500',
     success: 'border-emerald-500 dark:border-emerald-500',
+    info: 'border-blue-500 dark:border-blue-500',
   }[activeStatus]
 
   return (

@@ -17,7 +17,7 @@ import {
 import { ListboxCore } from './ListboxCore'
 import { useAsyncDataSource } from '@/hooks/useAsyncDataSource'
 import { ClickOutside } from '@/primitives/ClickOutside'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 export interface RemoteSelectProps<T> extends DataMappingProps<T> {
   /** Función asíncrona de carga de datos que recibe la consulta y el AbortSignal */

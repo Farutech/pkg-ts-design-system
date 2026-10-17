@@ -56,7 +56,27 @@
 
 .ft-button--full { width: 100%; }
 
-.ft-button__icon { display: inline-flex; }
+.ft-button > svg,
+.ft-button [data-icon],
+.ft-button span > svg {
+  flex-shrink: 0;
+}
+
+.ft-inline-action {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ft-space-2, 0.5rem);
+  white-space: nowrap;
+}
+.ft-inline-action > svg,
+.ft-inline-action [data-icon],
+.ft-inline-action span > svg {
+  flex-shrink: 0;
+}
+
+.ft-button__icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .ft-button__spinner {
   width: 1em;
   height: 1em;

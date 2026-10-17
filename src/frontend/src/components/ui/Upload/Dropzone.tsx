@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, type DragEvent, type ChangeEvent } from 'react'
 import { cn } from '@/utils/cn'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 import { Button } from '@/components/ui/Button'
 import { useI18n } from '@/i18n/I18nContext'
 import { useDensity } from '@/providers/DesignSystemProvider'

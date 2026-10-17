@@ -45,6 +45,14 @@ const config: StorybookConfig = {
       chunkSizeWarningLimit: 1500,
     }
     config.server = config.server ?? {}
+    config.server.host = '0.0.0.0'
+    config.server.port = 3000
+    config.server.allowedHosts = true
+    config.server.cors = true
+    config.server.headers = {
+      ...(config.server.headers ?? {}),
+      'Access-Control-Allow-Origin': '*',
+    }
     config.server.watch = {
       ...(config.server.watch ?? {}),
       ignored: ['**/storybook-static/**', '**/dist/**'],

@@ -152,4 +152,5 @@ export const zIndex = {
 export * from './tokens'
 export * from './input'
 
+export * from './input-types'
 export * from './inputTypes'

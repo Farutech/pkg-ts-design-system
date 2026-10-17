@@ -20,6 +20,6 @@
     },
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },
-  "include": ["src", ".storybook"],
+  "include": ["src", "tests", ".storybook"],
   "exclude": ["node_modules", "dist", "storybook-static", "coverage"]
 }

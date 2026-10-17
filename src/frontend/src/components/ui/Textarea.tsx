@@ -10,7 +10,7 @@ import { cn } from '@/utils/cn'
 import { useDensity } from '@/providers/DesignSystemProvider'
 import type { Density } from '@/tokens/tokens'
 import type { InputSize, InputStatus, InputVariant } from './InputBase'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 import { useFormContext } from './Form'
 import type { LabelMode } from './input/types'
 

@@ -79,3 +79,4 @@ export function ToastContainer() {
 }
 
 export { notify, notify as toast } from '@/store/notificationStore'
+export { Toast, type ToastProps } from '@/components/basic/Toast'

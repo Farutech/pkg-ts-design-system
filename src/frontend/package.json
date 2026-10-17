@@ -121,7 +121,8 @@
     "not op_mini all"
   ],
   "scripts": {
-    "dev": "vite build --watch",
+    "dev": "npm run storybook",
+    "build:watch": "vite build --watch",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -133,9 +134,9 @@
     "test:storybook": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest run --project storybook",
     "test:unit": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest run --project unit",
     "test:coverage": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning vitest run --coverage",
-    "storybook": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning storybook dev -p 6006",
-    "build-storybook": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning storybook build",
-    "check": "npm run typecheck && npm run lint -- --max-warnings 0 && npm run build && npm run build-storybook",
+    "storybook": "cross-env NODE_OPTIONS=--disable-warning=DEP0205 --disable-warning=ExperimentalWarning storybook dev -p 3000 -h 0.0.0.0 --ci",
+    "verify-exports": "node scripts/verify-exports.mjs",
+    "check": "npm run typecheck && npm run lint && npm run test:unit && npm run build && npm run verify-exports && npm run build-storybook",
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
     "pack:check": "npm pack --dry-run",

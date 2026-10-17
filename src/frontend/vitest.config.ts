@@ -40,7 +40,7 @@ export default defineConfig({
   test: {
     pool: 'forks',
     execArgv: ['--disable-warning=ExperimentalWarning'],
-    maxWorkers: 4,
+    maxWorkers: 2,
     projects: [
       {
         extends: true,
@@ -48,9 +48,9 @@ export default defineConfig({
           name: 'unit',
           globals: true,
           environment: 'jsdom',
-          setupFiles: ['./src/test-setup.ts'],
+          setupFiles: ['./tests/setup.ts'],
           css: false,
-          include: ['src/**/*.{test,spec}.{ts,tsx}'],
+          include: ['tests/**/*.{test,spec}.{ts,tsx}'],
           restoreMocks: true,
         },
       },
@@ -63,7 +63,7 @@ export default defineConfig({
           name: 'storybook',
           globals: true,
           environment: 'jsdom',
-          setupFiles: ['./src/test-setup.ts'],
+          setupFiles: ['./tests/setup.ts'],
           isolate: false,
           // Some full-page composition stories (calendar, tables, CRUD) legitimately
           // take longer under jsdom + coverage than isolated interaction tests.
@@ -79,10 +79,8 @@ export default defineConfig({
       reportsDirectory: './coverage',
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
-        'src/**/*.test.{ts,tsx}',
-        'src/**/__tests__/**',
+        'tests/**',
         'src/**/*.stories.{ts,tsx}',
-        'src/test-setup.ts',
         'src/docs/**',
         'src/shims/**',
         'src/index.ts',

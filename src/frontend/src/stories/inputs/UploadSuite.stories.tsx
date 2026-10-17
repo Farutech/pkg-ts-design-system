@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
-import { Dropzone, FileList, UploadProgress } from '@/components/ui/Upload';
-import type { UploadFileItem } from '@/components/ui/Upload';
+import { Dropzone, FileList, UploadProgress } from '@/components/ui/upload';
+import type { UploadFileItem } from '@/components/ui/upload';
 
 const meta = {
   title: '4-Inputs/UploadSuite',

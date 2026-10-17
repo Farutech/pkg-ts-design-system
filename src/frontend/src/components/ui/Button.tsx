@@ -1,6 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 import { useDesignSystem } from '@/providers/DesignSystemProvider'
+import { IconSlot } from '@/primitives/icon/IconSlot'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'ghost' | 'outline' | 'addon'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -8,11 +9,18 @@ export type ButtonSize = 'sm' | 'md' | 'lg'
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
+  /** Icono directo (lucide-react, svg o ReactNode) */
   icon?: ReactNode
+  /** Alias para icono a la izquierda */
+  leftIcon?: ReactNode
+  /** Alias para icono a la derecha */
+  rightIcon?: ReactNode
   iconPosition?: 'left' | 'right'
   loading?: boolean
   isLoading?: boolean
   fullWidth?: boolean
+  /** Permitir salto de línea explícito (por defecto false: prohíbe saltos automáticos) */
+  allowWrap?: boolean
   /** Ruta interna — renderiza el LinkComponent del provider si existe */
   to?: string
   /** URL externa — renderiza <a> */
@@ -26,10 +34,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     variant = 'primary',
     size = 'md',
     icon,
+    leftIcon,
+    rightIcon,
     iconPosition = 'left',
     loading = false,
     isLoading = false,
     fullWidth = false,
+    allowWrap = false,
     to,
     href,
     external,
@@ -43,8 +54,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const isButtonLoading = loading || isLoading
   const { LinkComponent } = useDesignSystem()
 
+  const effectiveLeftIcon = leftIcon ?? (iconPosition === 'left' ? icon : undefined)
+  const effectiveRightIcon = rightIcon ?? (iconPosition === 'right' ? icon : undefined)
+
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+    'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none'
 
   const variants: Record<ButtonVariant, string> = {
     primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm',
@@ -67,9 +81,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 
   const classes = cn(
     baseStyles,
-    'ft-button',
+    'ft-button ft-inline-action',
     `ft-button--${variant}`,
     `ft-button--${size}`,
+    !allowWrap && 'whitespace-nowrap',
     fullWidth && 'ft-button--full w-full',
     variants[variant] || variants.primary,
     sizes[size] || sizes.md,
@@ -80,7 +95,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <>
       {isButtonLoading && (
         <svg
-          className="animate-spin -ml-1 mr-2 h-4 w-4"
+          className="animate-spin -ml-1 mr-2 h-4 w-4 shrink-0"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -95,9 +110,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         </svg>
       )}
 
-      {!isButtonLoading && icon && iconPosition === 'left' && <span className="mr-2">{icon}</span>}
-      <span>{children}</span>
-      {!isButtonLoading && icon && iconPosition === 'right' && <span className="ml-2">{icon}</span>}
+      {!isButtonLoading && effectiveLeftIcon && (
+        <IconSlot icon={effectiveLeftIcon} className="mr-2 shrink-0" />
+      )}
+
+      {children && (
+        <span
+          className={cn(
+            'inline-flex items-center gap-2 [&>svg]:shrink-0',
+            !allowWrap && 'whitespace-nowrap'
+          )}
+        >
+          {children}
+        </span>
+      )}
+
+      {!isButtonLoading && effectiveRightIcon && (
+        <IconSlot icon={effectiveRightIcon} className="ml-2 shrink-0" />
+      )}
     </>
   )
 
@@ -138,4 +168,3 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 })
 
 Button.displayName = 'Button'
-

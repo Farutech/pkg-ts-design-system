@@ -1,7 +1,7 @@
 import { useState, type ReactNode, type FormEvent } from 'react'
 import { cn } from '@/utils/cn'
 import { Input, PasswordInput, Button, Checkbox, Alert } from '@/components/ui'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 import { useBrandConfig } from '@/providers/DesignSystemProvider'
 
 export type LoginProvider = string | {

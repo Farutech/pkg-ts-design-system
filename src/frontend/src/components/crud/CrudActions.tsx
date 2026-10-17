@@ -126,7 +126,7 @@ export function CrudActions({
     const overflowActions = allActions.slice(2)
 
     return (
-      <div className={cn('flex items-center gap-1.5 shrink-0', className)}>
+      <div className={cn('flex items-center gap-1.5 shrink-0 whitespace-nowrap', className)}>
         {prominentActions.map((action, index) => (
           <button
             key={index}
@@ -138,7 +138,7 @@ export function CrudActions({
               action.onClick()
             }}
             className={cn(
-              'p-1.5 rounded-lg shadow-sm transition-all duration-150 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500/40',
+              'p-1.5 rounded-lg shadow-sm transition-all duration-150 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500/40 shrink-0 [&>svg]:shrink-0',
               getButtonStyles(action.variant)
             )}
           >
@@ -146,11 +146,11 @@ export function CrudActions({
           </button>
         ))}
 
-        <Menu as="div" className="relative inline-block text-left">
+        <Menu as="div" className="relative inline-block text-left shrink-0">
           <Menu.Button
             title="Más acciones"
             aria-label="Más acciones"
-            className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm transition-all"
+            className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm transition-all shrink-0 [&>svg]:shrink-0"
           >
             <EllipsisHorizontalIcon className="h-3.5 w-3.5" />
           </Menu.Button>
@@ -165,7 +165,7 @@ export function CrudActions({
                       action.onClick()
                     }}
                     className={cn(
-                      'flex items-center gap-2.5 w-full px-3.5 py-2 text-xs transition-colors font-medium',
+                      'flex items-center gap-2.5 w-full px-3.5 py-2 text-xs transition-colors font-medium whitespace-nowrap [&>svg]:shrink-0',
                       active ? 'bg-gray-50 dark:bg-gray-700/60' : '',
                       action.variant === 'danger'
                         ? 'text-red-600 dark:text-red-400'

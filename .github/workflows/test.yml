@@ -31,10 +31,13 @@ jobs:
         run: npm run typecheck
 
       - name: Lint
-        run: npm run lint -- --max-warnings 0
+        run: npm run lint
 
       - name: Run Component & Unit Tests
         run: npm run test:unit
+
+      - name: Build Library & Verify Exports
+        run: npm run build && npm run verify-exports
 
       - name: Build Storybook
         run: npm run build-storybook

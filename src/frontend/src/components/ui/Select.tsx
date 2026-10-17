@@ -18,7 +18,7 @@ import {
 } from './DataMapping'
 import { ListboxCore } from './ListboxCore'
 import { ClickOutside } from '@/primitives/ClickOutside'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 import { useFormContext } from './Form'
 import type { LabelMode } from './input/types'
 

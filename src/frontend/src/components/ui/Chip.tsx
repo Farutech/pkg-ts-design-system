@@ -6,6 +6,8 @@ import type { ReactNode } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { cn } from '@/utils/cn'
 
+import { IconSlot } from '@/primitives/icon/IconSlot'
+
 export type ChipVariant = 'neutral' | 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'outline'
 
 export interface ChipProps {
@@ -47,7 +49,7 @@ export function Chip({
 
   const content = (
     <>
-      {icon && <span className="inline-flex shrink-0">{icon}</span>}
+      {icon && <IconSlot icon={icon} className="mr-1 shrink-0" />}
       <span className="truncate">{children}</span>
       {onDelete && !disabled && (
         <button
@@ -58,19 +60,19 @@ export function Chip({
           }}
           aria-label="Eliminar"
           className={cn(
-            '-mr-1 inline-flex h-4 w-4 items-center justify-center rounded-full',
+            '-mr-1 inline-flex h-4 w-4 items-center justify-center rounded-full shrink-0',
             'opacity-70 transition-opacity hover:opacity-100 hover:bg-black/10 dark:hover:bg-white/10',
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-current',
           )}
         >
-          <XMarkIcon className="h-3 w-3" aria-hidden="true" />
+          <XMarkIcon className="h-3 w-3 shrink-0" aria-hidden="true" />
         </button>
       )}
     </>
   )
 
   const base = cn(
-    'inline-flex max-w-full items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',
+    'inline-flex max-w-full items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap shrink-0 [&>svg]:shrink-0',
     'transition-colors',
     VARIANTS[variant],
     disabled && 'opacity-50 cursor-not-allowed',

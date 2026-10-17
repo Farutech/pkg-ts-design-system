@@ -1,6 +1,6 @@
 import { forwardRef, type KeyboardEvent } from 'react'
 import { Input, type InputProps } from './Input'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 export interface SearchInputProps extends InputProps {
   /** Callback invocado al presionar Enter o limpiar el campo */

@@ -16,7 +16,7 @@ import {
   resolveOptionValue,
   resolveOptionLabel,
 } from './DataMapping'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 export interface ListboxCoreProps<T> extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
   items: T[]

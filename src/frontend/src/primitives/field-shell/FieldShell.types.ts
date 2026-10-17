@@ -1,7 +1,12 @@
 import type { ReactNode, CSSProperties } from 'react'
+import type { InputStatus, LabelMode } from '@/tokens/input-types'
 
-export type LabelMode = 'external' | 'floating' | 'hidden'
-export type FieldStatus = 'default' | 'error' | 'success' | 'warning'
+// Re-exporta los tipos canónicos (fuente única en @/tokens/input-types) para
+// no duplicar unions más estrechas que rompían el pase desde Input/Select.
+export type { LabelMode, InputStatus }
+
+/** Estados visuales que FieldShell sabe *estilizar* (subconjunto de InputStatus). */
+export type FieldStatus = Extract<InputStatus, 'default' | 'error' | 'success' | 'warning'>
 export type FieldDensity = 'comfortable' | 'compact' | 'dense'
 
 export interface FieldShellProps {
@@ -12,11 +17,11 @@ export interface FieldShellProps {
   required?: boolean
   disabled?: boolean
   readOnly?: boolean
-  status?: FieldStatus
+  status?: InputStatus
   error?: ReactNode
   helperText?: ReactNode
   description?: ReactNode
-  tooltip?: string
+  tooltip?: ReactNode
   hasValue?: boolean
   isFocused?: boolean
   placeholder?: string

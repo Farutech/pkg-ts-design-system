@@ -1,46 +1,58 @@
-# Local AI/tooling workspace state (not part of the repository)
-# Dependencies
-node_modules/
+# =========================================================
+# FaruTech TypeScript Design System · .gitignore consolidado
+# =========================================================
 
-.kilo/
+# ---------- Dependencias ----------
+node_modules/
+**/node_modules/
 .pnp
 .pnp.js
 
-# Production build
+# ---------- Compilación y Builds ----------
 dist/
+**/dist/
 dist-ssr/
 build/
+**/build/
 storybook-static/
+**/storybook-static/
 *.tsbuildinfo
 *.tgz
+packages/*.tgz
 
-# Vite / Cache
+# ---------- Vite / Cache ----------
 .vite/
 .vite-temp/
+.turbo/
+.cache/
 
-# Environment
+# ---------- Pruebas y Reportes ----------
+coverage/
+**/coverage/
+.nyc_output/
+allure-results/
+**/allure-results/
+allure-report/
+**/allure-report/
+evidence/
+**/evidence/
+TestResults/
+**/TestResults/
+playwright-report/
+**/playwright-report/
+blob-report/
+.playwright/
+
+# ---------- Entorno y Secretos ----------
 .env
 .env.*
 !.env.example
+*.local.env
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-*.log
-
-# Testing & Coverage
-coverage/
-allure-results/
-evidence/
-TestResults/
-playwright-report/
-blob-report/
-
-# Editor & OS
+# ---------- Editor y Sistema ----------
 .vscode/
 .idea/
+.vs/
 .DS_Store
 Thumbs.db
 desktop.ini
@@ -50,3 +62,10 @@ desktop.ini
 *.tmp
 *.bak
 *scratch*
+
+# ---------- Logs ----------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log

@@ -26,6 +26,7 @@ const mockUsers: UserEntity[] = [
 
 const meta = {
   title: '4-Inputs/EntityPicker',
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
     docs: {
@@ -33,6 +34,12 @@ const meta = {
         component: 'Selectores de entidad empresariales (Lookup genérico EntityPicker<T> y UserPicker especializado con avatares y roles).',
       },
     },
+  },
+  argTypes: {
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    error: { control: 'text', description: 'Mensaje de error' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
   },
 } satisfies Meta;
 

@@ -23,7 +23,7 @@ export function FieldShell({
   labelMode = 'external',
   required = false,
   disabled = false,
-  readOnly = false,
+  readOnly: _readOnly = false,
   status = 'default',
   error,
   helperText,

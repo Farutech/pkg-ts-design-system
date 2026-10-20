@@ -1,70 +1,12 @@
 import { useState, useCallback, useMemo } from 'react'
+import {
+  resolveMaskConfig,
+  type MaskConfig,
+  type MaskType,
+} from '@/utils/maskEngine'
 
-export type MaskType = 'currency' | 'phone' | 'date' | 'percent' | 'document' | 'custom'
-
-export interface MaskConfig {
-  type?: MaskType
-  pattern?: string
-  format?: (rawValue: string) => string
-  parse?: (inputText: string) => string
-  /** Mostrar valor transparente y editable mientras tiene el foco (por defecto true) */
-  unmaskOnFocus?: boolean
-}
-
-/** Formateadores estándar integrados */
-const DEFAULT_FORMATTERS: Record<MaskType, { format: (val: string) => string; parse: (val: string) => string }> = {
-  currency: {
-    format: (val: string) => {
-      const clean = val.replace(/\D/g, '')
-      if (!clean) return ''
-      return `$ ${Number(clean).toLocaleString('es-CO')}`
-    },
-    parse: (val: string) => val.replace(/\D/g, ''),
-  },
-  phone: {
-    format: (val: string) => {
-      const clean = val.replace(/\D/g, '').slice(0, 10)
-      if (!clean) return ''
-      if (clean.length <= 3) return `(${clean}`
-      if (clean.length <= 6) return `(${clean.slice(0, 3)}) ${clean.slice(3)}`
-      return `(${clean.slice(0, 3)}) ${clean.slice(3, 6)}-${clean.slice(6, 10)}`
-    },
-    parse: (val: string) => val.replace(/\D/g, ''),
-  },
-  date: {
-    format: (val: string) => {
-      const clean = val.replace(/\D/g, '').slice(0, 8)
-      if (!clean) return ''
-      if (clean.length <= 2) return clean
-      if (clean.length <= 4) return `${clean.slice(0, 2)}/${clean.slice(2)}`
-      return `${clean.slice(0, 2)}/${clean.slice(2, 4)}/${clean.slice(4, 8)}`
-    },
-    parse: (val: string) => val.replace(/\D/g, ''),
-  },
-  percent: {
-    format: (val: string) => {
-      const clean = val.replace(/[^\d.]/g, '')
-      if (!clean) return ''
-      return `${clean}%`
-    },
-    parse: (val: string) => val.replace(/[^\d.]/g, ''),
-  },
-  document: {
-    format: (val: string) => {
-      const clean = val.replace(/\D/g, '').slice(0, 10)
-      if (!clean) return ''
-      if (clean.length <= 9) {
-        return Number(clean).toLocaleString('es-CO')
-      }
-      return `${clean.slice(0, 9)}-${clean.slice(9, 10)}`
-    },
-    parse: (val: string) => val.replace(/\D/g, ''),
-  },
-  custom: {
-    format: (val: string) => val,
-    parse: (val: string) => val,
-  },
-}
+export type { MaskConfig, MaskType } from '@/utils/maskEngine'
+export { DEFAULT_FORMATTERS, resolveMaskConfig } from '@/utils/maskEngine'
 
 export interface UseMaskedValueOptions {
   value?: string
@@ -95,19 +37,10 @@ export function useMaskedValue({
   const isControlled = controlledValue !== undefined
   const rawValue = isControlled ? controlledValue : internalValue
 
-  const activeMaskConfig = useMemo<MaskConfig | null>(() => {
-    if (!mask) return null
-    if (typeof mask === 'string') {
-      return { type: mask, ...DEFAULT_FORMATTERS[mask] }
-    }
-    const defaultEngine = mask.type ? DEFAULT_FORMATTERS[mask.type] : DEFAULT_FORMATTERS.custom
-    return {
-      type: mask.type || 'custom',
-      format: mask.format || defaultEngine.format,
-      parse: mask.parse || defaultEngine.parse,
-      unmaskOnFocus: mask.unmaskOnFocus !== undefined ? mask.unmaskOnFocus : unmaskOnFocus,
-    }
-  }, [mask, unmaskOnFocus])
+  const activeMaskConfig = useMemo<MaskConfig | null>(
+    () => resolveMaskConfig(mask ?? null, unmaskOnFocus),
+    [mask, unmaskOnFocus],
+  )
 
   // Formatear valor para reposo
   const formattedValue = useMemo(() => {

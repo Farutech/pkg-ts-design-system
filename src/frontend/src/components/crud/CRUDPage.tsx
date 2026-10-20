@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, Children, isValidElement } from 'react'
+import React, { useState, useMemo, useCallback, Children, isValidElement } from 'react'
 import type { ReactNode } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/ui/DataTable'
@@ -8,9 +8,7 @@ import { Select } from '@/components/ui/Select'
 import { Modal } from '@/components/ui/Modal'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
-import { CrudActions, type Action } from './CrudActions'
 import { CrudPagination } from './CrudPagination'
-import { IconSlot } from '@/primitives/icon/IconSlot'
 import { Icon } from '@/primitives/icon/Icon'
 import { cn } from '@/utils/cn'
 
@@ -203,24 +201,24 @@ export function CRUDPageComponent<T extends { id: string | number }>({
   canEdit: propCanEdit,
   canDelete: propCanDelete,
   canView: propCanView,
-  canPrint: propCanPrint,
-  canExport: propCanExport,
+  canPrint: _propCanPrint,
+  canExport: _propCanExport,
   onCreate,
   createLabel = 'Crear nuevo',
   onEdit,
   onSave,
   onDelete,
-  onBulkDelete,
+  onBulkDelete: _onBulkDelete,
   onView,
-  onPrint,
-  onExport,
+  onPrint: _onPrint,
+  onExport: _onExport,
   onRefresh,
   onCreatePage,
   onEditPage,
-  customRowActions = [],
-  customGlobalActions = [],
+  customRowActions: _customRowActions = [],
+  customGlobalActions: _customGlobalActions = [],
   filterMode = 'local',
-  onApiFilter,
+  onApiFilter: _onApiFilter,
   searchPlaceholder = 'Buscar...',
   loading = false,
   isLoading = false,
@@ -234,8 +232,8 @@ export function CRUDPageComponent<T extends { id: string | number }>({
   filtersSlot,
   headerSlot,
   tableSlot,
-  showDensitySwitcher,
-  showColumnVisibility,
+  showDensitySwitcher: _showDensitySwitcher,
+  showColumnVisibility: _showColumnVisibility,
   beforeContent: propBeforeContent,
   toolbarStart: propToolbarStart,
   toolbarEnd: propToolbarEnd,

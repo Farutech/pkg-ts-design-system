@@ -9,6 +9,27 @@ import { GlobalLoading } from '@/components/ui/GlobalLoading'
  */
 const meta = {
   title: '6-Feedback/GlobalLoading',
+  component: GlobalLoading,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['random', 'spin', 'flipHorizontal', 'flip'],
+      description: 'Tipo de animación de carga',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg', 'xl'],
+      description: 'Tamaño del indicador de carga',
+    },
+    message: { control: 'text', description: 'Mensaje de carga opcional' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    variant: 'random',
+    size: 'xl',
+    message: 'Cargando aplicación...',
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {
@@ -17,7 +38,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof GlobalLoading>
 
 export default meta
 type Story = StoryObj<typeof meta>

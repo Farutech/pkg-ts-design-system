@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { Button } from '@/components/ui/Button'
 import { useState } from 'react'
@@ -51,6 +51,16 @@ function TransitionDemo({ variant = 'fade' }: { variant?: 'fade' | 'slide' | 'sc
 
 const meta = {
   title: '2-Layout/PageTransition',
+  component: PageTransition,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['fade', 'slide', 'scale'],
+      description: 'Tipo de animación de transición',
+    },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -62,18 +72,17 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const Fade: Story = {
+export const Fade = {
   render: () => <TransitionDemo variant="fade" />,
 }
 
-export const Slide: Story = {
+export const Slide = {
   name: 'Slide desde derecha',
   render: () => <TransitionDemo variant="slide" />,
 }
 
-export const Scale: Story = {
+export const Scale = {
   name: 'Scale up + fade',
   render: () => <TransitionDemo variant="scale" />,
 }

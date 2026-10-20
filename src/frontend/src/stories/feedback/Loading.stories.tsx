@@ -4,9 +4,10 @@ import { Spinner } from '@/components/ui/Spinner'
 const meta = {
   title: '6-Feedback/Loading',
   component: Spinner,
+  tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: ['sm', 'md', 'lg', 'xl'] },
-    variant: { control: 'select', options: ['primary', 'white', 'gray'] },
+    variant: { control: 'select', options: ['circle', 'dots', 'ring', 'dual-ring'] },
   },
   args: { size: 'md', variant: 'circle' },
   parameters: {

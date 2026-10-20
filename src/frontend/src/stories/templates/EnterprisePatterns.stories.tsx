@@ -9,6 +9,16 @@ import { Icon } from '@/primitives/icon/Icon'
 
 const meta: Meta = {
   title: '11-Templates/EnterprisePatterns',
+  tags: ['autodocs'],
+  argTypes: {
+    appName: { control: 'text', description: 'Nombre de la aplicación' },
+    showCreator: { control: 'boolean', description: 'Mostrar atribución al creador' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    appName: 'Afilamos Operaciones',
+    showCreator: true,
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {

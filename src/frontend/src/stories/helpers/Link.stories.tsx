@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { Link as FTLink } from '@/components/ui/Link'
 import { ArrowTopRightOnSquareIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 
@@ -10,6 +10,22 @@ import { ArrowTopRightOnSquareIcon, ArrowRightIcon } from '@heroicons/react/24/o
  */
 const meta = {
   title: '10-Helpers/Link',
+  component: FTLink,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'subtle', 'brand', 'muted'],
+      description: 'Variante de estilo del enlace',
+    },
+    underline: {
+      control: 'select',
+      options: ['hover', 'always', 'none'],
+      description: 'Estilo de subrayado',
+    },
+    external: { control: 'boolean', description: 'Enlace externo (abrir en nueva pestaña)' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -21,9 +37,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const Variantes: Story = {
+export const Variantes = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -58,7 +73,7 @@ export const Variantes: Story = {
   ),
 }
 
-export const EnlacesExternos: Story = {
+export const EnlacesExternos = {
   name: 'Enlaces externos (nueva pestaña)',
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '400px' }}>

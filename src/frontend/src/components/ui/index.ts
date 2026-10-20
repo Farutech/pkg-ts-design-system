@@ -186,15 +186,32 @@ export type {
 } from './Table'
 
 export { DataTable } from './DataTable'
+export {
+  DataTableEmptyState,
+  DataTableLoadingState,
+  type DataTableEmptyStateProps,
+  type DataTableLoadingStateProps,
+} from './data-table/DataTableStates'
+export {
+  DataTableToolbar,
+  type DataTableToolbarProps,
+} from './data-table/DataTableToolbar'
+export {
+  DataTableFilters,
+  DataTableFilterControl,
+  type DataTableFiltersProps,
+} from './data-table/DataTableFilters'
 export type {
   DataTableProps,
   DataTablePagination,
   DataTableActions,
   DataTableGlobalAction,
   DataTableFilter,
-  FilterState,
+  DataTableColumn,
   FilterType,
-} from './DataTable'
+  FilterState,
+  FilterValue,
+} from './data-table/types'
 
 export { StatsCard, StatsCardGroup } from './StatsCard'
 export type { StatsCardProps } from './StatsCard'

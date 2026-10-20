@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { CodePreview } from '@/components/ui/CodePreview'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -11,6 +11,16 @@ import { Badge } from '@/components/ui/Badge'
  */
 const meta = {
   title: '10-Helpers/CodePreview',
+  component: CodePreview,
+  tags: ['autodocs'],
+  argTypes: {
+    title: { control: 'text', description: 'Título del preview' },
+    description: { control: 'text', description: 'Descripción del componente' },
+    language: { control: 'select', options: ['tsx', 'ts', 'jsx', 'js', 'html', 'css'], description: 'Lenguaje del código' },
+    showGrid: { control: 'boolean', description: 'Mostrar rejilla entre preview y código' },
+    minHeight: { control: 'text', description: 'Altura mínima del contenedor' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -22,9 +32,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const ComponenteConCodigo: Story = {
+export const ComponenteConCodigo = {
   render: () => (
     <CodePreview
       title="Button Primary"
@@ -37,7 +46,7 @@ export const ComponenteConCodigo: Story = {
   ),
 }
 
-export const VariasVariantes: Story = {
+export const VariasVariantes = {
   name: 'Varias variantes en una preview',
   render: () => (
     <CodePreview
@@ -61,7 +70,7 @@ export const VariasVariantes: Story = {
   ),
 }
 
-export const SinTitulo: Story = {
+export const SinTitulo = {
   name: 'Sin título (solo preview + código)',
   render: () => (
     <CodePreview

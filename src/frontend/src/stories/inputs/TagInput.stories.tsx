@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { expect, userEvent, within } from 'storybook/test'
 import TagInput from '@/components/ui/TagInput'
 import { useState, useCallback } from 'react'
@@ -22,6 +22,18 @@ const AVAILABLE_TAGS = [
 
 const meta = {
   title: '4-Inputs/TagInput',
+  component: TagInput,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    maxTags: { control: 'number', description: 'Límite máximo de tags' },
+    allowCreate: { control: 'boolean', description: 'Permitir crear tags nuevos' },
+    showSearchIcon: { control: 'boolean', description: 'Mostrar icono de búsqueda' },
+    error: { control: 'text', description: 'Mensaje de error de validación' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -33,9 +45,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const SelectorDeTags: Story = {
+export const SelectorDeTags = {
   render: () => {
     const [tags, setTags] = useState<Array<{ id: string | number; label: string; color?: string }>>([])
     const handleSearch = useCallback(async (query: string) => {
@@ -97,7 +108,7 @@ export const SelectorDeTags: Story = {
  * 2. Test de Funcionalidad e Interacción:
  * Escribe un tag nuevo y lo crea con Enter.
  */
-export const TestInteraccion: Story = {
+export const TestInteraccion = {
   name: 'Test: Creación de Tag e Interacción',
   render: () => {
     const [tags, setTags] = useState<Array<{ id: string | number; label: string }>>([])
@@ -114,7 +125,7 @@ export const TestInteraccion: Story = {
       </div>
     )
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement)
     const input = canvas.getByPlaceholderText(/escribe un tag y presiona enter/i)
     await userEvent.type(input, 'vitest[Enter]')
@@ -126,7 +137,7 @@ export const TestInteraccion: Story = {
  * 3. Test de Accesibilidad y Estado de Error:
  * Verifica etiqueta, contador de límite y mensaje de error.
  */
-export const TestAccesibilidad: Story = {
+export const TestAccesibilidad = {
   name: 'Test: Accesibilidad y ARIA',
   render: () => (
     <div style={{ width: '420px' }}>
@@ -140,7 +151,7 @@ export const TestAccesibilidad: Story = {
       />
     </div>
   ),
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement)
     await expect(canvas.getByText(/tags con límite/i)).toBeInTheDocument()
     await expect(canvas.getByText(/\(2\/3\)/)).toBeInTheDocument()

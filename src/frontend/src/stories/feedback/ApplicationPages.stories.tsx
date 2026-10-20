@@ -8,6 +8,14 @@ import { OfflineBanner } from '@/components/pages/OfflineBanner';
 
 const meta = {
   title: '6-Feedback/ApplicationPages',
+  tags: ['autodocs'],
+  argTypes: {
+    fullScreen: { control: 'boolean', description: 'Pantalla completa' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    fullScreen: false,
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {

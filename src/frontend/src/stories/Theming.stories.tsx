@@ -79,6 +79,7 @@ const PRESETS = {
 
 const meta: Meta<CustomThemeArgs> = {
   title: 'Guía/Theming',
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {

@@ -54,6 +54,7 @@ const RADAR_DATA = [
 
 const meta = {
   title: '5-Data Display/Charts',
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {

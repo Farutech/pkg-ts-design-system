@@ -62,6 +62,26 @@ function ToastDemo() {
 
 const meta = {
   title: '6-Feedback/Toast',
+  component: ToastContainer,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['success', 'error', 'warning', 'info'],
+      description: 'Tipo semántico de la notificación',
+    },
+    duration: { control: 'number', description: 'Duración en milisegundos antes de autodesaparecer' },
+    position: {
+      control: 'select',
+      options: ['top-right', 'top-left', 'bottom-right', 'bottom-left', 'top-center', 'bottom-center'],
+      description: 'Posición del toast en pantalla',
+    },
+  },
+  args: {
+    variant: 'success',
+    duration: 5000,
+    position: 'top-right',
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -70,7 +90,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof ToastContainer>
 
 export default meta
 type Story = StoryObj<typeof meta>

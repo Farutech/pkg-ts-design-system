@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { FieldArray } from '@/components/forms/FieldArray';
 import type { FieldArrayItem } from '@/components/forms/FieldArray';
@@ -11,7 +11,14 @@ interface PhoneItem {
 }
 
 const meta = {
-  title: '7-Helpers/FieldArray',
+  title: '10-Helpers/FieldArray',
+  component: FieldArray,
+  tags: ['autodocs'],
+  argTypes: {
+    items: { control: 'object', description: 'Lista de items del array de campos' },
+    addLabel: { control: 'text', description: 'Etiqueta del botón de agregar' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'padded',
     docs: {
@@ -23,9 +30,8 @@ const meta = {
 } satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const DynamicPhones: Story = {
+export const DynamicPhones = {
   render: () => {
     const [phones, setPhones] = useState<FieldArrayItem<PhoneItem>[]>([
       { id: 'p1', data: { type: 'Móvil', number: '+57 300 123 4567' } },
@@ -71,7 +77,7 @@ export const DynamicPhones: Story = {
       </div>
     );
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement);
     expect(canvas.getByText(/Números de Contacto Corporativo/i)).toBeInTheDocument();
     expect(canvas.getByDisplayValue('+57 300 123 4567')).toBeInTheDocument();

@@ -2,7 +2,6 @@ import React, { useMemo } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/ui/DataTable'
 import { Button } from '@/components/ui/Button'
-import { DEFAULT_PER_PAGE_OPTIONS } from './CrudPagination'
 export { DEFAULT_PER_PAGE_OPTIONS } from './CrudPagination'
 
 export interface Column<T = any> {

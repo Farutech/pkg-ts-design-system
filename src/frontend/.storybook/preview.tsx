@@ -70,7 +70,7 @@ const preview: Preview = {
       expanded: true,
     },
     viewport: {
-      viewports: {
+      options: {
         mobileSmall: {
           name: 'Mobile (Small - 375px)',
           styles: { width: '375px', height: '667px' },
@@ -94,10 +94,10 @@ const preview: Preview = {
       },
     },
     a11y: {
-      test: 'todo',
+      test: 'run',
     },
     layout: 'centered',
-    backgrounds: { disable: true },
+    backgrounds: { disabled: true },
     options: {
       storySort: {
         order: [

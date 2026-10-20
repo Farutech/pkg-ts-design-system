@@ -1,7 +1,7 @@
 import { forwardRef, useMemo } from 'react'
 import type { InputHTMLAttributes } from 'react'
 import { Input, type LabelMode, type InputSize } from './Input'
-import type { MaskConfig, MaskType } from '@/hooks/useMaskedValue'
+import type { MaskConfig } from '@/hooks/useMaskedValue'
 
 export type PredefinedMask = 
   | 'phone-co'          // +57 xxx xxx xxxx
@@ -181,8 +181,10 @@ export const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(
   (
     {
       mask = 'phone-co',
+      customMask: _customMask,
       customFormatter,
       customUnformatter,
+      maskChar: _maskChar,
       value,
       onChange,
       unmaskOnFocus = true,

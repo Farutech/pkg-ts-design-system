@@ -57,6 +57,41 @@ function FABDemo() {
 
 const meta = {
   title: '7-Overlays/FloatingActionButton',
+  component: FloatingActionButton,
+  tags: ['autodocs'],
+  argTypes: {
+    icon: { control: 'object', description: 'Icono del botón principal' },
+    label: { control: 'text', description: 'Etiqueta de accesibilidad' },
+    onClick: { action: 'clicked' },
+    actions: { control: 'object', description: 'Acciones expandibles del FAB' },
+    position: {
+      control: 'select',
+      options: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+      description: 'Posicionamiento del FAB',
+    },
+    positioningMode: {
+      control: 'select',
+      options: ['fixed', 'absolute'],
+      description: 'Modo de posicionamiento',
+    },
+    size: { control: 'select', options: ['sm', 'md', 'lg'], description: 'Tamaño del FAB' },
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'success', 'warning', 'danger'],
+      description: 'Variante de color',
+    },
+    offset: { control: 'number', description: 'Offset desde los bordes en px' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    icon: <PlusIcon className="h-6 w-6" />,
+    label: 'Acciones principales',
+    position: 'bottom-right',
+    positioningMode: 'absolute',
+    size: 'md',
+    variant: 'primary',
+    offset: 24,
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -65,7 +100,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof FloatingActionButton>
 
 export default meta
 type Story = StoryObj<typeof meta>

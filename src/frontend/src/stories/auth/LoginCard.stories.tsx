@@ -5,8 +5,18 @@ import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 
 const meta: Meta<typeof LoginCard> = {
-  title: 'Auth/LoginCard (Modular & Turnkey)',
+  title: '8-Auth/LoginCard',
   component: LoginCard,
+  tags: ['autodocs'],
+  argTypes: {
+    title: { control: 'text', description: 'Título de la tarjeta de login' },
+    subtitle: { control: 'text', description: 'Subtítulo descriptivo' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    title: 'Ordeon Operaciones',
+    subtitle: 'Acceso al sistema de gestión y manufactura',
+  },
   parameters: {
     docs: {
       description: {

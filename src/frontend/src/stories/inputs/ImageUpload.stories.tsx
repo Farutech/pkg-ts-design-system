@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { ImageUpload } from '@/components/ui/ImageUpload'
 import { useState } from 'react'
 
@@ -10,6 +10,22 @@ import { useState } from 'react'
  */
 const meta = {
   title: '4-Inputs/ImageUpload',
+  component: ImageUpload,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo de upload' },
+    helperText: { control: 'text', description: 'Texto de ayuda debajo del campo' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    accept: { control: 'text', description: 'Tipos de archivo aceptados (ej. image/*)' },
+    maxSizeMB: { control: 'number', description: 'Tamaño máximo en MB' },
+    aspectRatio: {
+      control: 'select',
+      options: ['square', 'wide', 'portrait', 'free'],
+      description: 'Relación de aspecto del preview',
+    },
+    error: { control: 'text', description: 'Mensaje de error de validación' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -21,9 +37,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const UploadDeImagen: Story = {
+export const UploadDeImagen = {
   render: () => {
     const [preview, setPreview] = useState<string | null>(null)
     const [file, setFile] = useState<File | null>(null)
@@ -54,7 +69,7 @@ export const UploadDeImagen: Story = {
   },
 }
 
-export const ConAspectRatioWide: Story = {
+export const ConAspectRatioWide = {
   name: 'Aspect ratio wide (16:9)',
   render: () => (
     <div style={{ width: '480px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -70,7 +85,7 @@ export const ConAspectRatioWide: Story = {
   ),
 }
 
-export const ConAspectRatioSquare: Story = {
+export const ConAspectRatioSquare = {
   name: 'Aspect ratio square (1:1)',
   render: () => (
     <div style={{ width: '280px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>

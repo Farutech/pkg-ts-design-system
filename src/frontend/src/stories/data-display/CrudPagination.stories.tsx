@@ -62,7 +62,9 @@ Usa \`DEFAULT_PER_PAGE_OPTIONS\` como valor por defecto. Compatible con iconos H
         `,
       },
     },
-    viewport: { defaultViewport: 'desktop' },
+  },
+  globals: {
+    viewport: { value: 'desktop', isRotated: false },
   },
   argTypes: {
     variant: {
@@ -195,7 +197,7 @@ export const SinglePage: Story = {
  * Mobile: 375px.
  */
 export const Mobile: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileSmall' } },
+  globals: { viewport: { value: 'mobileSmall', isRotated: false } },
   render: (args) => <Controlled {...args} total={247} />,
 }
 
@@ -203,7 +205,7 @@ export const Mobile: Story = {
  * Tablet: 768px.
  */
 export const Tablet: Story = {
-  parameters: { viewport: { defaultViewport: 'tablet' } },
+  globals: { viewport: { value: 'tablet', isRotated: false } },
   render: (args) => <Controlled {...args} total={247} />,
 }
 

@@ -143,6 +143,7 @@ function ColorsPage() {
 
 const meta = {
   title: '1-Foundations/Colors',
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {

@@ -40,6 +40,20 @@ export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void
   /** Callback simplificado de valor */
   onValueChange?: (value: string) => void
+  /** Habilitar modo colapsable/expandible con botón integrado en cabecera */
+  collapsible?: boolean
+  /** Estado de expansión inicial en modo collapsible (por defecto false) */
+  defaultExpanded?: boolean
+  /** Control controlado de expansión */
+  isExpanded?: boolean
+  /** Callback al alternar expansión */
+  onExpandedChange?: (expanded: boolean) => void
+  /** Etiqueta personalizada para expandir */
+  expandLabel?: ReactNode
+  /** Etiqueta personalizada para contraer */
+  collapseLabel?: ReactNode
+  /** Elemento o acción extra a renderizar en la cabecera del label */
+  labelExtra?: ReactNode
 }
 
 /**
@@ -70,6 +84,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       validationMode = 'block',
       onChange,
       onValueChange,
+      collapsible = false,
+      defaultExpanded = false,
+      isExpanded,
+      onExpandedChange,
+      expandLabel,
+      collapseLabel,
+      labelExtra,
       value,
       defaultValue,
       maxLength,
@@ -82,6 +103,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ) => {
     const contextDensity = useDensity()
     const activeDensity = propDensity ?? contextDensity
+
+    const [uncontrolledExpanded, setUncontrolledExpanded] = useState(defaultExpanded)
+    const isEffectivelyExpanded = isExpanded !== undefined ? isExpanded : uncontrolledExpanded
+
+    const handleToggleExpand = () => {
+      const next = !isEffectivelyExpanded
+      if (isExpanded === undefined) {
+        setUncontrolledExpanded(next)
+      }
+      onExpandedChange?.(next)
+    }
 
     const generatedId = useId()
     const textareaId = id || `ft-textarea-${generatedId}`
@@ -171,14 +203,31 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className={cn('flex flex-col text-left', fullWidth && 'w-full')}>
-        {!isFloating && label && effectiveLabelMode !== 'hidden' && (
-          <label
-            htmlFor={textareaId}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            {label}
-            {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
-          </label>
+        {!isFloating && (label || collapsible || labelExtra) && effectiveLabelMode !== 'hidden' && (
+          <div className="flex items-center justify-between mb-1 gap-2">
+            {label && (
+              <label
+                htmlFor={textareaId}
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                {label}
+                {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+              </label>
+            )}
+            <div className="flex items-center gap-2 ml-auto">
+              {labelExtra}
+              {collapsible && (
+                <button
+                  type="button"
+                  onClick={handleToggleExpand}
+                  className="text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline cursor-pointer select-none transition-colors"
+                  aria-expanded={isEffectivelyExpanded}
+                >
+                  {isEffectivelyExpanded ? (collapseLabel ?? 'Contraer') : (expandLabel ?? '+ Desplegar')}
+                </button>
+              )}
+            </div>
+          </div>
         )}
         {!isFloating && label && effectiveLabelMode === 'hidden' && (
           <label htmlFor={textareaId} className="sr-only">
@@ -207,6 +256,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             id={textareaId}
             value={currentValue}
             onChange={handleChange}
+            rows={collapsible ? (isEffectivelyExpanded ? (props.rows ?? 2) : 1) : props.rows}
             onFocus={(e) => {
               setIsFocused(true)
               props.onFocus?.(e)
@@ -224,12 +274,15 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             aria-readonly={readOnly ? 'true' : undefined}
             aria-describedby={cn(displayError && errorId, displayDesc && descId) || undefined}
             className={cn(
-              'w-full rounded-md transition-colors outline-none min-h-[80px]',
+              'w-full rounded-md transition-all outline-none',
+              collapsible && !isEffectivelyExpanded
+                ? 'min-h-[36px] max-h-[38px] py-1.5 resize-none overflow-hidden'
+                : 'min-h-[70px]',
               'text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500',
               isFloating ? 'pt-6 px-3.5 pb-2 text-sm' : paddingClasses,
               variantStyles,
               statusStyles,
-              resizeStyles,
+              (!collapsible || isEffectivelyExpanded) && resizeStyles,
               disabled && 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-800',
               readOnly && 'bg-gray-50 dark:bg-gray-800/50 cursor-default',
               className

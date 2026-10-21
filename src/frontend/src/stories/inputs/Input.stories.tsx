@@ -35,6 +35,16 @@ const meta = {
   component: Input,
   argTypes: {
     label: { control: 'text' },
+    labelPlacement: {
+      control: 'select',
+      options: ['top', 'inside', 'start', 'left', 'hidden'],
+      description: 'Ubicación de la etiqueta (top, inside/floating, start/left, hidden)',
+    },
+    labelAlign: {
+      control: 'inline-radio',
+      options: ['left', 'center', 'right'],
+      description: 'Alineación horizontal del label',
+    },
     placeholder: { control: 'text' },
     error: { control: 'text' },
     description: { control: 'text' },
@@ -60,6 +70,8 @@ const meta = {
   },
   args: {
     label: 'Nombre completo',
+    labelPlacement: 'top',
+    labelAlign: 'left',
     placeholder: 'Ej. María García',
     fullWidth: true,
     size: 'md',

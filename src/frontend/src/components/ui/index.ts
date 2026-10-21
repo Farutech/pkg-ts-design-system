@@ -301,6 +301,13 @@ export {
   useGlobalLoading,
 } from './GlobalLoading'
 
+export {
+  CircularProgress,
+  type CircularProgressProps,
+  type CircularProgressSize,
+  type CircularProgressColor,
+} from './CircularProgress'
+
 // ============================================================================
 // 9. OVERLAYS & FLOATING UI
 // ============================================================================

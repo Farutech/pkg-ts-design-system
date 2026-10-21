@@ -37,3 +37,10 @@
   background: currentColor;
   flex-shrink: 0;
 }
+
+.ft-badge svg,
+.ft-badge [data-icon],
+.ft-badge span > svg {
+  flex-shrink: 0;
+  display: inline-block;
+}

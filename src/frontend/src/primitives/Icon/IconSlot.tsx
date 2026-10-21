@@ -44,7 +44,7 @@ export function IconSlot({
   if (isValidElement(icon)) {
     const existingClassName = (icon.props as { className?: string })?.className || ''
     return cloneElement(icon as React.ReactElement<any>, {
-      className: cn('shrink-0 select-none', existingClassName, className),
+      className: cn('shrink-0 select-none inline-block', existingClassName, className),
       'aria-hidden': ariaHidden ? 'true' : undefined,
     })
   }

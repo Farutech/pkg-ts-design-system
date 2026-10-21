@@ -20,7 +20,9 @@ export function FieldShell({
   id: explicitId,
   label,
   floatingTitle,
-  labelMode = 'external',
+  labelMode,
+  labelPlacement: explicitPlacement,
+  labelAlign = 'left',
   required = false,
   disabled = false,
   readOnly: _readOnly = false,
@@ -46,10 +48,30 @@ export function FieldShell({
   const descId = `${fieldId}-desc`
   const [isHovered, setIsHovered] = useState(false)
 
-  const isFloating = labelMode === 'floating'
+  // Resolución de disposición: Si no hay label, por defecto es 'hidden'.
+  // Si se pasa 'inside' o labelMode='floating', se activa modo flotante interno.
+  // En cualquier otro caso con label, por defecto es 'top' (por fuera).
+  const effectivePlacement = explicitPlacement || (
+    labelMode === 'floating' || labelMode === 'placeholder'
+      ? 'inside'
+      : labelMode === 'hidden' || !label
+      ? 'hidden'
+      : 'top'
+  )
+
+  const isFloating = effectivePlacement === 'inside'
+  const isHorizontal = effectivePlacement === 'start' || effectivePlacement === 'left'
+  const isHidden = effectivePlacement === 'hidden' || !label
+
   const isFloatingActive = isFocused || hasValue
   const activeStatus = error ? 'error' : status
   const effectiveHelper = error || helperText || description
+
+  const alignClasses = {
+    left: 'justify-start text-left',
+    center: 'justify-center text-center',
+    right: 'justify-end text-right',
+  }
 
   // RENDERIZADO: Modo Floating Label
   if (isFloating) {
@@ -138,64 +160,80 @@ export function FieldShell({
     )
   }
 
-  // RENDERIZADO: Modo External Label (Estándar)
+  // RENDERIZADO: Modo External Label (Estándar o Horizontal)
   return (
     <div
       className={cn(
-        'relative flex flex-col gap-1.5',
+        'relative flex',
+        isHorizontal ? 'flex-col sm:flex-row sm:items-center gap-2 sm:gap-3' : 'flex-col gap-1.5',
         fullWidth && 'w-full',
         disabled && 'opacity-60 pointer-events-none cursor-not-allowed',
         className
       )}
       style={style}
     >
-      {label && labelMode !== 'hidden' && (
-        <label
-          htmlFor={fieldId}
-          className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1 select-none"
+      {label && !isHidden && (
+        <div
+          className={cn(
+            'flex items-center gap-1 select-none',
+            isHorizontal ? 'sm:w-36 shrink-0' : 'w-full',
+            alignClasses[labelAlign]
+          )}
         >
-          {label}
-          {required && <span className="text-red-500 font-bold" aria-hidden="true">*</span>}
-        </label>
+          <label
+            htmlFor={fieldId}
+            className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1"
+          >
+            {label}
+            {required && <span className="text-red-500 font-bold" aria-hidden="true">*</span>}
+            {tooltip && (
+              <span className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-help" title={typeof tooltip === 'string' ? tooltip : undefined}>
+                <Icon.Info size="xs" />
+              </span>
+            )}
+          </label>
+        </div>
       )}
 
-      <div
-        className={cn(
-          'relative flex items-center min-h-[40px] sm:min-h-[44px] rounded-xl border transition-all duration-150 overflow-hidden',
-          'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100',
-          isFocused && 'border-primary-500 ring-2 ring-primary-500/25 shadow-sm',
-          activeStatus === 'error' && 'border-red-500 ring-2 ring-red-500/20 text-red-900 dark:text-red-100',
-          activeStatus === 'success' && 'border-emerald-500 ring-2 ring-emerald-500/20',
-          disabled && 'bg-gray-50 dark:bg-gray-800/50'
-        )}
-      >
-        {(leftSection || prefix) && (
-          <div className="pl-3 pr-1.5 flex items-center text-gray-400 dark:text-gray-500 shrink-0">
-            <IconSlot icon={leftSection || prefix} />
-          </div>
-        )}
+      <div className={cn('flex flex-col', isHorizontal ? 'flex-1 min-w-0' : 'w-full')}>
+        <div
+          className={cn(
+            'relative flex items-center min-h-[40px] sm:min-h-[44px] rounded-xl border transition-all duration-150 overflow-hidden',
+            'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100',
+            isFocused && 'border-primary-500 ring-2 ring-primary-500/25 shadow-sm',
+            activeStatus === 'error' && 'border-red-500 ring-2 ring-red-500/20 text-red-900 dark:text-red-100',
+            activeStatus === 'success' && 'border-emerald-500 ring-2 ring-emerald-500/20',
+            disabled && 'bg-gray-50 dark:bg-gray-800/50'
+          )}
+        >
+          {(leftSection || prefix) && (
+            <div className="pl-3 pr-1.5 flex items-center text-gray-400 dark:text-gray-500 shrink-0">
+              <IconSlot icon={leftSection || prefix} />
+            </div>
+          )}
 
-        <div className="flex-1 min-w-0 px-3">
-          {children}
+          <div className="flex-1 min-w-0 px-3">
+            {children}
+          </div>
+
+          {(rightSection || suffix) && (
+            <div className="pr-3 pl-1.5 flex items-center text-gray-400 dark:text-gray-500 shrink-0">
+              <IconSlot icon={rightSection || suffix} />
+            </div>
+          )}
         </div>
 
-        {(rightSection || suffix) && (
-          <div className="pr-3 pl-1.5 flex items-center text-gray-400 dark:text-gray-500 shrink-0">
-            <IconSlot icon={rightSection || suffix} />
-          </div>
-        )}
+        {error ? (
+          <p id={errorId} role="alert" className="text-xs text-red-600 dark:text-red-400 mt-0.5 ml-0.5 flex items-center gap-1 font-medium">
+            <Icon.Error size="xs" className="shrink-0" />
+            <span>{error}</span>
+          </p>
+        ) : effectiveHelper ? (
+          <p id={descId} className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-0.5">
+            {effectiveHelper}
+          </p>
+        ) : null}
       </div>
-
-      {error ? (
-        <p id={errorId} role="alert" className="text-xs text-red-600 dark:text-red-400 mt-0.5 ml-0.5 flex items-center gap-1 font-medium">
-          <Icon.Error size="xs" className="shrink-0" />
-          <span>{error}</span>
-        </p>
-      ) : effectiveHelper ? (
-        <p id={descId} className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-0.5">
-          {effectiveHelper}
-        </p>
-      ) : null}
     </div>
   )
 }

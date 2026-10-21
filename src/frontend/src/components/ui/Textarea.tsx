@@ -12,13 +12,15 @@ import type { Density } from '@/tokens/tokens'
 import type { InputSize, InputStatus, InputVariant } from './InputBase'
 import { Icon } from '@/primitives/icon/Icon'
 import { useFormContext } from './Form'
-import type { LabelMode } from './input/types'
+import type { LabelMode, LabelPlacement, LabelAlign } from './input/types'
 
 export type ValidationMode = 'block' | 'error'
 
 export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size' | 'onChange'> {
   label?: ReactNode
   labelMode?: LabelMode
+  labelPlacement?: LabelPlacement
+  labelAlign?: LabelAlign
   floatingTitle?: ReactNode
   activeLabel?: ReactNode
   description?: ReactNode
@@ -66,6 +68,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     {
       label,
       labelMode,
+      labelPlacement: explicitPlacement,
+      labelAlign: explicitAlign,
       floatingTitle,
       activeLabel,
       description,
@@ -125,8 +129,34 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       String(value ?? defaultValue ?? '')
     )
     const formContext = useFormContext()
-    const effectiveLabelMode: LabelMode = labelMode || (variant === 'floating' ? 'floating' : formContext.defaultLabelMode) || 'external'
-    const isFloating = variant === 'floating' || effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
+
+    const effectiveLabelPlacement: LabelPlacement =
+      explicitPlacement ||
+      (variant === 'floating' || labelMode === 'floating'
+        ? 'inside'
+        : labelMode === 'hidden' || !label
+        ? 'hidden'
+        : formContext.defaultLabelPlacement || (formContext.defaultLabelMode === 'floating' ? 'inside' : 'top'))
+
+    const effectiveLabelAlign: LabelAlign =
+      explicitAlign || formContext.defaultLabelAlign || 'left'
+
+    const effectiveLabelMode: LabelMode =
+      effectiveLabelPlacement === 'inside'
+        ? 'floating'
+        : effectiveLabelPlacement === 'hidden'
+        ? 'hidden'
+        : 'external'
+
+    const isFloating = effectiveLabelPlacement === 'inside'
+    const isHorizontal = effectiveLabelPlacement === 'start' || effectiveLabelPlacement === 'left'
+
+    const alignClasses = {
+      left: 'justify-start text-left',
+      center: 'justify-center text-center',
+      right: 'justify-end text-right',
+    }
+
     const [validationError, setValidationError] = useState<string>('')
 
     const currentValue = value !== undefined ? String(value) : internalValue
@@ -202,9 +232,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     }[resize]
 
     return (
-      <div className={cn('flex flex-col text-left', fullWidth && 'w-full')}>
+      <div className={cn('flex text-left', isHorizontal ? 'flex-col sm:flex-row sm:items-start gap-2 sm:gap-3' : 'flex-col', fullWidth && 'w-full')}>
         {!isFloating && (label || collapsible || labelExtra) && effectiveLabelMode !== 'hidden' && (
-          <div className="flex items-center justify-between mb-1 gap-2">
+          <div className={cn('flex items-center justify-between mb-1 gap-2', isHorizontal ? 'sm:w-36 shrink-0 pt-2.5' : 'w-full', alignClasses[effectiveLabelAlign])}>
             {label && (
               <label
                 htmlFor={textareaId}
@@ -235,7 +265,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           </label>
         )}
 
-        <div className="relative w-full">
+        <div className={cn('relative', isHorizontal ? 'flex-1 min-w-0' : 'w-full')}>
           {isFloating && (
             <span
               className={cn(

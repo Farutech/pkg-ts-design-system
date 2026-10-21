@@ -42,8 +42,14 @@ export type InputType =
   | 'url'
   | 'date'
 
-/** Modalidades de etiqueta para controles de formulario */
+/** Modalidades de etiqueta para controles de formulario (compatibilidad) */
 export type LabelMode = 'external' | 'floating' | 'placeholder' | 'hidden'
+
+/** Disposición o ubicación del label respecto al control */
+export type LabelPlacement = 'top' | 'start' | 'left' | 'inside' | 'floating' | 'hidden'
+
+/** Alineación horizontal del texto del label */
+export type LabelAlign = 'left' | 'center' | 'right'
 
 /** Modo de validación por regex */
 export type ValidationMode = 'block' | 'error' | 'none'
@@ -122,6 +128,10 @@ export interface InputProps
   variant?: InputVariant
   /** Modo de presentación de la etiqueta ('external' | 'floating' | 'placeholder' | 'hidden') */
   labelMode?: LabelMode
+  /** Ubicación o disposición del label ('top' | 'start' | 'left' | 'inside' | 'hidden'). Por defecto: 'top' si hay label, o 'hidden' si no hay. */
+  labelPlacement?: LabelPlacement
+  /** Alineación horizontal del texto del label ('left' | 'center' | 'right'). Por defecto: 'left' */
+  labelAlign?: LabelAlign
   /** Superficie específica para variantes oscura/vidrio */
   surfaceVariant?: SurfaceVariant
   /** Ancho completo (100%) */

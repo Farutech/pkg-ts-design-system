@@ -7,11 +7,23 @@ const meta = {
   component: Select,
   argTypes: {
     label: { control: 'text' },
+    labelPlacement: {
+      control: 'select',
+      options: ['top', 'inside', 'start', 'left', 'hidden'],
+      description: 'Ubicación de la etiqueta respecto al control',
+    },
+    labelAlign: {
+      control: 'inline-radio',
+      options: ['left', 'center', 'right'],
+      description: 'Alineación horizontal del label',
+    },
     error: { control: 'text' },
     disabled: { control: 'boolean' },
   },
   args: {
     label: 'País de residencia',
+    labelPlacement: 'top',
+    labelAlign: 'left',
     options: [
       { value: '', label: 'Selecciona un país' },
       { value: 'co', label: 'Colombia' },

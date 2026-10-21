@@ -34,13 +34,25 @@ import { useDensity } from '@/providers/DesignSystemProvider'
 import type { Density } from '@/tokens/tokens'
 import type { InputSize } from './InputBase'
 import { useLocaleStore, formatDateWithLocale, type DateFormat, type TimeFormat } from '@/store/localeStore'
+import { useFormContext } from './Form'
+import type { LabelPlacement, LabelAlign } from '@/tokens/input-types'
 
 // ============================================================================
 // TIPOS Y UTILIDADES
 // ============================================================================
 
+const alignClasses: Record<LabelAlign, string> = {
+  left: 'justify-start text-left',
+  center: 'justify-center text-center',
+  right: 'justify-end text-right',
+}
+
 export interface BaseDatePickerProps {
   label?: string
+  labelPlacement?: LabelPlacement
+  labelAlign?: LabelAlign
+  required?: boolean
+  helperText?: React.ReactNode
   placeholder?: string
   disabled?: boolean
   error?: string
@@ -496,6 +508,10 @@ export function DatePicker({
   onChange,
   onValueChange,
   label,
+  labelPlacement,
+  labelAlign,
+  required = false,
+  helperText,
   placeholder = 'Seleccionar fecha',
   minDate,
   maxDate,
@@ -510,6 +526,13 @@ export function DatePicker({
   density: propDensity,
   size = 'md',
 }: SingleDatePickerProps) {
+  const formContext = useFormContext()
+  const effectivePlacement: LabelPlacement = labelPlacement ?? formContext?.defaultLabelPlacement ?? 'top'
+  const effectiveAlign: LabelAlign = labelAlign ?? formContext?.defaultLabelAlign ?? 'left'
+  const isHorizontal = effectivePlacement === 'start' || effectivePlacement === 'left'
+  const isFloating = effectivePlacement === 'inside' || effectivePlacement === 'floating'
+  const isHidden = effectivePlacement === 'hidden'
+
   const contextDensity = useDensity()
   const activeDensity = propDensity || contextDensity
 
@@ -582,50 +605,62 @@ export function DatePicker({
   }, [placement])
 
   return (
-    <div className={className}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {label}
-        </label>
+    <div className={cn('relative', isHorizontal ? 'flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3' : 'flex flex-col', className)}>
+      {!isFloating && !isHidden && label && (
+        <div className={cn('flex items-center gap-1 select-none', isHorizontal ? 'sm:w-36 shrink-0' : 'w-full mb-1', alignClasses[effectiveAlign])}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {label}
+            {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+          </label>
+        </div>
       )}
 
-      <Popover className="relative">
-        {({ open, close }) => {
-          // Recalcular posición cuando se abre
-          if (open && placement === 'auto' && buttonRef.current) {
-            const rect = buttonRef.current.getBoundingClientRect()
-            const spaceBelow = window.innerHeight - rect.bottom
-            const spaceAbove = rect.top
-            const panelHeight = 400
+      <div className={cn('relative', isHorizontal ? 'flex-1 min-w-0' : 'w-full')}>
+        <Popover className="relative">
+          {({ open, close }) => {
+            // Recalcular posición cuando se abre
+            if (open && placement === 'auto' && buttonRef.current) {
+              const rect = buttonRef.current.getBoundingClientRect()
+              const spaceBelow = window.innerHeight - rect.bottom
+              const spaceAbove = rect.top
+              const panelHeight = 400
 
-            const newPlacement = spaceBelow < panelHeight && spaceAbove > panelHeight ? 'top' : 'bottom'
-            if (newPlacement !== panelPlacement) {
-              setPanelPlacement(newPlacement)
+              const newPlacement = spaceBelow < panelHeight && spaceAbove > panelHeight ? 'top' : 'bottom'
+              if (newPlacement !== panelPlacement) {
+                setPanelPlacement(newPlacement)
+              }
             }
-          }
 
-          return (
-          <>
-            <div className="relative">
-              <Popover.Button
-                ref={buttonRef}
-                disabled={disabled}
-                className={cn(
-                  'w-full flex items-center justify-between text-left rounded-lg border transition-colors',
-                  heightClass,
-                  disabled
-                    ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
-                    : error
-                    ? 'border-red-500 focus:ring-2 focus:ring-red-500'
-                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-2 focus:ring-primary-500',
-                  open && 'ring-2 ring-primary-500'
-                )}
-              >
-                <span className={cn('flex-1 text-sm', clearable && dateValue && !disabled && 'pr-6', dateValue ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
-                  {dateValue ? formatDateWithLocale(dateValue, dateFormat, showTime, timeFormat) : placeholder}
-                </span>
-                <CalendarIcon className="h-5 w-5 text-gray-400" />
-              </Popover.Button>
+            return (
+            <>
+              <div className="relative">
+                <Popover.Button
+                  ref={buttonRef}
+                  disabled={disabled}
+                  className={cn(
+                    'w-full flex items-center justify-between text-left rounded-lg border transition-colors',
+                    isFloating && label ? 'px-3 py-1.5' : heightClass,
+                    disabled
+                      ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-not-allowed'
+                      : error
+                      ? 'border-red-500 focus:ring-2 focus:ring-red-500'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-2 focus:ring-primary-500',
+                    open && 'ring-2 ring-primary-500'
+                  )}
+                >
+                  <div className="flex-1 min-w-0">
+                    {isFloating && label && (
+                      <span className="block text-[11px] font-medium text-gray-500 dark:text-gray-400 truncate leading-tight">
+                        {label}
+                        {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+                      </span>
+                    )}
+                    <span className={cn('block text-sm truncate', clearable && dateValue && !disabled && 'pr-6', dateValue ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
+                      {dateValue ? formatDateWithLocale(dateValue, dateFormat, showTime, timeFormat) : placeholder}
+                    </span>
+                  </div>
+                  <CalendarIcon className="h-5 w-5 text-gray-400 shrink-0 ml-2" />
+                </Popover.Button>
               {clearable && dateValue && !disabled && (
                 <button
                   type="button"
@@ -701,12 +736,17 @@ export function DatePicker({
               </Popover.Panel>
             </Transition>
           </>
-        )}}
+          )
+        }}
       </Popover>
 
-      {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
-      )}
+        {error && (
+          <p className={cn("mt-1 text-sm text-red-600 dark:text-red-400", isHorizontal && "sm:ml-36")}>{error}</p>
+        )}
+        {!error && helperText && (
+          <p className={cn("mt-1 text-xs text-gray-500 dark:text-gray-400", isHorizontal && "sm:ml-36")}>{helperText}</p>
+        )}
+      </div>
     </div>
   )
 }
@@ -720,6 +760,10 @@ export function DateRangePicker({
   onChange,
   onValueChange,
   label,
+  labelPlacement,
+  labelAlign,
+  required = false,
+  helperText,
   placeholder = 'Seleccionar rango',
   showTime = false,
   presets = [],
@@ -733,6 +777,12 @@ export function DateRangePicker({
   density: propDensity,
   size = 'md',
 }: DateRangePickerProps) {
+  const formContext = useFormContext()
+  const effectivePlacement: LabelPlacement = labelPlacement ?? formContext?.defaultLabelPlacement ?? 'top'
+  const effectiveAlign: LabelAlign = labelAlign ?? formContext?.defaultLabelAlign ?? 'left'
+  const isHorizontal = effectivePlacement === 'start' || effectivePlacement === 'left'
+  const isHidden = effectivePlacement === 'hidden'
+
   const contextDensity = useDensity()
   const activeDensity = propDensity || contextDensity
 
@@ -887,14 +937,18 @@ export function DateRangePicker({
   }, [placement])
 
   return (
-    <div className={className}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {label}
-        </label>
+    <div className={cn('relative', isHorizontal ? 'flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3' : 'flex flex-col', className)}>
+      {!isHidden && label && (
+        <div className={cn('flex items-center gap-1 select-none', isHorizontal ? 'sm:w-36 shrink-0 sm:pt-2' : 'w-full mb-1', alignClasses[effectiveAlign])}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {label}
+            {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+          </label>
+        </div>
       )}
 
-      <Popover className="relative">
+      <div className={cn('relative', isHorizontal ? 'flex-1 min-w-0' : 'w-full')}>
+        <Popover className="relative">
         {({ open, close }) => {
           // Recalcular posición cuando se abre
           if (open && placement === 'auto' && buttonRef.current) {
@@ -1043,12 +1097,17 @@ export function DateRangePicker({
               </Popover.Panel>
             </Transition>
           </>
-        )}}
+          )
+        }}
       </Popover>
 
       {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className={cn("mt-1 text-sm text-red-600 dark:text-red-400", isHorizontal && "sm:ml-36")}>{error}</p>
       )}
+      {!error && helperText && (
+        <p className={cn("mt-1 text-xs text-gray-500 dark:text-gray-400", isHorizontal && "sm:ml-36")}>{helperText}</p>
+      )}
+      </div>
     </div>
   )
 }
@@ -1061,6 +1120,10 @@ export function TimeRangePicker({
   value = ['09:00', '17:00'],
   onChange,
   label,
+  labelPlacement,
+  labelAlign,
+  required = false,
+  helperText,
   minTime,
   maxTime,
   step = 15,
@@ -1069,6 +1132,12 @@ export function TimeRangePicker({
   className,
   placement = 'auto', // Por defecto 'auto' detecta espacio disponible
 }: TimeRangePickerProps) {
+  const formContext = useFormContext()
+  const effectivePlacement: LabelPlacement = labelPlacement ?? formContext?.defaultLabelPlacement ?? 'top'
+  const effectiveAlign: LabelAlign = labelAlign ?? formContext?.defaultLabelAlign ?? 'left'
+  const isHorizontal = effectivePlacement === 'start' || effectivePlacement === 'left'
+  const isHidden = effectivePlacement === 'hidden'
+
   const [startTime, endTime] = value
   const startButtonRef = useRef<HTMLButtonElement>(null)
   const endButtonRef = useRef<HTMLButtonElement>(null)
@@ -1137,14 +1206,18 @@ export function TimeRangePicker({
   }
 
   return (
-    <div className={className}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {label}
-        </label>
+    <div className={cn('relative', isHorizontal ? 'flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3' : 'flex flex-col', className)}>
+      {!isHidden && label && (
+        <div className={cn('flex items-center gap-1 select-none', isHorizontal ? 'sm:w-36 shrink-0' : 'w-full mb-1', alignClasses[effectiveAlign])}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {label}
+            {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+          </label>
+        </div>
       )}
 
-      <div className="flex items-center gap-3">
+      <div className={cn('relative', isHorizontal ? 'flex-1 min-w-0' : 'w-full')}>
+        <div className="flex items-center gap-3">
         {/* Selector hora inicio */}
         <Listbox value={startTime} onChange={handleStartChange} disabled={disabled}>
           <div className="relative flex-1">
@@ -1253,8 +1326,12 @@ export function TimeRangePicker({
       </div>
 
       {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className={cn("mt-1 text-sm text-red-600 dark:text-red-400", isHorizontal && "sm:ml-36")}>{error}</p>
       )}
+      {!error && helperText && (
+        <p className={cn("mt-1 text-xs text-gray-500 dark:text-gray-400", isHorizontal && "sm:ml-36")}>{helperText}</p>
+      )}
+      </div>
     </div>
   )
 }

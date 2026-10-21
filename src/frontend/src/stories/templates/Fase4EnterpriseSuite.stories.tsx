@@ -74,8 +74,8 @@ export const UploadSuiteDemo: StoryObj = {
 
         <Dropzone
           accept="image/*,.pdf,.docx"
-          onFilesAccepted={(newFiles) => {
-            const items = newFiles.map((f, i) => ({
+          onFilesAccepted={(newFiles: File[]) => {
+            const items = newFiles.map((f: File, i: number) => ({
               id: `${Date.now()}-${i}`,
               name: f.name,
               size: f.size,
@@ -94,7 +94,7 @@ export const UploadSuiteDemo: StoryObj = {
 
         <FileList
           files={files}
-          onRemove={(id) => setFiles(files.filter((f) => f.id !== id))}
+          onRemove={(id: string) => setFiles(files.filter((f) => f.id !== id))}
         />
       </div>
     )

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { FormField } from '@/components/ui/FormField'
 import { Input } from '@/components/ui/Input'
 
@@ -10,6 +10,20 @@ import { Input } from '@/components/ui/Input'
  */
 const meta = {
   title: '10-Helpers/FormField',
+  component: FormField,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo' },
+    hint: { control: 'text', description: 'Texto de ayuda debajo del campo' },
+    error: { control: 'text', description: 'Mensaje de error de validación' },
+    required: { control: 'boolean', description: 'Marcar como campo obligatorio' },
+    labelPosition: {
+      control: 'select',
+      options: ['top', 'left'],
+      description: 'Posición de la etiqueta',
+    },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -21,9 +35,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const LabelEncima: Story = {
+export const LabelEncima = {
   render: () => (
     <div style={{ width: '360px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <FormField label="Email" required hint="Ingresa tu correo electrónico" error="El formato del email es inválido">
@@ -45,7 +58,7 @@ export const LabelEncima: Story = {
   ),
 }
 
-export const LabelAlLado: Story = {
+export const LabelAlLado = {
   name: 'Label al lado (labelPosition: left)',
   render: () => (
     <div style={{ width: '500px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>

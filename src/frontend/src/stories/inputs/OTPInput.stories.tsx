@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { OTPInput } from '@/components/ui/OTPInput'
 import { useState, useCallback } from 'react'
@@ -11,6 +11,16 @@ import { useState, useCallback } from 'react'
  */
 const meta = {
   title: '4-Inputs/OTPInput',
+  component: OTPInput,
+  tags: ['autodocs'],
+  argTypes: {
+    length: { control: 'number', description: 'Número de dígitos del código OTP' },
+    value: { control: 'text', description: 'Valor actual del código' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    secure: { control: 'boolean', description: 'Ocultar caracteres (modo seguro)' },
+    error: { control: 'text', description: 'Mensaje de error de validación' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -22,9 +32,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const CodigoDe6Digitos: Story = {
+export const CodigoDe6Digitos = {
   render: () => {
     const [otp, setOtp] = useState('')
     const [completed, setCompleted] = useState<string | null>(null)
@@ -67,7 +76,7 @@ export const CodigoDe6Digitos: Story = {
   },
 }
 
-export const ConLongitudPersonalizada: Story = {
+export const ConLongitudPersonalizada = {
   name: 'Longitud personalizada (4 dígitos)',
   render: () => {
     const [otp, setOtp] = useState('')
@@ -85,7 +94,7 @@ export const ConLongitudPersonalizada: Story = {
   },
 }
 
-export const ModoSeguro: Story = {
+export const ModoSeguro = {
   name: 'Modo seguro (ocultar caracteres)',
   render: () => {
     const [otp, setOtp] = useState('')
@@ -102,7 +111,7 @@ export const ModoSeguro: Story = {
  * 2. Test de Funcionalidad e Interacción:
  * Escribe los 6 dígitos y valida onChange + onComplete.
  */
-export const TestInteraccion: Story = {
+export const TestInteraccion = {
   name: 'Test: Escritura e Interacción',
   render: () => {
     const [otp, setOtp] = useState('')
@@ -114,7 +123,7 @@ export const TestInteraccion: Story = {
       </div>
     )
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement)
     const firstDigit = canvas.getByLabelText(/dígito 1/i)
     await userEvent.click(firstDigit)
@@ -128,10 +137,10 @@ export const TestInteraccion: Story = {
  * 3. Test de Accesibilidad y Roles ARIA:
  * Verifica grupo accesible, dígitos etiquetados y mensaje de error.
  */
-export const TestAccesibilidad: Story = {
+export const TestAccesibilidad = {
   name: 'Test: Accesibilidad y ARIA',
   render: () => <OTPInput value="" onChange={() => {}} length={4} error="Código incompleto" />,
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement)
     await expect(canvas.getByRole('group', { name: /código de verificación de 4 dígitos/i })).toBeInTheDocument()
     await expect(canvas.getByLabelText(/dígito 1/i)).toBeInTheDocument()

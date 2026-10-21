@@ -1,6 +1,6 @@
 import React from 'react'
 import type { InputBehavior, InputType } from './types'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 const MailIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg

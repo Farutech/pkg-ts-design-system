@@ -4,6 +4,7 @@
  */
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/utils/cn'
+import { IconSlot } from '@/primitives/icon/IconSlot'
 
 export type IconButtonVariant = 'solid' | 'outline' | 'ghost' | 'danger'
 export type IconButtonSize = 'sm' | 'md' | 'lg'
@@ -41,7 +42,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       ref={ref}
       type={type}
       className={cn(
-        'inline-flex items-center justify-center transition-colors',
+        'inline-flex items-center justify-center transition-colors shrink-0 whitespace-nowrap [&>svg]:shrink-0',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900',
         'disabled:opacity-40 disabled:cursor-not-allowed',
         rounded ? 'rounded-full' : 'rounded-lg',
@@ -51,7 +52,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       )}
       {...props}
     >
-      {icon}
+      <IconSlot icon={icon} />
     </button>
   )
 })

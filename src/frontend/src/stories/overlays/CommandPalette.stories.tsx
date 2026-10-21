@@ -19,6 +19,19 @@ const COMMANDS = [
 
 const meta = {
   title: '7-Overlays/CommandPalette',
+  component: CommandPalette,
+  tags: ['autodocs'],
+  argTypes: {
+    commands: { control: 'object', description: 'Lista de comandos disponibles' },
+    recentCommands: { control: 'object', description: 'IDs de comandos recientes' },
+    placeholder: { control: 'text', description: 'Placeholder del buscador' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    commands: COMMANDS,
+    recentCommands: ['new-user', 'settings'],
+    placeholder: 'Buscar o ejecutar un comando...',
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {
@@ -27,7 +40,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof CommandPalette>
 
 export default meta
 type Story = StoryObj<typeof meta>

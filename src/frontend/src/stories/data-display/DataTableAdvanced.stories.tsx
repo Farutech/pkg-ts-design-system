@@ -77,7 +77,14 @@ const columns: ColumnDef<Product>[] = [
 ]
 
 const meta: Meta = {
-  title: 'DataDisplay/DataTable (Best-of-Breed Showcase)',
+  title: '5-Data Display/DataTable Advanced',
+  component: DataTable,
+  tags: ['autodocs'],
+  argTypes: {
+    searchable: { control: 'boolean', description: 'Habilitar búsqueda global' },
+    selectable: { control: 'boolean', description: 'Habilitar selección múltiple de filas' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     docs: {
       description: {

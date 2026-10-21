@@ -1,0 +1,8 @@
+{
+  "name": "FaruTech Design System",
+  "description": "FaruTech Enterprise Design System — Accessible UI components, themeable tokens, interactive catalog and templates.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

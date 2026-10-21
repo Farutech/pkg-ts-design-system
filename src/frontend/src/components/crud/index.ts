@@ -28,3 +28,4 @@ export {
   AdminTableRow,
   type AdminCatalogLayoutProps,
 } from './AdminCatalogLayout'
+export { BulkActionsBar, type BulkActionsBarProps, type BulkActionItem } from '@/components/ui/BulkActionsBar'

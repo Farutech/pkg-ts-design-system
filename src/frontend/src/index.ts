@@ -3,6 +3,9 @@
  * Sistema de diseño oficial de Farutech — Componentes UI, tokens, layouts y hooks reutilizables.
  */
 
+// Resoluciones explícitas para evitar ambigüedad de re-exportación
+export type { InputProps, LabelMode } from './components/ui/index'
+
 // Tokens y utilidades de estilo
 export * from './tokens/index'
 
@@ -10,8 +13,8 @@ export * from './tokens/index'
 export * from './components/ui/index'
 
 // Primitivas de contenido y animación
-export { Eyebrow, SectionHeading, type EyebrowProps, type SectionHeadingProps } from './components/Content/index'
-export { Reveal, type RevealProps } from './components/Reveal/index'
+export { Eyebrow, SectionHeading, type EyebrowProps, type SectionHeadingProps } from './components/content/index'
+export { Reveal, type RevealProps } from './components/reveal/index'
 
 // Primitivas Headless y Sistema de Iconos
 export * from './primitives/index'

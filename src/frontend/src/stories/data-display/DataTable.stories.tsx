@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { DataTable } from '@/components/ui/DataTable'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -40,6 +40,13 @@ const COLUMNS: ColumnDef<(typeof MOCK_DATA)[number]>[] = [
 
 const meta = {
   title: '5-Data Display/DataTable',
+  component: DataTable,
+  tags: ['autodocs'],
+  argTypes: {
+    searchable: { control: 'boolean', description: 'Habilitar búsqueda global' },
+    selectable: { control: 'boolean', description: 'Habilitar selección múltiple de filas' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -51,9 +58,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const TablaCompleta: Story = {
+export const TablaCompleta = {
   render: () => {
     const [search, setSearch] = useState('')
     const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set())
@@ -116,7 +122,7 @@ const MOCK_100_USERS = Array.from({ length: 100 }, (_, i) => {
   }
 })
 
-export const PaginacionCompleta10Paginas: Story = {
+export const PaginacionCompleta10Paginas = {
   name: 'Paginación de 10 Páginas (Anexo A)',
   render: () => {
     const [page, setPage] = useState(5)

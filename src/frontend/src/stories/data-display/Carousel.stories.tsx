@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { Carousel } from '@/components/ui/Carousel'
 
 /**
@@ -59,6 +59,20 @@ function CarouselDemo({ autoPlay = false }: { autoPlay?: boolean }) {
 
 const meta = {
   title: '5-Data Display/Carousel',
+  component: Carousel,
+  tags: ['autodocs'],
+  argTypes: {
+    autoPlay: { control: 'boolean', description: 'Reproducción automática de slides' },
+    interval: { control: 'number', description: 'Intervalo entre slides en ms' },
+    showControls: { control: 'boolean', description: 'Mostrar controles de navegación' },
+    showIndicators: { control: 'boolean', description: 'Mostrar indicadores de posición' },
+    controlsVariant: {
+      control: 'select',
+      options: ['arrows', 'default', 'minimal'],
+      description: 'Variante de controles',
+    },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -70,13 +84,12 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const ConControles: Story = {
+export const ConControles = {
   render: () => <CarouselDemo />,
 }
 
-export const ConAutoplay: Story = {
+export const ConAutoplay = {
   name: 'Con autoplay',
   parameters: {
     docs: {
@@ -88,7 +101,7 @@ export const ConAutoplay: Story = {
   render: () => <CarouselDemo autoPlay />,
 }
 
-export const SinIndicadores: Story = {
+export const SinIndicadores = {
   name: 'Sin indicadores',
   render: () => (
     <Carousel

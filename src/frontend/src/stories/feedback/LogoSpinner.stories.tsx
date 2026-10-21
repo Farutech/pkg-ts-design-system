@@ -10,6 +10,27 @@ import { Spinner } from '@/components/ui/Spinner'
  */
 const meta = {
   title: '6-Feedback/LogoSpinner',
+  component: LogoSpinner,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['spin', 'flipHorizontal', 'flip'],
+      description: 'Variante de animación del logo',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg', 'xl'],
+      description: 'Tamaño del logo animado',
+    },
+    invertColors: { control: 'boolean', description: 'Invertir colores del logo' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    variant: 'spin',
+    size: 'md',
+    invertColors: false,
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -18,7 +39,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof LogoSpinner>
 
 export default meta
 type Story = StoryObj<typeof meta>

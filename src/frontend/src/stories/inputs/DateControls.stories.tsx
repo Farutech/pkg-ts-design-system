@@ -15,6 +15,7 @@ import type { SingleDatePickerProps, DateRangePickerProps, TimeRangePickerProps 
  */
 const meta: Meta = {
   title: '4-Inputs/DateControls',
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
@@ -22,6 +23,22 @@ const meta: Meta = {
         component: 'Suite completa de controles de fecha y hora integrados con el locale del store (español). Incluye presets rápidos, navegación avanzada y validación.',
       },
     },
+  },
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo de fecha' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    clearable: { control: 'boolean', description: 'Permite limpiar la selección' },
+    placement: {
+      control: 'select',
+      options: ['top', 'bottom', 'left', 'right'],
+      description: 'Posición del popover del calendario',
+    },
+    showTime: { control: 'boolean', description: 'Mostrar selector de hora' },
+    minTime: { control: 'text', description: 'Hora mínima permitida (HH:mm)' },
+    maxTime: { control: 'text', description: 'Hora máxima permitida (HH:mm)' },
+    step: { control: 'number', description: 'Paso de minutos en el selector de hora' },
+    presets: { control: 'object', description: 'Lista de presets de rango rápido' },
   },
 }
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { ListGroup } from '@/components/ui/ListGroup'
 import { HomeIcon, UserGroupIcon, CogIcon, BellIcon, DocumentTextIcon, EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
 
@@ -22,6 +22,16 @@ const NAV_ITEMS = [
 
 const meta = {
   title: '5-Data Display/ListGroup',
+  component: ListGroup,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'flush', 'bordered'],
+      description: 'Variante de estilo de la lista',
+    },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -33,9 +43,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const ListaDeNavegacion: Story = {
+export const ListaDeNavegacion = {
   render: () => (
     <div style={{ width: '280px' }}>
       <ListGroup items={NAV_ITEMS} variant="default" />
@@ -43,7 +52,7 @@ export const ListaDeNavegacion: Story = {
   ),
 }
 
-export const Flush: Story = {
+export const Flush = {
   name: 'Variante flush (sin bordes)',
   render: () => (
     <div style={{ width: '280px' }}>
@@ -52,7 +61,7 @@ export const Flush: Story = {
   ),
 }
 
-export const Bordered: Story = {
+export const Bordered = {
   name: 'Variante bordered (con borde exterior)',
   render: () => (
     <div style={{ width: '280px' }}>
@@ -61,7 +70,7 @@ export const Bordered: Story = {
   ),
 }
 
-export const ConBadges: Story = {
+export const ConBadges = {
   name: 'Con badges de conteo',
   render: () => (
     <div style={{ width: '280px' }}>

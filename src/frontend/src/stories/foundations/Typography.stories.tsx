@@ -111,6 +111,7 @@ function TypographyScale() {
 
 const meta = {
   title: '1-Foundations/Typography',
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {

@@ -29,7 +29,7 @@ export function ButtonGroup({
   return (
     <div
       className={cn(
-        'inline-flex',
+        'inline-flex shrink-0 whitespace-nowrap',
         orientation === 'vertical' ? 'flex-col' : 'flex-row',
         variant === 'outlined' && 'border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden',
         className

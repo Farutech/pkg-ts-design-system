@@ -11,6 +11,31 @@ import { useState } from 'react'
  */
 const meta = {
   title: '4-Inputs/MaskedInput',
+  component: MaskedInput,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    mask: {
+      control: 'select',
+      options: ['phone-co', 'phone-us', 'date-dmy', 'credit-card', 'currency-cop', 'custom'],
+      description: 'Máscara de formato predefinida',
+    },
+    customMask: { control: 'text', description: 'Máscara personalizada (solo si mask="custom")' },
+    maskChar: { control: 'text', description: 'Carácter de relleno para máscara personalizada' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    readOnly: { control: 'boolean', description: 'Modo solo lectura' },
+    error: { control: 'text', description: 'Mensaje de error' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    label: 'Teléfono Colombia',
+    placeholder: '+57 321 456 7890',
+    mask: 'phone-co',
+    disabled: false,
+    readOnly: false,
+    error: undefined,
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -19,7 +44,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof MaskedInput>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -129,6 +154,9 @@ export const TestInteraccion: Story = {
     const canvas = within(canvasElement)
     const input = canvas.getByRole('textbox', { name: /tarjeta de prueba/i })
     await userEvent.type(input, '1234567890123456')
+    // Patrón documentado "Focus Unmasked / Blur Formatted": al perder el foco
+    // el campo debe presentar el valor formateado.
+    await userEvent.tab()
     await expect(input).toHaveValue('1234 5678 9012 3456')
   },
 }

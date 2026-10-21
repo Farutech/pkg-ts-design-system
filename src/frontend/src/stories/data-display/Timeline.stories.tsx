@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { Timeline } from '@/components/ui/Timeline'
 import { CheckCircleIcon, InformationCircleIcon, XMarkIcon, UserGroupIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
 
@@ -20,6 +20,11 @@ const ACTIVITY_ITEMS = [
 
 const meta = {
   title: '5-Data Display/Timeline',
+  component: Timeline,
+  tags: ['autodocs'],
+  argTypes: {
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -31,9 +36,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const HistorialDeActividad: Story = {
+export const HistorialDeActividad = {
   render: () => (
     <div style={{ width: '600px' }}>
       <Timeline items={ACTIVITY_ITEMS} />
@@ -41,7 +45,7 @@ export const HistorialDeActividad: Story = {
   ),
 }
 
-export const ConItemsPersonalizados: Story = {
+export const ConItemsPersonalizados = {
   name: 'Con items personalizados',
   render: () => (
     <div style={{ width: '480px' }}>

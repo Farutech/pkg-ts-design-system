@@ -77,6 +77,7 @@ function ShadowsPage() {
 
 const meta = {
   title: '1-Foundations/Shadows',
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {

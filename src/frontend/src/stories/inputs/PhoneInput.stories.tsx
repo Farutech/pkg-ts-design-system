@@ -10,6 +10,26 @@ import { useState } from 'react'
  */
 const meta = {
   title: '4-Inputs/PhoneInput',
+  component: PhoneInput,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    defaultCountry: { control: 'text', description: 'Código de país por defecto (ej. CO, MX, US)' },
+    showSearch: { control: 'boolean', description: 'Mostrar buscador de países' },
+    error: { control: 'text', description: 'Mensaje de error de validación' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    pattern: { control: 'object', description: 'Patrón de validación RegExp' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    label: 'Teléfono de contacto',
+    placeholder: 'Número de teléfono',
+    defaultCountry: 'CO',
+    showSearch: false,
+    disabled: false,
+    error: undefined,
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -18,7 +38,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof PhoneInput>
 
 export default meta
 type Story = StoryObj<typeof meta>

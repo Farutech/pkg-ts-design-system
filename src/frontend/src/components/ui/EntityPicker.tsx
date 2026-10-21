@@ -3,7 +3,7 @@ import { cn } from '@/utils/cn'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 import { useDebounce } from '@/hooks/useDebounce'
 
 export interface EntityPickerProps<T extends { id: string | number }> {

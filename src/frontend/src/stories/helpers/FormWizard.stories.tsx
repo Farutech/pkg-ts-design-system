@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { FormWizard } from '@/components/forms/FormWizard';
 import type { WizardStep } from '@/components/forms/FormWizard';
@@ -7,7 +7,13 @@ import { FormField } from '@/components/forms/FormField';
 import { Input } from '@/components/ui/Input';
 
 const meta = {
-  title: '7-Helpers/FormWizard',
+  title: '10-Helpers/FormWizard',
+  component: FormWizard,
+  tags: ['autodocs'],
+  argTypes: {
+    steps: { control: 'object', description: 'Lista de pasos del wizard' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'padded',
     docs: {
@@ -19,9 +25,8 @@ const meta = {
 } satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const DefaultWizard: Story = {
+export const DefaultWizard = {
   render: () => {
     const [formData, setFormData] = useState({
       companyName: '',
@@ -106,7 +111,7 @@ export const DefaultWizard: Story = {
       </div>
     );
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement);
     expect(canvas.getByText(/Datos Generales/i)).toBeInTheDocument();
     const nextBtn = canvas.getByRole('button', { name: /Siguiente/i });

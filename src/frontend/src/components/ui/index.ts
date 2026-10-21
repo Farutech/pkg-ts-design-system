@@ -186,15 +186,32 @@ export type {
 } from './Table'
 
 export { DataTable } from './DataTable'
+export {
+  DataTableEmptyState,
+  DataTableLoadingState,
+  type DataTableEmptyStateProps,
+  type DataTableLoadingStateProps,
+} from './data-table/DataTableStates'
+export {
+  DataTableToolbar,
+  type DataTableToolbarProps,
+} from './data-table/DataTableToolbar'
+export {
+  DataTableFilters,
+  DataTableFilterControl,
+  type DataTableFiltersProps,
+} from './data-table/DataTableFilters'
 export type {
   DataTableProps,
   DataTablePagination,
   DataTableActions,
   DataTableGlobalAction,
   DataTableFilter,
-  FilterState,
+  DataTableColumn,
   FilterType,
-} from './DataTable'
+  FilterState,
+  FilterValue,
+} from './data-table/types'
 
 export { StatsCard, StatsCardGroup } from './StatsCard'
 export type { StatsCardProps } from './StatsCard'
@@ -372,6 +389,6 @@ export type { ThemeToggleProps } from './ThemeToggle'
 
 export { EntityPicker, type EntityPickerProps } from './EntityPicker'
 export { UserPicker, type UserPickerProps, type UserEntity } from './UserPicker'
-export { Dropzone, type DropzoneProps } from './Upload/Dropzone'
-export { FileList, type FileListProps, type UploadFileItem } from './Upload/FileList'
-export { UploadProgress, type UploadProgressProps } from './Upload/UploadProgress'
+export { Dropzone, type DropzoneProps } from './upload/Dropzone'
+export { FileList, type FileListProps, type UploadFileItem } from './upload/FileList'
+export { UploadProgress, type UploadProgressProps } from './upload/UploadProgress'

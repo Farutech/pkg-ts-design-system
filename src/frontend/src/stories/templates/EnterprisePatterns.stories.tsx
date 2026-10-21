@@ -5,10 +5,20 @@ import { LoginPage } from '@/auth-screens/LoginPage'
 import { CRUDPage } from '@/components/crud/CRUDPage'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 const meta: Meta = {
   title: '11-Templates/EnterprisePatterns',
+  tags: ['autodocs'],
+  argTypes: {
+    appName: { control: 'text', description: 'Nombre de la aplicación' },
+    showCreator: { control: 'boolean', description: 'Mostrar atribución al creador' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    appName: 'Afilamos Operaciones',
+    showCreator: true,
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {

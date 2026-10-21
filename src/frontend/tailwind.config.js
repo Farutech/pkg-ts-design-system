@@ -12,31 +12,47 @@
  */
 
 /** @type {import('tailwindcss').Config} */
+
+/* Map family -> custom property prefix (DRY: 1 entrada genera las 11 tonalidades) */
+const PALETTE_FAMILIES = ['primary', 'secondary', 'accent', 'success', 'warning', 'danger', 'info']
+
+/**
+ * Genera la escala completa 50–950 (+ DEFAULT/600) de una familia a partir de
+ * sus custom properties `--ft-<familia>-<tono>` (canales RGB). Soporta
+ * opacidad: `bg-danger-700/30`.
+ */
+function ftScale(family) {
+  const scale = {}
+  for (const shade of [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]) {
+    scale[shade] = `rgb(var(--ft-${family}-${shade}) / <alpha-value>)`
+  }
+  scale.DEFAULT = `rgb(var(--ft-${family}-600) / <alpha-value>)`
+  return scale
+}
+
 export default {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
-    './.storybook/**/*.{js,ts,jsx,tsx}',
+    './.storybook/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
-        /* Paleta primitiva como canales RGB -> soporta `bg-primary-600/30` */
-        primary: {
-          50: 'rgb(var(--ft-primary-50) / <alpha-value>)',
-          100: 'rgb(var(--ft-primary-100) / <alpha-value>)',
-          200: 'rgb(var(--ft-primary-200) / <alpha-value>)',
-          300: 'rgb(var(--ft-primary-300) / <alpha-value>)',
-          400: 'rgb(var(--ft-primary-400) / <alpha-value>)',
-          500: 'rgb(var(--ft-primary-500) / <alpha-value>)',
-          600: 'rgb(var(--ft-primary-600) / <alpha-value>)',
-          700: 'rgb(var(--ft-primary-700) / <alpha-value>)',
-          800: 'rgb(var(--ft-primary-800) / <alpha-value>)',
-          900: 'rgb(var(--ft-primary-900) / <alpha-value>)',
-          950: 'rgb(var(--ft-primary-950) / <alpha-value>)',
-          DEFAULT: 'rgb(var(--ft-primary-600) / <alpha-value>)',
-        },
-        accent: 'var(--ft-color-accent)',
+        /* 7 familias × 11 tonalidades (50–950) + DEFAULT. Cada familia tiene
+           además su semántico `soft` (tono 100) para backgrounds suaves.
+           Nota: accent ancla su DEFAULT en 500 (compat visual con 1.x). */
+        ...Object.fromEntries(
+          PALETTE_FAMILIES.map((family) => [
+            family,
+            {
+              ...ftScale(family),
+              DEFAULT: `rgb(var(--ft-${family}-${family === 'accent' ? 500 : 600}) / <alpha-value>)`,
+              soft: `rgb(var(--ft-${family}-100) / <alpha-value>)`,
+            },
+          ]),
+        ),
+        /* Alias semánticos (compat) — resuelven vía --ft-color-* */
         spark: 'var(--ft-color-spark)',
         surface: {
           DEFAULT: 'var(--ft-color-surface)',
@@ -45,22 +61,6 @@ export default {
         },
         foreground: 'var(--ft-color-foreground)',
         muted: 'var(--ft-color-muted-foreground)',
-        success: {
-          DEFAULT: 'var(--ft-color-success)',
-          soft: 'var(--ft-color-success-soft)',
-        },
-        warning: {
-          DEFAULT: 'var(--ft-color-warning)',
-          soft: 'var(--ft-color-warning-soft)',
-        },
-        danger: {
-          DEFAULT: 'var(--ft-color-danger)',
-          soft: 'var(--ft-color-danger-soft)',
-        },
-        info: {
-          DEFAULT: 'var(--ft-color-info)',
-          soft: 'var(--ft-color-info-soft)',
-        },
       },
       fontFamily: {
         sans: 'var(--ft-font-sans)',

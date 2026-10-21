@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { cn } from '@/utils/cn'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 import { useBrandConfig } from '@/providers/DesignSystemProvider'
 
 export interface BreadcrumbItem {

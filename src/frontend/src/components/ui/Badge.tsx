@@ -41,7 +41,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full font-medium',
+        'inline-flex items-center rounded-full font-medium whitespace-nowrap shrink-0 [&>svg]:shrink-0',
         'ft-badge',
         `ft-badge--${variant}`,
         `ft-badge--${size}`,

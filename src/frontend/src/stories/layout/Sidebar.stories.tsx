@@ -13,6 +13,7 @@ import type { SidebarProps } from '@/components/layout/Sidebar'
 const meta = {
   title: '2-Layout/Sidebar',
   component: Sidebar,
+  tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
     docs: {

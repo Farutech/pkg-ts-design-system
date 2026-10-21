@@ -1,6 +1,9 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import type { StorybookConfig } from '@storybook/react-vite'
-import path from 'node:path'
+import path from 'node:path';
 import { fileURLToPath } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -45,6 +48,14 @@ const config: StorybookConfig = {
       chunkSizeWarningLimit: 1500,
     }
     config.server = config.server ?? {}
+    config.server.host = '0.0.0.0'
+    config.server.port = 3000
+    config.server.allowedHosts = true
+    config.server.cors = true
+    config.server.headers = {
+      ...(config.server.headers ?? {}),
+      'Access-Control-Allow-Origin': '*',
+    }
     config.server.watch = {
       ...(config.server.watch ?? {}),
       ignored: ['**/storybook-static/**', '**/dist/**'],

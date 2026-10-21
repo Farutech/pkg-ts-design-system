@@ -101,6 +101,7 @@ function SpacingPage() {
 
 const meta = {
   title: '1-Foundations/Spacing',
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {

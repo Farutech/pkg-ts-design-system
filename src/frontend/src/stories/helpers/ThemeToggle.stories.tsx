@@ -38,6 +38,25 @@ function ThemeToggleDemo() {
 
 const meta = {
   title: '10-Helpers/ThemeToggle',
+  component: ThemeToggle,
+  tags: ['autodocs'],
+  argTypes: {
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'Tamaño del botón',
+    },
+    variant: {
+      control: 'select',
+      options: ['ghost', 'outline', 'solid'],
+      description: 'Variante visual',
+    },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    size: 'md',
+    variant: 'ghost',
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -46,7 +65,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof ThemeToggle>
 
 export default meta
 type Story = StoryObj<typeof meta>

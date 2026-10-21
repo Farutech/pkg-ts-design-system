@@ -3,13 +3,19 @@ import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 const root = process.cwd()
-const addonRoot = path.join(root, 'node_modules', '@storybook', 'addon-vitest')
+const candidatePaths = [
+  path.resolve(import.meta.dirname, '../node_modules/@storybook/addon-vitest'),
+  path.join(root, 'node_modules', '@storybook', 'addon-vitest'),
+  path.join(root, 'src', 'frontend', 'node_modules', '@storybook', 'addon-vitest'),
+]
+const addonRoot = candidatePaths.find((p) => existsSync(path.join(p, 'package.json'))) || candidatePaths[0]
 const packagePath = path.join(addonRoot, 'package.json')
 const presetPath = path.join(addonRoot, 'dist', 'preset.js')
 const vitestPath = path.join(addonRoot, 'dist', 'node', 'vitest.js')
 
 if (!existsSync(packagePath) || !existsSync(presetPath) || !existsSync(vitestPath)) {
-  throw new Error('@storybook/addon-vitest is not installed; run npm install first.')
+  console.log('[storybook-vitest] @storybook/addon-vitest not installed yet; skipping patch.')
+  process.exit(0)
 }
 
 const { version } = JSON.parse(readFileSync(packagePath, 'utf8'))

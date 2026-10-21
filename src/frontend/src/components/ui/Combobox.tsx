@@ -17,7 +17,7 @@ import {
 } from './DataMapping'
 import { ListboxCore } from './ListboxCore'
 import { ClickOutside } from '@/primitives/ClickOutside'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 import { useFormContext } from './Form'
 import type { LabelMode } from './input/types'
 
@@ -108,6 +108,8 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
   const isFloating = effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
   const generatedId = useId()
   const comboboxId = id || `ft-combobox-${generatedId}`
+  const listboxId = `${comboboxId}-listbox`
+  const messageId = `${comboboxId}-message`
 
   const [isOpen, setIsOpen] = useState(false)
   const [internalValue, setInternalValue] = useState<string>(
@@ -209,6 +211,13 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
             <input
               id={comboboxId}
               type="text"
+              role="combobox"
+              aria-expanded={isOpen}
+              aria-controls={listboxId}
+              aria-haspopup="listbox"
+              aria-autocomplete="list"
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error || description ? messageId : undefined}
               value={displayInputValue}
               onChange={handleInputChange}
               onFocus={() => !disabled && setIsOpen(true)}
@@ -252,6 +261,7 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
         {isOpen && (
           <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg overflow-hidden">
             <ListboxCore
+              id={listboxId}
               items={filteredOptions}
               selectedKey={currentValue}
               onSelectKey={handleSelect}
@@ -270,8 +280,8 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
           </div>
         )}
 
-        {error && <p role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
-        {description && !error && <p className="mt-1 text-xs text-gray-500">{description}</p>}
+        {error && <p id={messageId} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
+        {description && !error && <p id={messageId} className="mt-1 text-xs text-gray-500">{description}</p>}
       </div>
     </ClickOutside>
   )

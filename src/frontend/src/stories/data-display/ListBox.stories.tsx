@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { ListBox } from '@/components/ui/ListBox'
 import { useState } from 'react'
 
@@ -20,6 +20,17 @@ const FRUITS = [
 
 const meta = {
   title: '5-Data Display/ListBox',
+  component: ListBox,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    multiple: { control: 'boolean', description: 'Permitir selección múltiple' },
+    searchable: { control: 'boolean', description: 'Habilitar búsqueda inline' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    error: { control: 'text', description: 'Mensaje de error de validación' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -31,9 +42,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const SingleSelection: Story = {
+export const SingleSelection = {
   render: () => {
     const [value, setValue] = useState('')
     return (
@@ -55,7 +65,7 @@ export const SingleSelection: Story = {
   },
 }
 
-export const MultipleSelection: Story = {
+export const MultipleSelection = {
   name: 'Selección múltiple',
   render: () => {
     const [value, setValue] = useState<string[]>([])
@@ -80,7 +90,7 @@ export const MultipleSelection: Story = {
   },
 }
 
-export const ConBusqueda: Story = {
+export const ConBusqueda = {
   name: 'Con búsqueda',
   render: () => {
     const [value, setValue] = useState('')
@@ -100,7 +110,7 @@ export const ConBusqueda: Story = {
   },
 }
 
-export const BusquedaApiDebounce: Story = {
+export const BusquedaApiDebounce = {
   name: 'Búsqueda remota API con Debounce (Anexo C)',
   render: () => {
     const [value, setValue] = useState('')
@@ -141,7 +151,7 @@ export const BusquedaApiDebounce: Story = {
   },
 }
 
-export const ConError: Story = {
+export const ConError = {
   name: 'Con estado de error',
   render: () => (
     <div style={{ width: '280px' }}>

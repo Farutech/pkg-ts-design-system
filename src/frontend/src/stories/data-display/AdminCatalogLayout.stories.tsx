@@ -28,7 +28,9 @@ Exporta además \`AdminTableHeader\` y \`AdminTableRow\` para mantener consisten
         `,
       },
     },
-    viewport: { defaultViewport: 'desktop' },
+  },
+  globals: {
+    viewport: { value: 'desktop', isRotated: false },
   },
   argTypes: {
     eyebrow: { control: 'text' },
@@ -166,7 +168,7 @@ export const MinimalHeader: Story = {
  * Mobile (375px).
  */
 export const Mobile: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileSmall' } },
+  globals: { viewport: { value: 'mobileSmall', isRotated: false } },
   args: WithHeaderActions.args,
 }
 
@@ -174,7 +176,7 @@ export const Mobile: Story = {
  * Tablet (iPad 768px).
  */
 export const Tablet: Story = {
-  parameters: { viewport: { defaultViewport: 'tablet' } },
+  globals: { viewport: { value: 'tablet', isRotated: false } },
   args: WithHeaderActions.args,
 }
 
@@ -182,7 +184,7 @@ export const Tablet: Story = {
  * Laptop (1280px).
  */
 export const Laptop: Story = {
-  parameters: { viewport: { defaultViewport: 'laptop' } },
+  globals: { viewport: { value: 'laptop', isRotated: false } },
   args: WithHeaderActions.args,
 }
 

@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { SessionTimeoutDialog } from '@/security/SessionTimeoutDialog';
 import { Button } from '@/components/ui/Button';
 
 const meta = {
   title: '7-Overlays/SessionTimeoutDialog',
+  component: SessionTimeoutDialog,
+  tags: ['autodocs'],
+  argTypes: {
+    enabled: { control: 'boolean', description: 'Habilitar monitoreo de sesión' },
+    idleTimeoutMs: { control: 'number', description: 'Tiempo de inactividad en ms antes de advertir' },
+    warningCountdownSeconds: { control: 'number', description: 'Segundos de cuenta regresiva de advertencia' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -17,9 +24,8 @@ const meta = {
 } satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const InteractiveWarning: Story = {
+export const InteractiveWarning = {
   render: () => {
     const [enabled, setEnabled] = useState(false);
 
@@ -47,7 +53,7 @@ export const InteractiveWarning: Story = {
       </div>
     );
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', { name: /Iniciar Monitoreo de Sesión/i });
     expect(trigger).toBeInTheDocument();

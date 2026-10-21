@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { UserPicker, type UserEntity } from '@/components/ui/UserPicker'
 
 const mockUsers: UserEntity[] = [
@@ -8,19 +8,39 @@ const mockUsers: UserEntity[] = [
   { id: '3', name: 'Andrés Felipe Gómez', email: 'andres.gomez@afilamos.com', role: 'Jefe de Planta', department: 'Operaciones' },
 ]
 
-const meta: Meta<typeof UserPicker> = {
-  title: 'Components/Selection/UserPicker',
+const meta: Meta = {
+  title: '4-Inputs/UserPicker',
   component: UserPicker,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    error: { control: 'text', description: 'Mensaje de error de validación' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'Selector de usuario con avatar, rol y departamento. Búsqueda async y selección de entidad.',
+      },
+    },
+  },
 }
 export default meta
 
-export const Default: StoryObj<typeof UserPicker> = {
-  render: () => {
+export const Default = {
+  args: {
+    label: 'Operario Asignado',
+    placeholder: 'Buscar operario...',
+  },
+  render: (args: any) => {
     const [selected, setSelected] = useState<UserEntity | null>(null)
     return (
       <div className="max-w-md p-6 bg-white dark:bg-gray-900 rounded-xl space-y-4">
         <UserPicker
-          label="Operario Asignado"
+          {...args}
           value={selected}
           onValueChange={setSelected}
           onSearch={(query) => {

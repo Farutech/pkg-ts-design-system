@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { Accordion, AccordionItem } from '@/components/ui/Accordion'
 
 /**
@@ -45,6 +45,17 @@ function FAQAccordion() {
 
 const meta = {
   title: '5-Data Display/Accordion',
+  component: Accordion,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'flush'],
+      description: 'Variante de estilo del acordeón',
+    },
+    allowMultiple: { control: 'boolean', description: 'Permitir múltiples items abiertos' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -56,13 +67,12 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const FAQ: Story = {
+export const FAQ = {
   render: () => <FAQAccordion />,
 }
 
-export const ConItemPorDefectoAbierto: Story = {
+export const ConItemPorDefectoAbierto = {
   name: 'Con item abierto por defecto',
   render: () => (
     <div style={{ width: '480px' }}>
@@ -89,7 +99,7 @@ export const ConItemPorDefectoAbierto: Story = {
   ),
 }
 
-export const UnoSoloDesplegado: Story = {
+export const UnoSoloDesplegado = {
   name: 'Uno solo desplegado (allowMultiple = false)',
   render: () => (
     <div style={{ width: '500px' }}>
@@ -117,7 +127,7 @@ export const UnoSoloDesplegado: Story = {
   ),
 }
 
-export const MultiplesDesplegados: Story = {
+export const MultiplesDesplegados = {
   name: 'Múltiples desplegados (allowMultiple = true)',
   render: () => (
     <div style={{ width: '500px' }}>
@@ -145,7 +155,7 @@ export const MultiplesDesplegados: Story = {
   ),
 }
 
-export const VarianteFlush: Story = {
+export const VarianteFlush = {
   name: 'Variante flush (separación mínima)',
   render: () => (
     <div style={{ width: '480px' }}>

@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
-import { Dropzone, FileList, UploadProgress } from '@/components/ui/Upload';
-import type { UploadFileItem } from '@/components/ui/Upload';
+import { Dropzone, FileList, UploadProgress } from '@/components/ui/upload';
+import type { UploadFileItem } from '@/components/ui/upload';
 
 const meta = {
   title: '4-Inputs/UploadSuite',
+  tags: ['autodocs'],
+  argTypes: {
+    maxSizeBytes: { control: 'number', description: 'Tamaño máximo de archivo en bytes' },
+    accept: { control: 'text', description: 'Tipos de archivo aceptados (ej. .pdf,.png)' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    maxSizeBytes: 10 * 1024 * 1024,
+    accept: '.pdf,.png,.jpg,.docx',
+    disabled: false,
+  },
   parameters: {
     layout: 'padded',
     docs: {

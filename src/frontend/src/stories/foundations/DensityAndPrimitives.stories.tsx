@@ -8,7 +8,8 @@ import {
 } from '@/index'
 
 const meta: Meta = {
-  title: 'Foundations/Cimiento y Densidad (Fase 0)',
+  title: '1-Foundations/DensityAndPrimitives',
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

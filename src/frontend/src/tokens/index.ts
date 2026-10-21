@@ -1,40 +1,26 @@
 /**
- * Tokens de diseño - Sistema de diseño Farutech
+ * Tokens de diseño — Sistema de diseño Farutech
  * Variables CSS customizables para temas, colores, tipografía, espaciado, etc.
+ *
+ * NOTA (revisión DS): la paleta legado `colors` ahora DERIVA de las escalas
+ * canónicas (fuente única en `palette.ts` / `tokens.css`) — antes declaraba un
+ * primary verde que contradecía el azul canónico. Los tonos 50–950 están
+ * completos para todas las familias.
  */
+import { CANONICAL_SCALES } from './palette'
 
 export const colors = {
-  // Colores primarios (confianza, profesionalismo)
-  primary: {
-    50: '#f0fdf4',
-    100: '#dcfce7',
-    200: '#bbf7d0',
-    300: '#86efac',
-    400: '#4ade80',
-    500: '#22c55e',
-    600: '#16a34a',
-    700: '#15803d',
-    800: '#166534',
-    900: '#14532d',
-  },
-  // Colores secundarios (innovación, tecnología)
-  secondary: {
-    50: '#f5f3ff',
-    100: '#ede9fe',
-    200: '#ddd6fe',
-    300: '#c4b5fd',
-    400: '#a78bfa',
-    500: '#8b5cf6',
-    600: '#7c3aed',
-    700: '#6d28d9',
-    800: '#5b21b6',
-    900: '#4c1d95',
-  },
-  // Colores semánticos
-  success: '#22c55e',
-  warning: '#f59e0b',
-  error: '#ef4444',
-  info: '#3b82f6',
+  // Paleta de marca (azul — canónica, espejo de --ft-primary-*)
+  primary: CANONICAL_SCALES.primary,
+  // Secundario (violeta)
+  secondary: CANONICAL_SCALES.secondary,
+  // Acento (esmeralda)
+  accent: CANONICAL_SCALES.accent,
+  // Colores semánticos con su escala completa de tonalidades
+  success: CANONICAL_SCALES.success,
+  warning: CANONICAL_SCALES.warning,
+  error: CANONICAL_SCALES.danger,
+  info: CANONICAL_SCALES.info,
   // Grises
   gray: {
     50: '#f9fafb',
@@ -47,6 +33,7 @@ export const colors = {
     700: '#374151',
     800: '#1f2937',
     900: '#111827',
+    950: '#030712',
   },
 } as const
 
@@ -152,4 +139,8 @@ export const zIndex = {
 export * from './tokens'
 export * from './input'
 
+export * from './input-types'
 export * from './inputTypes'
+
+// Paleta: generación de escalas 50–950 desde un color + presets de marca
+export * from './palette'

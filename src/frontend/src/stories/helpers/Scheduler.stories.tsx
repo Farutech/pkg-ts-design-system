@@ -48,6 +48,19 @@ const SAMPLE_APPOINTMENTS = [
 
 const meta = {
   title: '10-Helpers/Scheduler',
+  component: Scheduler,
+  tags: ['autodocs'],
+  argTypes: {
+    defaultView: {
+      control: 'select',
+      options: ['day', 'week', 'month', 'bimonth', 'quarter', 'semester', 'year'],
+      description: 'Vista predeterminada del calendario',
+    },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    defaultView: 'month',
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {
@@ -56,7 +69,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta
+} satisfies Meta<typeof Scheduler>
 
 export default meta
 type Story = StoryObj<typeof meta>

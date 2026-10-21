@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta } from '@storybook/react-vite'
 import { IconButton } from '@/components/ui/IconButton'
 import { BellIcon, MagnifyingGlassIcon, CogIcon, UserIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
@@ -12,6 +12,24 @@ import { useState } from 'react'
  */
 const meta = {
   title: '10-Helpers/IconButton',
+  component: IconButton,
+  tags: ['autodocs'],
+  argTypes: {
+    icon: { control: 'object', description: 'Icono a mostrar dentro del botón' },
+    variant: {
+      control: 'select',
+      options: ['ghost', 'solid', 'outline'],
+      description: 'Variante visual del botón',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'Tamaño del botón',
+    },
+    rounded: { control: 'boolean', description: 'Bordes completamente redondeados' },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
   parameters: {
     layout: 'centered',
     docs: {
@@ -23,9 +41,8 @@ const meta = {
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-export const Variantes: Story = {
+export const Variantes = {
   render: () => {
     const [count, setCount] = useState(0)
     return (

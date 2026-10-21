@@ -18,8 +18,8 @@ import {
 } from 'react'
 import type { DesignTokens, Density } from '@/tokens/tokens'
 import { tokensToStyle, densityToStyle } from '@/tokens/tokens'
-import type { IconAdapter } from '@/primitives/Icon/IconAdapter'
-import { IconProvider } from '@/primitives/Icon/IconContext'
+import type { IconAdapter } from '@/primitives/icon/IconAdapter'
+import { IconProvider } from '@/primitives/icon/IconContext'
 
 export type LinkComponent = (props: { href: string; children: ReactNode; className?: string }) => ReactNode
 

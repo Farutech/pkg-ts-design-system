@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 export interface SessionTimeoutDialogProps {
   /** Tiempo de inactividad antes de advertir (en milisegundos). Default: 15 minutos (900,000 ms) */

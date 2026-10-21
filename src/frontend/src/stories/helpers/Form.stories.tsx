@@ -117,6 +117,11 @@ function FormDemo() {
 
 const meta = {
   title: '10-Helpers/Form',
+  tags: ['autodocs'],
+  argTypes: {
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {},
   parameters: {
     layout: 'centered',
     docs: {

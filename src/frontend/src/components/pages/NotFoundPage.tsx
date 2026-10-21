@@ -1,7 +1,7 @@
 import React from 'react'
 import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/Button'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 export interface NotFoundPageProps {
   title?: string

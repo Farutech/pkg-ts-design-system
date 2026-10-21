@@ -20,6 +20,55 @@
  * ============================================================================
  */
 
+/**
+ * ============================================================================
+ *  Escalas de paleta — familias y tonalidades (DRY)
+ * ============================================================================
+ * Cada familia expone 11 tonalidades (50–950) como custom properties
+ * `--ft-<familia>-<tono>` con canales RGB. En tokens de React se escriben
+ * planas: `success500`, `danger100`, `secondary950` (camelCase).
+ */
+export type PaletteFamily =
+  | 'primary'
+  | 'secondary'
+  | 'accent'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+
+export type PaletteShade =
+  | 50
+  | 100
+  | 200
+  | 300
+  | 400
+  | 500
+  | 600
+  | 700
+  | 800
+  | 900
+  | 950
+
+export const PALETTE_SHADES: readonly PaletteShade[] = [
+  50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
+] as const
+
+export const PALETTE_FAMILIES: readonly PaletteFamily[] = [
+  'primary',
+  'secondary',
+  'accent',
+  'success',
+  'warning',
+  'danger',
+  'info',
+] as const
+
+/** Claves planas de tonalidad: `success500`, `primary950`, ... */
+export type ScaleTokens = {
+  [F in PaletteFamily as `${F}${PaletteShade}`]?: string
+}
+
 export type DesignTokens = {
   /* ---------------------------------------------------------------- superficie */
   colorBackground?: string
@@ -37,6 +86,8 @@ export type DesignTokens = {
   colorPrimaryHover?: string
   colorPrimarySoft?: string
   colorOnPrimary?: string
+  colorSecondary?: string
+  colorSecondarySoft?: string
   colorAccent?: string
   colorSpark?: string
 
@@ -49,19 +100,6 @@ export type DesignTokens = {
   colorDangerSoft?: string
   colorInfo?: string
   colorInfoSoft?: string
-
-  /* -------------------------------------------- paleta primitiva (canales RGB) */
-  primary50?: string
-  primary100?: string
-  primary200?: string
-  primary300?: string
-  primary400?: string
-  primary500?: string
-  primary600?: string
-  primary700?: string
-  primary800?: string
-  primary900?: string
-  primary950?: string
 
   /* ----------------------------------------------------------------- tipografía */
   fontSans?: string
@@ -92,7 +130,7 @@ export type DesignTokens = {
   densityPaddingY?: string
   densityFontSize?: string
   densityGap?: string
-}
+} & ScaleTokens
 
 export type Density = 'comfortable' | 'compact' | 'dense'
 
@@ -146,13 +184,21 @@ export function densityToStyle(density: Density = 'compact'): Record<string, str
   }
 }
 
-/** Claves de la paleta primitiva que Tailwind consume como canales RGB. */
-export const PRIMARY_SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
-export type PrimaryShade = (typeof PRIMARY_SHADES)[number]
+/** Claves de la paleta primitiva que Tailwind consume como canales RGB. @deprecated Usa PALETTE_SHADES */
+export const PRIMARY_SHADES = PALETTE_SHADES
+export type PrimaryShade = PaletteShade
 
 /** camelCase -> `--ft-kebab-case` */
 export function tokenToCssVar(key: string): string {
   return `--ft-${key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}`
+}
+
+/** `success500` -> `--ft-success-500` | `colorPrimary` -> `--ft-color-primary` */
+function scaleKeyToCssVar(key: string): string | undefined {
+  const match = /^([a-z]+)(50|100|200|300|400|500|600|700|800|900|950)$/.exec(key)
+  if (!match) return undefined
+  if (!(PALETTE_FAMILIES as readonly string[]).includes(match[1])) return undefined
+  return `--ft-${match[1]}-${match[2]}`
 }
 
 /**
@@ -191,28 +237,58 @@ export function colorToRgbChannels(value: string): string | undefined {
   return undefined
 }
 
-/** Traduce overrides de tokens a custom properties inline para el `style` de React. */
+/**
+ * Traduce overrides de tokens a custom properties inline para el `style` de React.
+ *
+ * - Tonalidades planas (`success500`, `secondary950`) -> `--ft-success-500` con
+ *   canales RGB (habilita `bg-success-500/30` en Tailwind).
+ * - Semánticos (`colorSuccess`) -> `--ft-color-success` Y sincronizan su tono
+ *   base en la escala (`--ft-success-600`) para que las utilidades sigan el tema.
+ */
 export function tokensToStyle(tokens: DesignTokens): Record<string, string> {
   const style: Record<string, string> = {}
+
+  /* Semántico -> tono base de su escala (y su hover/soft) */
+  const SEMANTIC_SCALE_SYNC: Record<string, readonly [string, PaletteShade]> = {
+    colorPrimary: ['primary', 600],
+    colorPrimaryHover: ['primary', 700],
+    colorPrimarySoft: ['primary', 100],
+    colorSecondary: ['secondary', 600],
+    colorSecondarySoft: ['secondary', 100],
+    colorAccent: ['accent', 500],
+    colorSpark: ['warning', 500],
+    colorSuccess: ['success', 600],
+    colorSuccessSoft: ['success', 100],
+    colorWarning: ['warning', 600],
+    colorWarningSoft: ['warning', 100],
+    colorDanger: ['danger', 600],
+    colorDangerSoft: ['danger', 100],
+    colorInfo: ['info', 600],
+    colorInfoSoft: ['info', 100],
+  }
 
   for (const [key, value] of Object.entries(tokens)) {
     if (value === undefined || value === '') continue
 
-    const isPrimaryScale = /^primary(50|100|200|300|400|500|600|700|800|900|950)$/.test(key)
     const channels = colorToRgbChannels(value)
+    const scaleVar = scaleKeyToCssVar(key)
 
-    if (isPrimaryScale && channels) {
-      // Canales para que Tailwind aplique opacidad: bg-primary-600/30
-      style[tokenToCssVar(key)] = channels
+    // Tonalidad de escala: emitir canales RGB (`--ft-danger-700`)
+    if (scaleVar && channels) {
+      style[scaleVar] = channels
+      continue
+    }
+    if (scaleVar) {
+      style[scaleVar] = value
       continue
     }
 
     style[tokenToCssVar(key)] = value
 
-    // El color semántico principal sincroniza la paleta primitiva para que las
-    // utilidades Tailwind (bg-primary-600, text-primary-700...) sigan el tema.
-    if (key === 'colorPrimary' && channels) style['--ft-primary-600'] = channels
-    if (key === 'colorPrimaryHover' && channels) style['--ft-primary-700'] = channels
+    // El semántico sincroniza su tono base para que Tailwind (bg-danger-600,
+    // text-success-700...) siga el mismo override en caliente.
+    const sync = SEMANTIC_SCALE_SYNC[key]
+    if (sync && channels) style[`--ft-${sync[0]}-${sync[1]}`] = channels
   }
 
   return style

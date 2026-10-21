@@ -63,15 +63,18 @@ export const PorDefecto: Story = {
       email: 'admin@farutech.com',
       role: 'Superadmin',
     },
+
     breadcrumbs: [
       { label: 'Inicio', href: '/' },
       { label: 'Administración', href: '/admin' },
       { label: 'Panel de Control', href: '/admin/dashboard' },
     ],
-    showSearch: true,
-    showThemeToggle: true,
-    showNotifications: true,
+
+    showSearch: false,
+    showThemeToggle: false,
+    showNotifications: false,
     showUserMenu: true,
+    appName: "Hola mundo"
   },
 }
 

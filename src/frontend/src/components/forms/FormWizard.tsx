@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/Button'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 export interface WizardStep {
   id: string

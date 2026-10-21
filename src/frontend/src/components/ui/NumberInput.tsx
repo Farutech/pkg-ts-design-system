@@ -6,7 +6,7 @@ import {
   type KeyboardEvent,
 } from 'react'
 import { Input, type InputProps } from './Input'
-import { Icon } from '@/primitives/Icon/Icon'
+import { Icon } from '@/primitives/icon/Icon'
 
 export interface NumberInputProps extends Omit<InputProps, 'type' | 'onChange' | 'onValueChange'> {
   value?: number

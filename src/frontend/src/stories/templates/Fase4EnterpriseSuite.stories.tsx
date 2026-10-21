@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { DatePicker, DateRangePicker } from '@/components/ui/DateControls'
-import { Dropzone, FileList, UploadProgress } from '@/components/ui/Upload'
+import { Dropzone, FileList, UploadProgress } from '@/components/ui/upload'
 import { FormField, FieldArray, FormWizard } from '@/components/forms'
 import { UserPicker } from '@/components/ui/UserPicker'
 import { ErrorPage, NotFoundPage, OfflineBanner } from '@/components/pages'

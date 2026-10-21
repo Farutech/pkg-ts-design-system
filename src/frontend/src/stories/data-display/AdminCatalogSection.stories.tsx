@@ -78,9 +78,9 @@ Centraliza:
         `,
       },
     },
-    viewport: {
-      defaultViewport: 'desktop',
-    },
+  },
+  globals: {
+    viewport: { value: 'desktop', isRotated: false },
   },
   argTypes: {
     eyebrow: { control: 'text', description: 'Etiqueta pequeña sobre el título' },
@@ -289,7 +289,7 @@ export const WithCustomFilter: Story = {
  * Vista mobile (375px) — útil para validar responsiveness.
  */
 export const Mobile: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileSmall' } },
+  globals: { viewport: { value: 'mobileSmall', isRotated: false } },
   args: Default.args,
 }
 
@@ -297,7 +297,7 @@ export const Mobile: Story = {
  * Vista tablet (iPad 768px).
  */
 export const Tablet: Story = {
-  parameters: { viewport: { defaultViewport: 'tablet' } },
+  globals: { viewport: { value: 'tablet', isRotated: false } },
   args: Default.args,
 }
 
@@ -305,7 +305,7 @@ export const Tablet: Story = {
  * Vista laptop (1280px).
  */
 export const Laptop: Story = {
-  parameters: { viewport: { defaultViewport: 'laptop' } },
+  globals: { viewport: { value: 'laptop', isRotated: false } },
   args: Default.args,
 }
 
@@ -313,6 +313,6 @@ export const Laptop: Story = {
  * Vista desktop grande (1440px).
  */
 export const Desktop: Story = {
-  parameters: { viewport: { defaultViewport: 'desktop' } },
+  globals: { viewport: { value: 'desktop', isRotated: false } },
   args: Default.args,
 }

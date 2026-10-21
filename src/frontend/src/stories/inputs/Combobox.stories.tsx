@@ -1,11 +1,33 @@
-import React, { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Combobox } from '@/components/ui/Combobox'
+import { useState } from 'react'
 
 const meta: Meta<typeof Combobox> = {
-  title: 'Components/Inputs/Combobox',
+  title: '4-Inputs/Combobox',
   component: Combobox,
+  tags: ['autodocs'],
+  argTypes: {
+    label: { control: 'text', description: 'Etiqueta del campo' },
+    placeholder: { control: 'text', description: 'Texto de sugerencia' },
+    floatingTitle: { control: 'text', description: 'Título para modo floating' },
+    labelMode: {
+      control: 'select',
+      options: ['external', 'floating', 'placeholder', 'hidden'],
+      description: 'Modo de visualización de la etiqueta',
+    },
+    disabled: { control: 'boolean', description: 'Estado deshabilitado' },
+    error: { control: 'text', description: 'Mensaje de error' },
+    className: { control: 'text', description: 'Clases CSS adicionales' },
+  },
+  args: {
+    label: 'Buscar Cliente',
+    placeholder: 'Escribe el nombre o NIT...',
+    disabled: false,
+    error: undefined,
+  },
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
         component: 'Campo de texto interactivo con búsqueda y filtrado dinámico en tiempo real.',
@@ -13,16 +35,21 @@ const meta: Meta<typeof Combobox> = {
     },
   },
 }
-export default meta
 
-export const Default: StoryObj<typeof Combobox> = {
-  render: () => {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: {
+    label: 'Buscar Cliente',
+    placeholder: 'Escribe el nombre o NIT...',
+  },
+  render: (args) => {
     const [selected, setSelected] = useState('')
     return (
       <div className="max-w-md p-6 bg-white dark:bg-gray-900 rounded-xl space-y-4">
         <Combobox
-          label="Buscar Cliente"
-          placeholder="Escribe el nombre o NIT..."
+          {...args}
           value={selected}
           onValueChange={setSelected}
           options={[
@@ -38,7 +65,13 @@ export const Default: StoryObj<typeof Combobox> = {
   },
 }
 
-export const FloatingTitle: StoryObj<typeof Combobox> = {
+export const FloatingTitle: Story = {
+  name: 'Título Flotante',
+  args: {
+    label: 'Selecciona un proveedor de aceros',
+    floatingTitle: 'PROVEEDOR PRINCIPAL',
+    labelMode: 'floating',
+  },
   render: () => (
     <div className="max-w-md p-6 bg-white dark:bg-gray-900 rounded-xl space-y-4">
       <Combobox
@@ -53,4 +86,66 @@ export const FloatingTitle: StoryObj<typeof Combobox> = {
       />
     </div>
   ),
+}
+
+/**
+ * Test de interacción: selecciona una opción y valida onValueChange.
+ */
+export const TestInteraccion: Story = {
+  name: 'Test: Selección e Interacción',
+  args: {
+    label: 'Buscar Cliente',
+    placeholder: 'Escribe el nombre o NIT...',
+    onValueChange: fn(),
+  },
+  render: (args) => {
+    const [selected, setSelected] = useState('')
+    return (
+      <div className="max-w-md p-6 bg-white dark:bg-gray-900 rounded-xl space-y-4">
+        <Combobox
+          {...args}
+          value={selected}
+          onValueChange={(v) => {
+            setSelected(v)
+            args.onValueChange?.(v)
+          }}
+          options={[
+            { value: '1', label: 'Inversiones Farutech S.A.S.' },
+            { value: '2', label: 'Afilamos Operaciones Industriales' },
+          ]}
+        />
+      </div>
+    )
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const combobox = canvas.getByRole('combobox', { name: /buscar cliente/i })
+    await userEvent.click(combobox)
+    const option = await within(document.body).findByText('Afilamos Operaciones Industriales')
+    await userEvent.click(option)
+    await expect(args.onValueChange).toHaveBeenCalled()
+  },
+}
+
+/**
+ * Test de accesibilidad: verifica rol combobox y label.
+ */
+export const TestAccesibilidad: Story = {
+  name: 'Test: Accesibilidad y ARIA',
+  args: {
+    label: 'Campo bloqueado',
+    disabled: true,
+    placeholder: 'No editable',
+  },
+  render: (args) => (
+    <div className="max-w-md p-6 bg-white dark:bg-gray-900 rounded-xl space-y-4">
+      <Combobox {...args} options={[]} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const combobox = canvas.getByRole('combobox', { name: /campo bloqueado/i })
+    await expect(combobox).toBeInTheDocument()
+    await expect(combobox).toBeDisabled()
+  },
 }

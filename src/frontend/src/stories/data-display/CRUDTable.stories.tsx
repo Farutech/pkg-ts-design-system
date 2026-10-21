@@ -70,7 +70,9 @@ Paginación interna con **CrudPagination**:
         `,
       },
     },
-    viewport: { defaultViewport: 'desktop' },
+  },
+  globals: {
+    viewport: { value: 'desktop', isRotated: false },
   },
   argTypes: {
     pageSize: {
@@ -188,7 +190,7 @@ export const Empty: Story = {
  * Mobile (375px) — para validar responsiveness.
  */
 export const Mobile: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileSmall' } },
+  globals: { viewport: { value: 'mobileSmall', isRotated: false } },
   args: {
     data: SAMPLE_USERS,
     columns,
@@ -200,7 +202,7 @@ export const Mobile: Story = {
  * Tablet (iPad 768px).
  */
 export const Tablet: Story = {
-  parameters: { viewport: { defaultViewport: 'tablet' } },
+  globals: { viewport: { value: 'tablet', isRotated: false } },
   args: {
     data: SAMPLE_USERS,
     columns,
@@ -212,7 +214,7 @@ export const Tablet: Story = {
  * Laptop (1280px).
  */
 export const Laptop: Story = {
-  parameters: { viewport: { defaultViewport: 'laptop' } },
+  globals: { viewport: { value: 'laptop', isRotated: false } },
   args: {
     data: SAMPLE_USERS,
     columns,

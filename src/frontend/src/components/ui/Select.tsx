@@ -20,7 +20,7 @@ import { ListboxCore } from './ListboxCore'
 import { ClickOutside } from '@/primitives/ClickOutside'
 import { Icon } from '@/primitives/icon/Icon'
 import { useFormContext } from './Form'
-import type { LabelMode } from './input/types'
+import type { LabelMode, LabelPlacement, LabelAlign } from './input/types'
 
 export interface SelectOption {
   value: string | number
@@ -58,6 +58,8 @@ export interface SelectProps<T = SelectOption> extends DataMappingProps<T> {
 
   label?: ReactNode
   labelMode?: LabelMode
+  labelPlacement?: LabelPlacement
+  labelAlign?: LabelAlign
   floatingTitle?: ReactNode
   activeLabel?: ReactNode
   description?: ReactNode
@@ -109,6 +111,8 @@ export const Select = forwardRef(function Select<T = SelectOption>(
     onValueChange,
     label,
     labelMode,
+    labelPlacement: explicitPlacement,
+    labelAlign: explicitAlign,
     floatingTitle,
     activeLabel,
     description,
@@ -165,8 +169,33 @@ export const Select = forwardRef(function Select<T = SelectOption>(
   const currentValue = value !== undefined ? String(value) : internalValue
   const triggerRef = useRef<HTMLDivElement>(null)
   const formContext = useFormContext()
-  const effectiveLabelMode: LabelMode = labelMode || (variant === 'floating' ? 'floating' : formContext.defaultLabelMode) || 'external'
-  const isFloating = variant === 'floating' || effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
+
+  const effectiveLabelPlacement: LabelPlacement =
+    explicitPlacement ||
+    (variant === 'floating' || labelMode === 'floating'
+      ? 'inside'
+      : labelMode === 'hidden' || !label
+      ? 'hidden'
+      : formContext.defaultLabelPlacement || (formContext.defaultLabelMode === 'floating' ? 'inside' : 'top'))
+
+  const effectiveLabelAlign: LabelAlign =
+    explicitAlign || formContext.defaultLabelAlign || 'left'
+
+  const effectiveLabelMode: LabelMode =
+    effectiveLabelPlacement === 'inside'
+      ? 'floating'
+      : effectiveLabelPlacement === 'hidden'
+      ? 'hidden'
+      : 'external'
+
+  const isFloating = effectiveLabelPlacement === 'inside'
+  const isHorizontal = effectiveLabelPlacement === 'start' || effectiveLabelPlacement === 'left'
+
+  const alignClasses = {
+    left: 'justify-start text-left',
+    center: 'justify-center text-center',
+    right: 'justify-end text-right',
+  }
 
   // Advertencia de deprecación en desarrollo si se utiliza onChange en lugar de onValueChange
   const hasWarnedRef = useRef(false)
@@ -245,25 +274,27 @@ export const Select = forwardRef(function Select<T = SelectOption>(
     <ClickOutside onClickOutside={() => setIsOpen(false)}>
       <div
         ref={ref}
-        className={cn('flex flex-col relative text-left', fullWidth && 'w-full')}
+        className={cn('relative text-left', isHorizontal ? 'flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3' : 'flex flex-col', fullWidth && 'w-full')}
       >
         {/* Label Externo */}
         {!isFloating && label && effectiveLabelMode !== 'hidden' && (
-          <label
-            id={labelId}
-            htmlFor={selectId}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            {label}
-            {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
-          </label>
+          <div className={cn("flex items-center gap-1 select-none", isHorizontal ? "sm:w-36 shrink-0" : "w-full mb-1", alignClasses[effectiveLabelAlign])}>
+            <label
+              id={labelId}
+              htmlFor={selectId}
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              {label}
+              {required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+            </label>
+          </div>
         )}
 
         {/* Input oculto para compatibilidad con FormData / formularios nativos */}
         {name && <input type="hidden" name={name} value={currentValue} />}
 
         {/* Fila del Trigger con Addons exteriores */}
-        <div className="flex w-full items-stretch relative">
+        <div className={cn("flex items-stretch relative", isHorizontal ? "flex-1 min-w-0" : "w-full")}>
           {addonBefore && (
             <div className="inline-flex items-center px-3 border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 text-sm rounded-l-md shrink-0 select-none">
               {addonBefore}

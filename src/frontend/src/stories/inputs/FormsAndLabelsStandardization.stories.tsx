@@ -11,6 +11,8 @@ import {
   Textarea,
   Combobox,
   Button,
+  PhoneInput,
+  DatePicker,
 } from '@/index'
 
 /**
@@ -431,4 +433,157 @@ export const FullFormWithContext: StoryObj = {
       </div>
     )
   },
+}
+
+/**
+ * Control Interactivo de Storybook: permite alternar en vivo labelPlacement, labelAlign, defaultValue y required
+ */
+export const InteractiveControls: StoryObj = {
+  name: '6. Sandbox Interactivo (ArgTypes Controls)',
+  argTypes: {
+    labelPlacement: {
+      control: 'select',
+      options: ['top', 'inside', 'start', 'left', 'hidden'],
+      description: 'Ubicación de la etiqueta respecto al control',
+    },
+    labelAlign: {
+      control: 'inline-radio',
+      options: ['left', 'center', 'right'],
+      description: 'Alineación horizontal del texto del label',
+    },
+    label: {
+      control: 'text',
+      description: 'Texto del label',
+    },
+    defaultValue: {
+      control: 'text',
+      description: 'Valor inicial precargado (modo edición vs creación)',
+    },
+    placeholder: {
+      control: 'text',
+      description: 'Texto prompt del placeholder',
+    },
+    required: {
+      control: 'boolean',
+      description: 'Indicador de campo obligatorio (*)',
+    },
+    helperText: {
+      control: 'text',
+      description: 'Texto de ayuda o descripción inferior',
+    },
+  },
+  args: {
+    labelPlacement: 'top',
+    labelAlign: 'left',
+    label: 'Nombre de la Cuenta / Empresa',
+    defaultValue: 'FaruTech Soluciones Cloud S.A.S.',
+    placeholder: 'Ej. Acero & Asociados',
+    required: true,
+    helperText: 'Nombre legal registrado ante la entidad tributaria',
+  },
+  render: (args: any) => (
+    <div className="max-w-xl p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6">
+      <div>
+        <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+          Input Estándar Unificado
+        </h4>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+          Prueba cambiando los controles en la pestaña inferior de Storybook (Placement: {args.labelPlacement}, Align: {args.labelAlign}).
+        </p>
+      </div>
+
+      <Input
+        label={args.label}
+        labelPlacement={args.labelPlacement}
+        labelAlign={args.labelAlign}
+        defaultValue={args.defaultValue}
+        placeholder={args.placeholder}
+        required={args.required}
+        helperText={args.helperText}
+      />
+
+      <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+        <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-3">
+          Mismo Placement y Align en Otros Controles
+        </h4>
+        <div className="space-y-4">
+          <Select
+            label="Tipo de Organización"
+            labelPlacement={args.labelPlacement}
+            labelAlign={args.labelAlign}
+            required={args.required}
+            defaultValue="sa"
+            options={[
+              { value: 'sas', label: 'Sociedad por Acciones Simplificada (S.A.S.)' },
+              { value: 'sa', label: 'Sociedad Anónima (S.A.)' },
+              { value: 'ltda', label: 'Sociedad Limitada (Ltda.)' },
+            ]}
+          />
+
+          <PhoneInput
+            label="Teléfono de Contacto"
+            labelPlacement={args.labelPlacement}
+            labelAlign={args.labelAlign}
+            required={args.required}
+            defaultValue="3001234567"
+          />
+
+          <DatePicker
+            label="Fecha de Constitución"
+            labelPlacement={args.labelPlacement}
+            labelAlign={args.labelAlign}
+            required={args.required}
+            value={new Date()}
+          />
+        </div>
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Formulario Horizontal con alineaciones (start/left + align right)
+ */
+export const HorizontalEnterpriseForm: StoryObj = {
+  name: '7. Formulario Horizontal (start + align: right)',
+  render: () => (
+    <div className="max-w-2xl p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+      <div className="mb-6">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+          Configuración Corporativa (Layout Horizontal)
+        </h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Todos los controles heredan automáticamente <code className="text-primary-600">defaultLabelPlacement="start"</code> y <code className="text-primary-600">defaultLabelAlign="right"</code> desde el contenedor Form.
+        </p>
+      </div>
+
+      <Form defaultLabelPlacement="start" defaultLabelAlign="right" className="space-y-4">
+        <Input
+          label="Identificador"
+          defaultValue="CORP-900142"
+          required
+        />
+        <Input
+          label="Nombre Comercial"
+          defaultValue="FaruTech Global"
+          required
+        />
+        <PhoneInput
+          label="Móvil Directo"
+          defaultValue="3109876543"
+          required
+        />
+        <DatePicker
+          label="Vencimiento"
+          value={new Date(2027, 11, 31)}
+          required
+        />
+        <Textarea
+          label="Notas"
+          defaultValue="Cliente preferencial con soporte 24/7."
+          rows={2}
+        />
+      </Form>
+    </div>
+  ),
 }

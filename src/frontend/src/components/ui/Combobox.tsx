@@ -19,7 +19,7 @@ import { ListboxCore } from './ListboxCore'
 import { ClickOutside } from '@/primitives/ClickOutside'
 import { Icon } from '@/primitives/icon/Icon'
 import { useFormContext } from './Form'
-import type { LabelMode } from './input/types'
+import type { LabelMode, LabelPlacement, LabelAlign } from './input/types'
 
 export interface ComboboxOption {
   value: string | number
@@ -37,6 +37,8 @@ export interface ComboboxProps<T = ComboboxOption> extends DataMappingProps<T> {
 
   label?: ReactNode
   labelMode?: LabelMode
+  labelPlacement?: LabelPlacement
+  labelAlign?: LabelAlign
   floatingTitle?: ReactNode
   activeLabel?: ReactNode
   description?: ReactNode
@@ -73,6 +75,8 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
     onValueChange,
     label,
     labelMode,
+    labelPlacement: explicitPlacement,
+    labelAlign: explicitAlign,
     floatingTitle,
     activeLabel,
     description,
@@ -104,8 +108,34 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
   const activeDensity = propDensity ?? contextDensity
 
   const formContext = useFormContext()
-  const effectiveLabelMode: LabelMode = labelMode || formContext.defaultLabelMode || 'external'
-  const isFloating = effectiveLabelMode === 'floating' || effectiveLabelMode === 'placeholder'
+
+  const effectiveLabelPlacement: LabelPlacement =
+    explicitPlacement ||
+    (labelMode === 'floating'
+      ? 'inside'
+      : labelMode === 'hidden' || !label
+      ? 'hidden'
+      : formContext.defaultLabelPlacement || (formContext.defaultLabelMode === 'floating' ? 'inside' : 'top'))
+
+  const effectiveLabelAlign: LabelAlign =
+    explicitAlign || formContext.defaultLabelAlign || 'left'
+
+  const effectiveLabelMode: LabelMode =
+    effectiveLabelPlacement === 'inside'
+      ? 'floating'
+      : effectiveLabelPlacement === 'hidden'
+      ? 'hidden'
+      : 'external'
+
+  const isFloating = effectiveLabelPlacement === 'inside'
+  const isHorizontal = effectiveLabelPlacement === 'start' || effectiveLabelPlacement === 'left'
+
+  const alignClasses = {
+    left: 'justify-start text-left',
+    center: 'justify-center text-center',
+    right: 'justify-end text-right',
+  }
+
   const generatedId = useId()
   const comboboxId = id || `ft-combobox-${generatedId}`
   const listboxId = `${comboboxId}-listbox`
@@ -170,12 +200,14 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
 
   return (
     <ClickOutside onClickOutside={() => setIsOpen(false)}>
-      <div ref={ref} className={cn('flex flex-col relative text-left', fullWidth && 'w-full')}>
+      <div ref={ref} className={cn('relative text-left', isHorizontal ? 'flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3' : 'flex flex-col', fullWidth && 'w-full')}>
         {!isFloating && label && effectiveLabelMode !== 'hidden' && (
-          <label htmlFor={comboboxId} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {label}
-            {required && <span className="text-red-500 ml-0.5">*</span>}
-          </label>
+          <div className={cn("flex items-center gap-1 select-none", isHorizontal ? "sm:w-36 shrink-0" : "w-full mb-1", alignClasses[effectiveLabelAlign])}>
+            <label htmlFor={comboboxId} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {label}
+              {required && <span className="text-red-500 ml-0.5">*</span>}
+            </label>
+          </div>
         )}
 
         {name && <input type="hidden" name={name} value={currentValue} />}
@@ -183,6 +215,7 @@ export const Combobox = forwardRef(function Combobox<T = ComboboxOption>(
         <div
           className={cn(
             'flex items-center justify-between border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-md outline-none transition-colors',
+            isHorizontal ? 'flex-1 min-w-0' : 'w-full',
             heightClasses,
             isFloating && 'min-h-[48px]',
             isOpen && 'ring-2 ring-primary-500/20 border-primary-500',

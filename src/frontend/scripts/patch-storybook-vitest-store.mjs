@@ -33,7 +33,7 @@ if (alreadyPatched) {
   process.exit(0)
 }
 
-if (version !== '10.6.0') {
+if (version !== '10.6.0' && version !== '10.6.2') {
   throw new Error(
     `Unsupported @storybook/addon-vitest ${version}. Verify the upstream implementation before upgrading.`,
   )

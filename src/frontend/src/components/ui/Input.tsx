@@ -73,6 +73,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       status = 'default',
       size: _size = 'md',
       labelMode: explicitLabelMode,
+      labelPlacement: explicitPlacement,
+      labelAlign: explicitAlign,
       variant = 'outline',
       surfaceVariant: _surfaceVariant = 'default',
       fullWidth = true,
@@ -132,11 +134,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const formContext = useFormContext()
 
-    // Resolución de labelMode: variant="floating" o labelMode="floating" o desde FormContext
+    // Resolución de disposición y modo de etiqueta
+    const effectiveLabelPlacement =
+      explicitPlacement ||
+      (variant === 'floating' || explicitLabelMode === 'floating'
+        ? 'inside'
+        : explicitLabelMode === 'hidden' || !label
+        ? 'hidden'
+        : formContext.defaultLabelPlacement || (formContext.defaultLabelMode === 'floating' ? 'inside' : 'top'))
+
+    const effectiveLabelAlign =
+      explicitAlign || formContext.defaultLabelAlign || 'left'
+
     const effectiveLabelMode: LabelMode =
-      variant === 'floating' || explicitLabelMode === 'floating'
+      effectiveLabelPlacement === 'inside'
         ? 'floating'
-        : explicitLabelMode || formContext.defaultLabelMode || 'external'
+        : effectiveLabelPlacement === 'hidden'
+        ? 'hidden'
+        : 'external'
+
+    const isFloating = effectiveLabelPlacement === 'inside'
 
     // Integración de máscara con patrón foco transparente / blur formateado
     const {
@@ -254,7 +271,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     // Placeholder contextual para floating label
     const effectivePlaceholder =
-      effectiveLabelMode === 'floating'
+      isFloating
         ? isFocused
           ? placeholder || ' '
           : ' '
@@ -266,6 +283,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         label={label}
         floatingTitle={floatingTitle || activeLabel}
         labelMode={effectiveLabelMode}
+        labelPlacement={effectiveLabelPlacement}
+        labelAlign={effectiveLabelAlign}
         required={required}
         disabled={disabled}
         readOnly={readOnly}

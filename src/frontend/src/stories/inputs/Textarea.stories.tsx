@@ -8,6 +8,16 @@ const meta: Meta<typeof Textarea> = {
   tags: ['autodocs'],
   argTypes: {
     label: { control: 'text', description: 'Etiqueta del área de texto' },
+    labelPlacement: {
+      control: 'select',
+      options: ['top', 'inside', 'start', 'left', 'hidden'],
+      description: 'Ubicación de la etiqueta respecto al control',
+    },
+    labelAlign: {
+      control: 'inline-radio',
+      options: ['left', 'center', 'right'],
+      description: 'Alineación horizontal del label',
+    },
     placeholder: { control: 'text', description: 'Texto sugerido cuando está vacío' },
     floatingTitle: { control: 'text', description: 'Título flotante para modo labelMode="floating"' },
     labelMode: {
@@ -25,6 +35,8 @@ const meta: Meta<typeof Textarea> = {
   },
   args: {
     label: 'Observaciones Técnicas',
+    labelPlacement: 'top',
+    labelAlign: 'left',
     placeholder: 'Escribe las especificaciones o condiciones del servicio...',
     rows: 3,
     showCount: false,

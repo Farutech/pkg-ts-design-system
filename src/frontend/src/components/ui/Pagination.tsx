@@ -96,7 +96,7 @@ export function Pagination({
         disabled={disabled || safePage === 1}
         aria-label="Página anterior"
       >
-        <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
+        <ChevronLeftIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
       </button>
 
       <ul className="flex items-center gap-1 list-none m-0 p-0">
@@ -143,7 +143,7 @@ export function Pagination({
         disabled={disabled || safePage === totalPages}
         aria-label="Página siguiente"
       >
-        <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
+        <ChevronRightIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
       </button>
       {showFirstLast && (
         <button

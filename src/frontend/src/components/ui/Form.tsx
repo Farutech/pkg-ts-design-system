@@ -4,12 +4,16 @@
 
 import React, { createContext, useContext } from 'react'
 import { cn } from '@/utils/cn'
-import type { LabelMode } from './input/types'
+import type { LabelMode, LabelPlacement, LabelAlign } from './input/types'
 import type { Density } from '@/tokens/tokens'
 
 export interface FormContextValue {
   /** Modo de etiqueta por defecto para todos los controles descendientes ('external' | 'floating' | 'placeholder' | 'hidden') */
   defaultLabelMode?: LabelMode
+  /** Ubicación o disposición de etiqueta por defecto ('top' | 'start' | 'left' | 'inside' | 'hidden') */
+  defaultLabelPlacement?: LabelPlacement
+  /** Alineación horizontal de etiqueta por defecto ('left' | 'center' | 'right') */
+  defaultLabelAlign?: LabelAlign
   /** Densidad por defecto para el formulario ('comfortable' | 'compact' | 'dense') */
   density?: Density
 }
@@ -26,6 +30,10 @@ export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   className?: string
   /** Configura el modo de etiqueta para todos los campos hijos (ej. 'floating' para etiquetas elevadas automáticas) */
   defaultLabelMode?: LabelMode
+  /** Ubicación o disposición de etiqueta por defecto para todos los campos hijos ('top' | 'start' | 'inside') */
+  defaultLabelPlacement?: LabelPlacement
+  /** Alineación horizontal de etiqueta por defecto para todos los campos hijos ('left' | 'center' | 'right') */
+  defaultLabelAlign?: LabelAlign
   /** Configura la densidad global para los campos del formulario */
   density?: Density
 }
@@ -33,7 +41,7 @@ export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
 /**
  * Form - Contenedor principal del formulario con propagación de contexto
  * @example
- * <Form defaultLabelMode="floating" onSubmit={handleSubmit}>
+ * <Form defaultLabelPlacement="inside" onSubmit={handleSubmit}>
  *   <FormRow>
  *     <FormGroup cols={{ default: 12, md: 6 }}>
  *       <Input label="Nombre completo" floatingTitle="NOMBRE" />
@@ -48,11 +56,13 @@ export function Form({
   children,
   className,
   defaultLabelMode,
+  defaultLabelPlacement,
+  defaultLabelAlign,
   density,
   ...props
 }: FormProps) {
   return (
-    <FormContext.Provider value={{ defaultLabelMode, density }}>
+    <FormContext.Provider value={{ defaultLabelMode, defaultLabelPlacement, defaultLabelAlign, density }}>
       <form className={cn('space-y-6', className)} {...props}>
         {children}
       </form>

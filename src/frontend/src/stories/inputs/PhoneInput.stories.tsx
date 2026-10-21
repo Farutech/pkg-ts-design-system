@@ -14,6 +14,16 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     label: { control: 'text', description: 'Etiqueta del campo' },
+    labelPlacement: {
+      control: 'select',
+      options: ['top', 'inside', 'start', 'left', 'hidden'],
+      description: 'Ubicación de la etiqueta respecto al control',
+    },
+    labelAlign: {
+      control: 'inline-radio',
+      options: ['left', 'center', 'right'],
+      description: 'Alineación horizontal del label',
+    },
     placeholder: { control: 'text', description: 'Texto de sugerencia' },
     defaultCountry: { control: 'text', description: 'Código de país por defecto (ej. CO, MX, US)' },
     showSearch: { control: 'boolean', description: 'Mostrar buscador de países' },
@@ -24,6 +34,8 @@ const meta = {
   },
   args: {
     label: 'Teléfono de contacto',
+    labelPlacement: 'top',
+    labelAlign: 'left',
     placeholder: 'Número de teléfono',
     defaultCountry: 'CO',
     showSearch: false,

@@ -17,6 +17,16 @@ const meta = {
   },
   argTypes: {
     label: { control: 'text', description: 'Etiqueta del selector de fecha' },
+    labelPlacement: {
+      control: 'select',
+      options: ['top', 'inside', 'start', 'left', 'hidden'],
+      description: 'Ubicación de la etiqueta respecto al control',
+    },
+    labelAlign: {
+      control: 'inline-radio',
+      options: ['left', 'center', 'right'],
+      description: 'Alineación horizontal del label',
+    },
     mode: {
       control: 'select',
       options: ['date', 'time', 'datetime'],
@@ -29,6 +39,8 @@ const meta = {
   },
   args: {
     label: 'Fecha de entrega pactada',
+    labelPlacement: 'top',
+    labelAlign: 'left',
     mode: 'date',
     placeholder: 'DD/MM/AAAA',
     disabled: false,

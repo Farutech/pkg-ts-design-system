@@ -8,6 +8,9 @@ import { cn } from '@/utils/cn'
 import { Fragment, useState, useEffect, useRef } from 'react'
 import React from 'react'
 
+import type { LabelPlacement, LabelAlign } from './input/types'
+import { useFormContext } from './Form'
+
 export interface ListBoxOption {
   id: string
   label: string
@@ -17,11 +20,16 @@ export interface ListBoxOption {
   disabled?: boolean
 }
 
-interface ListBoxProps {
+export interface ListBoxProps {
   options: ListBoxOption[]
   value?: string | string[]
+  defaultValue?: string | string[]
   onChange?: (value: string | string[]) => void
   label?: string
+  labelPlacement?: LabelPlacement
+  labelAlign?: LabelAlign
+  required?: boolean
+  helperText?: React.ReactNode
   placeholder?: string
   className?: string
   error?: string
@@ -48,8 +56,13 @@ interface ListBoxProps {
 export function ListBox({
   options,
   value,
+  defaultValue,
   onChange,
   label,
+  labelPlacement: explicitPlacement,
+  labelAlign: explicitAlign,
+  required = false,
+  helperText,
   placeholder = 'Seleccionar opción',
   className,
   error,
@@ -63,18 +76,32 @@ export function ListBox({
   emptyMessage = 'No se encontraron opciones',
   loading = false,
 }: ListBoxProps) {
+  const formContext = useFormContext()
+  const effectivePlacement = explicitPlacement || (!label ? 'hidden' : formContext.defaultLabelPlacement || 'top')
+  const effectiveAlign = explicitAlign || formContext.defaultLabelAlign || 'left'
+  const isHorizontal = effectivePlacement === 'start' || effectivePlacement === 'left'
+
+  const alignClasses = {
+    left: 'justify-start text-left',
+    center: 'justify-center text-center',
+    right: 'justify-end text-right',
+  }
+
   const [searchQuery, setSearchQuery] = useState('')
   const [asyncOptions, setAsyncOptions] = useState<ListBoxOption[] | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const latestRequestId = useRef(0)
   const debounceTimer = useRef<any>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  
+
+  const [internalValue, setInternalValue] = useState<string | string[]>(() => value ?? defaultValue ?? (multiple ? [] : ''))
+  const currentValue = value !== undefined ? value : internalValue
+
   const currentOptions = asyncOptions ?? options
 
   const selectedValues = multiple 
-    ? (Array.isArray(value) ? value : [])
-    : (value ? [value] : [])
+    ? (Array.isArray(currentValue) ? currentValue : [])
+    : (typeof currentValue === 'string' && currentValue ? [currentValue] : [])
   
   const selectedOptions = currentOptions.filter(opt => selectedValues.includes(opt.id))
 
@@ -155,37 +182,43 @@ export function ListBox({
   }
 
   return (
-    <div className={className}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {label}
-        </label>
+    <div className={cn('text-left', isHorizontal ? 'flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3' : 'flex flex-col gap-1.5', className)}>
+      {label && effectivePlacement !== 'hidden' && (
+        <div className={cn("flex items-center gap-1 select-none", isHorizontal ? "sm:w-36 shrink-0" : "w-full", alignClasses[effectiveAlign])}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {label}
+            {required && <span className="text-red-500 ml-0.5">*</span>}
+          </label>
+        </div>
       )}
       
-      <Listbox 
-        value={typeof value === 'string' ? value : (value?.[0] || '')} 
-        onChange={(newValue: string) => {
-          if (multiple) {
-            handleChange(newValue)
-          } else if (value === newValue && allowDeselect) {
-            onChange?.('')
-          } else {
-            onChange?.(newValue)
-          }
-        }}
-      >
-        <div className="relative">
-          <Listbox.Button
-            className={cn(
-              'relative w-full cursor-pointer rounded-xl border py-3 pl-3 pr-10 text-left',
-              'focus:outline-none focus:ring-2 focus:ring-primary-500',
-              'bg-white dark:bg-gray-800',
-              error
-                ? 'border-red-300 dark:border-red-700'
-                : 'border-gray-300 dark:border-gray-600',
-              multiple && selectedOptions.length > 0 && 'py-2'
-            )}
-          >
+      <div className="flex-1 min-w-0 w-full">
+        <Listbox 
+          value={typeof currentValue === 'string' ? currentValue : (currentValue?.[0] || '')} 
+          onChange={(newValue: string) => {
+            if (multiple) {
+              handleChange(newValue)
+            } else if (currentValue === newValue && allowDeselect) {
+              setInternalValue('')
+              onChange?.('')
+            } else {
+              setInternalValue(newValue)
+              onChange?.(newValue)
+            }
+          }}
+        >
+          <div className="relative">
+            <Listbox.Button
+              className={cn(
+                'relative w-full cursor-pointer rounded-xl border py-3 pl-3 pr-10 text-left',
+                'focus:outline-none focus:ring-2 focus:ring-primary-500',
+                'bg-white dark:bg-gray-800',
+                error
+                  ? 'border-red-300 dark:border-red-700'
+                  : 'border-gray-300 dark:border-gray-600',
+                multiple && selectedOptions.length > 0 && 'py-2'
+              )}
+            >
             {multiple && selectedOptions.length > 0 ? (
               <div className="flex flex-wrap gap-1">
                 {selectedOptions.map((opt) => (
@@ -378,8 +411,12 @@ export function ListBox({
       </Listbox>
 
       {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className={cn("mt-1 text-sm text-red-600 dark:text-red-400", isHorizontal && "sm:ml-36")}>{error}</p>
       )}
+      {!error && helperText && (
+        <p className={cn("mt-1 text-xs text-gray-500 dark:text-gray-400", isHorizontal && "sm:ml-36")}>{helperText}</p>
+      )}
+      </div>
     </div>
   )
 }

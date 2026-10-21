@@ -32,4 +32,11 @@
   padding: 0;
 }
 
+.ft-alert svg,
+.ft-alert [data-icon],
+.ft-alert span > svg {
+  flex-shrink: 0;
+  display: inline-block;
+}
+
 .ft-alert__close:focus-visible { outline: none; box-shadow: var(--ft-ring); border-radius: var(--ft-radius-sm); }

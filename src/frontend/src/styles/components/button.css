@@ -56,10 +56,11 @@
 
 .ft-button--full { width: 100%; }
 
-.ft-button > svg,
+.ft-button svg,
 .ft-button [data-icon],
 .ft-button span > svg {
   flex-shrink: 0;
+  display: inline-block;
 }
 
 .ft-button > span {
@@ -77,10 +78,11 @@
   gap: var(--ft-space-2, 0.5rem);
   white-space: nowrap;
 }
-.ft-inline-action > svg,
+.ft-inline-action svg,
 .ft-inline-action [data-icon],
 .ft-inline-action span > svg {
   flex-shrink: 0;
+  display: inline-block;
 }
 
 .ft-button__icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }

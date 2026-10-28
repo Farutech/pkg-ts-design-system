@@ -297,6 +297,17 @@ export function CRUDPageComponent<T extends { id: string | number }>({
   const effectiveCanDelete = propCanDelete ?? permissions?.canDelete ?? true
   const effectiveCanView = propCanView ?? permissions?.canView ?? true
 
+  // Disponibilidad de operación funcional (Regla FaruTech: Permiso + Operación Funcional Conectada)
+  const isCreateFunctional = createMode === 'page' ? Boolean(onCreatePage) : Boolean(onCreate || onSave)
+  const isEditFunctional = editMode === 'page' ? Boolean(onEditPage) : Boolean(onEdit || onSave)
+  const isDeleteFunctional = Boolean(onDelete)
+  const isViewFunctional = Boolean(onView)
+
+  const canExecuteCreate = effectiveCanCreate && isCreateFunctional
+  const canExecuteEdit = effectiveCanEdit && isEditFunctional
+  const canExecuteDelete = effectiveCanDelete && isDeleteFunctional
+  const canExecuteView = effectiveCanView && isViewFunctional
+
   // Filtrado local
   const filteredData = useMemo(() => {
     if (!searchQuery.trim() || filterMode === 'api') return data
@@ -394,7 +405,13 @@ export function CRUDPageComponent<T extends { id: string | number }>({
             )}
 
             {effectiveCanCreate && (
-              <Button variant="primary" size="sm" onClick={handleOpenCreate}>
+              <Button
+                variant="primary"
+                size="sm"
+                disabled={!isCreateFunctional}
+                title={!isCreateFunctional ? 'Operación de creación no implementada' : undefined}
+                onClick={canExecuteCreate ? handleOpenCreate : undefined}
+              >
                 <Icon.Plus className="w-4 h-4 mr-1.5 shrink-0" />
                 {createLabel}
               </Button>
@@ -558,17 +575,35 @@ export function CRUDPageComponent<T extends { id: string | number }>({
 
                     <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700/80 flex items-center justify-end gap-1.5 shrink-0 whitespace-nowrap">
                       {effectiveCanView && (
-                        <Button variant="ghost" size="sm" onClick={() => onView?.(item)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={!canExecuteView}
+                          title={!isViewFunctional ? 'Operación de ver detalles no configurada' : !effectiveCanView ? 'Sin permisos para ver' : undefined}
+                          onClick={() => canExecuteView && onView?.(item)}
+                        >
                           Ver
                         </Button>
                       )}
                       {effectiveCanEdit && (
-                        <Button variant="outline" size="sm" onClick={() => handleOpenEdit(item)}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={!canExecuteEdit}
+                          title={!isEditFunctional ? 'Operación de edición no configurada' : !effectiveCanEdit ? 'Sin permisos para editar' : undefined}
+                          onClick={() => canExecuteEdit && handleOpenEdit(item)}
+                        >
                           Editar
                         </Button>
                       )}
                       {effectiveCanDelete && (
-                        <Button variant="danger" size="sm" onClick={() => onDelete?.(item)}>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          disabled={!canExecuteDelete}
+                          title={!isDeleteFunctional ? 'Operación de eliminación no configurada' : !effectiveCanDelete ? 'Sin permisos para eliminar' : undefined}
+                          onClick={() => canExecuteDelete && onDelete?.(item)}
+                        >
                           Eliminar
                         </Button>
                       )}

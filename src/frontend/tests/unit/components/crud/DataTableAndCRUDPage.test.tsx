@@ -194,6 +194,7 @@ describe('CRUDPage: Enterprise Slots & Bulk Operations', () => {
           { key: 'name', label: 'Nombre', required: true },
           { key: 'role', label: 'Rol' },
         ]}
+        onCreate={vi.fn()}
       />
     )
 
@@ -208,4 +209,81 @@ describe('CRUDPage: Enterprise Slots & Bulk Operations', () => {
       expect(screen.queryByText('Crear nuevo registro en Usuarios')).not.toBeInTheDocument()
     })
   })
+
+  it('disables create button when functional handler is missing even if canCreate is true', () => {
+    render(
+      <CRUDPage
+        title="Usuarios"
+        data={sampleData}
+        columns={mockColumns}
+        canCreate={true}
+        // Sin onCreate, onSave ni onCreatePage
+      />
+    )
+
+    const createBtn = screen.getByText('Crear nuevo').closest('button')
+    expect(createBtn).toBeDisabled()
+    expect(createBtn).toHaveAttribute('title', 'Operación de creación no implementada')
+  })
+
+  it('enables create button when functional handler onCreate is provided', () => {
+    const handleCreate = vi.fn()
+    render(
+      <CRUDPage
+        title="Usuarios"
+        data={sampleData}
+        columns={mockColumns}
+        canCreate={true}
+        onCreate={handleCreate}
+      />
+    )
+
+    const createBtn = screen.getByText('Crear nuevo').closest('button')
+    expect(createBtn).not.toBeDisabled()
+  })
+
+  it('disables list item actions when functional handlers are missing', () => {
+    render(
+      <CRUDPage
+        title="Usuarios"
+        data={sampleData}
+        defaultView="list"
+        views={['list']}
+        canEdit={true}
+        canDelete={true}
+        // Sin onEdit ni onDelete
+      />
+    )
+
+    const editButtons = screen.getAllByRole('button', { name: 'Editar' })
+    const deleteButtons = screen.getAllByRole('button', { name: 'Eliminar' })
+
+    expect(editButtons[0]).toBeDisabled()
+    expect(deleteButtons[0]).toBeDisabled()
+  })
+
+  it('enables list item actions when functional handlers are provided and permission is granted', () => {
+    const handleEdit = vi.fn()
+    const handleDelete = vi.fn()
+
+    render(
+      <CRUDPage
+        title="Usuarios"
+        data={sampleData}
+        defaultView="list"
+        views={['list']}
+        canEdit={true}
+        canDelete={true}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+    )
+
+    const editButtons = screen.getAllByRole('button', { name: 'Editar' })
+    const deleteButtons = screen.getAllByRole('button', { name: 'Eliminar' })
+
+    expect(editButtons[0]).not.toBeDisabled()
+    expect(deleteButtons[0]).not.toBeDisabled()
+  })
 })
+

@@ -21,6 +21,8 @@ export interface Action {
   onClick: () => void
   variant?: 'default' | 'danger' | 'warning' | 'info' | 'primary'
   show?: boolean
+  disabled?: boolean
+  disabledReason?: string
 }
 
 export interface CrudActionsProps {
@@ -28,6 +30,10 @@ export interface CrudActionsProps {
   onDelete?: () => void
   onView?: () => void
   onDuplicate?: () => void
+  canEdit?: boolean
+  canDelete?: boolean
+  canView?: boolean
+  canDuplicate?: boolean
   customActions?: Action[]
   /** Modo de presentación: 'buttons' (iconos compactos), 'dropdown' (menú vertical), 'auto' (botones si <= 3, híbrido si > 3) */
   displayMode?: 'buttons' | 'dropdown' | 'auto'
@@ -39,38 +45,51 @@ export function CrudActions({
   onDelete,
   onView,
   onDuplicate,
+  canEdit = true,
+  canDelete = true,
+  canView = true,
+  canDuplicate = true,
   customActions = [],
   displayMode = 'auto',
   className,
 }: CrudActionsProps) {
+  // Regla de habilitación de FaruTech: acción disponible = permiso válido + operación funcional
   const defaultActions: Action[] = [
-    onView && {
+    (onView || canView !== undefined) && {
       label: 'Ver detalles',
       icon: <EyeIcon className="h-3.5 w-3.5" />,
-      onClick: onView,
+      onClick: onView || (() => {}),
       variant: 'info' as const,
-      show: true,
+      show: canView,
+      disabled: !onView || !canView,
+      disabledReason: !canView ? 'Sin permisos para ver' : !onView ? 'Operación no implementada' : undefined,
     },
-    onEdit && {
+    (onEdit || canEdit !== undefined) && {
       label: 'Editar',
       icon: <PencilIcon className="h-3.5 w-3.5" />,
-      onClick: onEdit,
+      onClick: onEdit || (() => {}),
       variant: 'warning' as const,
-      show: true,
+      show: canEdit,
+      disabled: !onEdit || !canEdit,
+      disabledReason: !canEdit ? 'Sin permisos para editar' : !onEdit ? 'Operación no implementada' : undefined,
     },
-    onDuplicate && {
+    (onDuplicate || canDuplicate !== undefined) && {
       label: 'Duplicar',
       icon: <DocumentDuplicateIcon className="h-3.5 w-3.5" />,
-      onClick: onDuplicate,
+      onClick: onDuplicate || (() => {}),
       variant: 'default' as const,
-      show: true,
+      show: canDuplicate && Boolean(onDuplicate),
+      disabled: !onDuplicate || !canDuplicate,
+      disabledReason: !canDuplicate ? 'Sin permisos para duplicar' : !onDuplicate ? 'Operación no implementada' : undefined,
     },
-    onDelete && {
+    (onDelete || canDelete !== undefined) && {
       label: 'Eliminar',
       icon: <TrashIcon className="h-3.5 w-3.5" />,
-      onClick: onDelete,
+      onClick: onDelete || (() => {}),
       variant: 'danger' as const,
-      show: true,
+      show: canDelete,
+      disabled: !onDelete || !canDelete,
+      disabledReason: !canDelete ? 'Sin permisos para eliminar' : !onDelete ? 'Operación no implementada' : undefined,
     },
   ].filter(Boolean) as Action[]
 
@@ -102,14 +121,15 @@ export function CrudActions({
           <button
             key={index}
             type="button"
-            title={action.label}
+            disabled={action.disabled}
+            title={action.disabled ? (action.disabledReason || action.label) : action.label}
             aria-label={action.label}
             onClick={(e) => {
               e.stopPropagation()
-              action.onClick()
+              if (!action.disabled) action.onClick()
             }}
             className={cn(
-              'p-1.5 rounded-lg shadow-sm transition-all duration-150 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500/40',
+              'p-1.5 rounded-lg shadow-sm transition-all duration-150 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500/40 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:pointer-events-none',
               getButtonStyles(action.variant)
             )}
           >
@@ -131,14 +151,15 @@ export function CrudActions({
           <button
             key={index}
             type="button"
-            title={action.label}
+            disabled={action.disabled}
+            title={action.disabled ? (action.disabledReason || action.label) : action.label}
             aria-label={action.label}
             onClick={(e) => {
               e.stopPropagation()
-              action.onClick()
+              if (!action.disabled) action.onClick()
             }}
             className={cn(
-              'p-1.5 rounded-lg shadow-sm transition-all duration-150 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500/40 shrink-0 [&>svg]:shrink-0',
+              'p-1.5 rounded-lg shadow-sm transition-all duration-150 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500/40 shrink-0 [&>svg]:shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:pointer-events-none',
               getButtonStyles(action.variant)
             )}
           >
@@ -157,16 +178,18 @@ export function CrudActions({
 
           <Menu.Items className="absolute right-0 z-[100] mt-1 w-48 origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700/80 ring-1 ring-black/5 focus:outline-none overflow-hidden py-1">
             {overflowActions.map((action, index) => (
-              <Menu.Item key={index}>
+              <Menu.Item key={index} disabled={action.disabled}>
                 {({ active }) => (
                   <button
+                    disabled={action.disabled}
+                    title={action.disabled ? (action.disabledReason || action.label) : undefined}
                     onClick={(e) => {
                       e.stopPropagation()
-                      action.onClick()
+                      if (!action.disabled) action.onClick()
                     }}
                     className={cn(
-                      'flex items-center gap-2.5 w-full px-3.5 py-2 text-xs transition-colors font-medium whitespace-nowrap [&>svg]:shrink-0',
-                      active ? 'bg-gray-50 dark:bg-gray-700/60' : '',
+                      'flex items-center gap-2.5 w-full px-3.5 py-2 text-xs transition-colors font-medium whitespace-nowrap [&>svg]:shrink-0 disabled:opacity-40 disabled:cursor-not-allowed',
+                      active && !action.disabled ? 'bg-gray-50 dark:bg-gray-700/60' : '',
                       action.variant === 'danger'
                         ? 'text-red-600 dark:text-red-400'
                         : 'text-gray-700 dark:text-gray-200'
@@ -193,16 +216,18 @@ export function CrudActions({
 
       <Menu.Items className="absolute right-0 z-[100] mt-1.5 w-52 origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700/80 ring-1 ring-black/5 focus:outline-none overflow-hidden py-1">
         {allActions.map((action, index) => (
-          <Menu.Item key={index}>
+          <Menu.Item key={index} disabled={action.disabled}>
             {({ active }) => (
               <button
+                disabled={action.disabled}
+                title={action.disabled ? (action.disabledReason || action.label) : undefined}
                 onClick={(e) => {
                   e.stopPropagation()
-                  action.onClick()
+                  if (!action.disabled) action.onClick()
                 }}
                 className={cn(
-                  'flex items-center gap-2.5 w-full px-3.5 py-2 text-xs font-medium transition-colors',
-                  active && 'bg-gray-50 dark:bg-gray-700/60',
+                  'flex items-center gap-2.5 w-full px-3.5 py-2 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+                  active && !action.disabled && 'bg-gray-50 dark:bg-gray-700/60',
                   action.variant === 'danger'
                     ? 'text-red-600 dark:text-red-400'
                     : 'text-gray-700 dark:text-gray-300'
